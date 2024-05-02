@@ -2,5 +2,11 @@
   "name": "gen-design-token",
   "version": "1.0.0",
   "main": "index.js",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "test": "vitest --config ./configs/vitest.config.js"
+  },
+  "devDependencies": {
+    "vitest": "^1.5.3"
+  }
 }

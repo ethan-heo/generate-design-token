@@ -5,6 +5,9 @@
       // outputs are set in workspace configs
       "dependsOn": ["^build"]
     },
+    "test": {
+      "dependsOn": ["^test"]
+    },
     "lint": {},
     "dev": {
       "persistent": true,
