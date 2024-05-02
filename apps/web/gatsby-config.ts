@@ -8,9 +8,9 @@ const config: GatsbyConfig = {
   plugins: [
     {
       resolve: `gatsby-plugin-compile-es6-packages`,
-      options: {
-        modules: [`@repo/ui`],
-      },
+      // options: {
+      //   modules: [`@repo/ui`],
+      // },
     },
   ],
 };
