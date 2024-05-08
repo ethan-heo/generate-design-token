@@ -1,0 +1,488 @@
+{
+  "grid": {
+    "mobile": {
+      "landscape": {
+        "column": {
+          "$type": "string",
+          "$value": "calc((100% - 24px * 5) / 4)"
+        },
+        "row": {
+          "$type": "dimension",
+          "$value": "8px"
+        },
+        "gutter": {
+          "$type": "dimension",
+          "$value": "24px"
+        },
+        "margin": {
+          "$type": "dimension",
+          "$value": "24px"
+        }
+      },
+      "portrait": {
+        "column": {
+          "$type": "string",
+          "$value": "calc((100% - 16px * 5) / 4)"
+        },
+        "row": {
+          "$type": "dimension",
+          "$value": "8px"
+        },
+        "gutter": {
+          "$type": "dimension",
+          "$value": "16px"
+        },
+        "margin": {
+          "$type": "dimension",
+          "$value": "16px"
+        }
+      }
+    },
+    "tablet": {
+      "column": {
+        "$type": "string",
+        "$value": "calc((100% - 24px * 9) / 8)"
+      },
+      "row": {
+        "$type": "dimension",
+        "$value": "8px"
+      },
+      "gutter": {
+        "$type": "dimension",
+        "$value": "24px"
+      },
+      "margin": {
+        "$type": "dimension",
+        "$value": "24px"
+      }
+    },
+    "desktop": {
+      "column": {
+        "$type": "dimension",
+        "$value": "72px"
+      },
+      "row": {
+        "$type": "dimension",
+        "$value": "8px"
+      },
+      "gutter": {
+        "$type": "dimension",
+        "$value": "24px"
+      },
+      "margin": {
+        "$type": "string",
+        "$value": "auto"
+      }
+    }
+  },
+  "responsive": {
+    "mobile": {
+      "landscape": {
+        "min-width": {
+          "$type": "dimension",
+          "$value": "576px"
+        },
+        "max-width": {
+          "$type": "dimension",
+          "$value": "767px"
+        }
+      },
+      "portrait": {
+        "max-width": {
+          "$type": "dimension",
+          "$value": "575px"
+        }
+      }
+    },
+    "tablet": {
+      "min-width": {
+        "$type": "dimension",
+        "$value": "768px"
+      },
+      "max-width": {
+        "$type": "dimension",
+        "$value": "991px"
+      }
+    },
+    "desktop": {
+      "min-width": {
+        "$type": "dimension",
+        "$value": "992px"
+      },
+      "max-width": {
+        "$type": "dimension",
+        "$value": "1199px"
+      }
+    },
+    "desktop-large": {
+      "min-width": {
+        "$type": "dimension",
+        "$value": "1200px"
+      }
+    }
+  },
+  "text-size": {
+    "2-extra-large": {
+      "$type": "string",
+      "$value": "normal 2rem/1.4 'Roboto', Arial, sans-serif"
+    },
+    "extra-large": {
+      "$type": "string",
+      "$value": "normal 1.6rem/1.4 'Roboto', Arial, sans-serif"
+    },
+    "large": {
+      "$type": "string",
+      "$value": "normal 1.2rem/1.4 'Roboto', Arial, sans-serif"
+    },
+    "medium": {
+      "$type": "string",
+      "$value": "normal 1rem/1.2 'Roboto', Arial, sans-serif"
+    },
+    "small": {
+      "$type": "string",
+      "$value": "normal 0.8rem/1.2 'Roboto', Arial, sans-serif"
+    },
+    "extra-small": {
+      "$type": "string",
+      "$value": "normal 0.6rem/1.2 'Roboto', Arial, sans-serif"
+    }
+  },
+  "text-weight": {
+    "bold": {
+      "$type": "fontWeight",
+      "$value": "700"
+    },
+    "medium": {
+      "$type": "fontWeight",
+      "$value": "500"
+    },
+    "light": {
+      "$type": "fontWeight",
+      "$value": "300"
+    }
+  },
+  "color": {
+    "primary": {
+      "$type": "color",
+      "$value": "#f97300"
+    },
+    "secondary": {
+      "$type": "color",
+      "$value": "#e2dfd0"
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "#32012f"
+    },
+    "success": {
+      "$type": "color",
+      "$value": "#102c57"
+    },
+    "warning": {
+      "$type": "color",
+      "$value": "#e9b824"
+    },
+    "error": {
+      "$type": "color",
+      "$value": "#cd1818"
+    },
+    "text": {
+      "$type": "color",
+      "$value": "#171615"
+    },
+    "text-white": {
+      "$type": "color",
+      "$value": "#ffffff"
+    },
+    "background": {
+      "$type": "color",
+      "$value": "#ffffff"
+    }
+  },
+  "border": {
+    "thin": {
+      "$type": "string",
+      "$value": "1px solid transparent"
+    },
+    "light": {
+      "$type": "string",
+      "$value": "2px solid transparent"
+    },
+    "medium": {
+      "$type": "string",
+      "$value": "3px solid transparent"
+    },
+    "bold": {
+      "$type": "string",
+      "$value": "4px solid transparent"
+    },
+    "heavy": {
+      "$type": "string",
+      "$value": "5px solid transparent"
+    },
+    "primary": {
+      "thin": {
+        "$type": "string",
+        "$value": "1px solid #f97300"
+      },
+      "light": {
+        "$type": "string",
+        "$value": "2px solid #f97300"
+      },
+      "medium": {
+        "$type": "string",
+        "$value": "3px solid #f97300"
+      },
+      "bold": {
+        "$type": "string",
+        "$value": "4px solid #f97300"
+      },
+      "heavy": {
+        "$type": "string",
+        "$value": "5px solid #f97300"
+      }
+    },
+    "secondary": {
+      "thin": {
+        "$type": "string",
+        "$value": "1px solid #e2dfd0"
+      },
+      "light": {
+        "$type": "string",
+        "$value": "2px solid #e2dfd0"
+      },
+      "medium": {
+        "$type": "string",
+        "$value": "3px solid #e2dfd0"
+      },
+      "bold": {
+        "$type": "string",
+        "$value": "4px solid #e2dfd0"
+      },
+      "heavy": {
+        "$type": "string",
+        "$value": "5px solid #e2dfd0"
+      }
+    },
+    "accent": {
+      "thin": {
+        "$type": "string",
+        "$value": "1px solid #32012f"
+      },
+      "light": {
+        "$type": "string",
+        "$value": "2px solid #32012f"
+      },
+      "medium": {
+        "$type": "string",
+        "$value": "3px solid #32012f"
+      },
+      "bold": {
+        "$type": "string",
+        "$value": "4px solid #32012f"
+      },
+      "heavy": {
+        "$type": "string",
+        "$value": "5px solid #32012f"
+      }
+    },
+    "success": {
+      "thin": {
+        "$type": "string",
+        "$value": "1px solid #102c57"
+      },
+      "light": {
+        "$type": "string",
+        "$value": "2px solid #102c57"
+      },
+      "medium": {
+        "$type": "string",
+        "$value": "3px solid #102c57"
+      },
+      "bold": {
+        "$type": "string",
+        "$value": "4px solid #102c57"
+      },
+      "heavy": {
+        "$type": "string",
+        "$value": "5px solid #102c57"
+      }
+    },
+    "warning": {
+      "thin": {
+        "$type": "string",
+        "$value": "1px solid #e9b824"
+      },
+      "light": {
+        "$type": "string",
+        "$value": "2px solid #e9b824"
+      },
+      "medium": {
+        "$type": "string",
+        "$value": "3px solid #e9b824"
+      },
+      "bold": {
+        "$type": "string",
+        "$value": "4px solid #e9b824"
+      },
+      "heavy": {
+        "$type": "string",
+        "$value": "5px solid #e9b824"
+      }
+    },
+    "error": {
+      "thin": {
+        "$type": "string",
+        "$value": "1px solid #cd1818"
+      },
+      "light": {
+        "$type": "string",
+        "$value": "2px solid #cd1818"
+      },
+      "medium": {
+        "$type": "string",
+        "$value": "3px solid #cd1818"
+      },
+      "bold": {
+        "$type": "string",
+        "$value": "4px solid #cd1818"
+      },
+      "heavy": {
+        "$type": "string",
+        "$value": "5px solid #cd1818"
+      }
+    },
+    "text": {
+      "thin": {
+        "$type": "string",
+        "$value": "1px solid #171615"
+      },
+      "light": {
+        "$type": "string",
+        "$value": "2px solid #171615"
+      },
+      "medium": {
+        "$type": "string",
+        "$value": "3px solid #171615"
+      },
+      "bold": {
+        "$type": "string",
+        "$value": "4px solid #171615"
+      },
+      "heavy": {
+        "$type": "string",
+        "$value": "5px solid #171615"
+      }
+    },
+    "text-white": {
+      "thin": {
+        "$type": "string",
+        "$value": "1px solid #ffffff"
+      },
+      "light": {
+        "$type": "string",
+        "$value": "2px solid #ffffff"
+      },
+      "medium": {
+        "$type": "string",
+        "$value": "3px solid #ffffff"
+      },
+      "bold": {
+        "$type": "string",
+        "$value": "4px solid #ffffff"
+      },
+      "heavy": {
+        "$type": "string",
+        "$value": "5px solid #ffffff"
+      }
+    },
+    "background": {
+      "thin": {
+        "$type": "string",
+        "$value": "1px solid #ffffff"
+      },
+      "light": {
+        "$type": "string",
+        "$value": "2px solid #ffffff"
+      },
+      "medium": {
+        "$type": "string",
+        "$value": "3px solid #ffffff"
+      },
+      "bold": {
+        "$type": "string",
+        "$value": "4px solid #ffffff"
+      },
+      "heavy": {
+        "$type": "string",
+        "$value": "5px solid #ffffff"
+      }
+    }
+  },
+  "border-radius": {
+    "small": {
+      "$type": "string",
+      "$value": "4px"
+    },
+    "medium": {
+      "$type": "string",
+      "$value": "8px"
+    },
+    "large": {
+      "$type": "string",
+      "$value": "12px"
+    },
+    "round": {
+      "$type": "string",
+      "$value": "100%"
+    }
+  },
+  "spacing": {
+    "1": {
+      "$type": "dimension",
+      "$value": "8px"
+    },
+    "2": {
+      "$type": "dimension",
+      "$value": "16px"
+    },
+    "3": {
+      "$type": "dimension",
+      "$value": "24px"
+    },
+    "4": {
+      "$type": "dimension",
+      "$value": "32px"
+    },
+    "5": {
+      "$type": "dimension",
+      "$value": "40px"
+    },
+    "6": {
+      "$type": "dimension",
+      "$value": "48px"
+    },
+    "7": {
+      "$type": "dimension",
+      "$value": "56px"
+    },
+    "8": {
+      "$type": "dimension",
+      "$value": "64px"
+    },
+    "9": {
+      "$type": "dimension",
+      "$value": "72px"
+    },
+    "10": {
+      "$type": "dimension",
+      "$value": "80px"
+    }
+  },
+  "shadow": {
+    "thin": {
+      "$type": "string",
+      "$value": "2px 2px 3px -3px #171615"
+    }
+  }
+}

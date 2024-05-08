@@ -1,103 +1,146 @@
-import { SequenceFunction, Token, TokenObj } from "./generateToken.token";
+import { TOKEN_REF_SEPERATOR } from "./constants/seperator";
+import { SequenceFunction, Token, TokenObj } from "./generateToken.types";
+import assignToken from "./utils/assignToken";
 import findToken from "./utils/findToken";
 import isTokenObj from "./utils/isTokenObj";
+import isTokenRef from "./utils/isTokenRef";
 import iterateToken from "./utils/iterateToken";
-import parseTokenRef from "./utils/parseTokenRef";
-
-const findTokenToBaseTokens = (baseTokens: Token[], tokenRef: string[]) => {
-	for (const baseToken of baseTokens) {
-		const foundToken = findToken(baseToken, tokenRef);
-
-		if (foundToken) {
-			return foundToken;
-		}
-	}
-};
+import matchTokenRefs from "./utils/matchTokenRefs";
 
 /**
  * TODO
  * - 리팩토링 필요
  */
 const transformer: SequenceFunction = (token, baseTokens) => {
-	const normalizeToken = iterateToken<Map<string, TokenObj>>({
-		data: new Map(),
-		foundTokenObjCallback: (tokenNames, token, data) => {
-			data.set(tokenNames.join("/"), token);
-		},
-	});
+  const skipTokenNames: string[][] = [];
 
-	// 1. 데이터를 일반화 한다.
-	const normalizedToken = normalizeToken(token);
-	const referredTokens = new Map();
+  return iterateToken<Token>({
+    data: {},
+    iterateCallback: (tokenNames, token, data) => {
+      const _tokenNames = [...tokenNames];
+      const _tokenName = _tokenNames.pop()!;
 
-	// 2. 참조할 토큰을 찾는다.
-	for (const [key] of normalizedToken[Symbol.iterator]()) {
-		const matcher = key.match(/\{[^{}]*\}/);
+      if (isTokenRef(_tokenName)) {
+        let _token = token;
+        const matchedTokenRef = matchTokenRefs(_tokenName)[0];
+        const foundToken = findToken(matchedTokenRef, baseTokens);
 
-		if (matcher !== null) {
-			const [referredTokenName] = matcher;
-			const tokenRef = parseTokenRef(referredTokenName);
+        if (foundToken === undefined) {
+          throw new Error(`토큰을 찾을 수 없습니다. [${_tokenName}]`);
+        }
 
-			referredTokens.set(
-				referredTokenName,
-				findTokenToBaseTokens(baseTokens, tokenRef),
-			);
-		}
-	}
+        const splitedMatchedTokenRef =
+          matchedTokenRef.split(TOKEN_REF_SEPERATOR);
 
-	// 3. 일반화된 토큰 데이터를 참조 토큰을 통해 값을 파싱한다.
-	for (const [referredTokenName, referredToken] of referredTokens[
-		Symbol.iterator
-	]()) {
-		for (const [tokenName, token] of normalizedToken[Symbol.iterator]()) {
-			if (!tokenName.includes(referredTokenName)) {
-				continue;
-			}
+        if (isTokenObj(foundToken) && isTokenObj(token)) {
+          splitedMatchedTokenRef.shift();
 
-			if (isTokenObj(referredToken)) {
-				const tokenRef = parseTokenRef(referredTokenName);
-				normalizedToken.set(
-					tokenName.replace(referredTokenName, tokenRef.pop()!),
-					{
-						...token,
-						$value: token.$value.replace("{$value}", referredToken.$value),
-					},
-				);
-			} else {
-				iterateToken({
-					data: null,
-					foundTokenObjCallback: (_tokenNames, _token) => {
-						normalizedToken.set(
-							tokenName.replace(referredTokenName, _tokenNames.join("/")),
-							{
-								...token,
-								$value: token.$value.replace("{$value}", _token.$value),
-							},
-						);
-					},
-				})(referredToken);
-			}
+          assignToken(
+            splitedMatchedTokenRef,
+            (_token = {}),
+            replaceTokenValue(token, matchedTokenRef),
+          );
+        }
+        if (isTokenObj(foundToken) && !isTokenObj(token)) {
+          splitedMatchedTokenRef.shift();
 
-			normalizedToken.delete(tokenName);
-		}
-	}
+          _token = iterateToken<Token>({
+            data: {},
+            foundTokenObjCallback: (__tokenNames, __token, __data) => {
+              assignToken(
+                [...splitedMatchedTokenRef, ...__tokenNames],
+                __data,
+                replaceTokenValue(__token, matchedTokenRef),
+              );
+            },
+          })(token);
+        }
+        if (!isTokenObj(foundToken) && isTokenObj(token)) {
+          _token = iterateToken<Token>({
+            data: {},
+            foundTokenObjCallback: (__tokenNames, __token, __data) => {
+              assignToken(
+                __tokenNames,
+                __data,
+                replaceTokenValue(
+                  token,
+                  [...splitedMatchedTokenRef, __tokenNames].join(
+                    TOKEN_REF_SEPERATOR,
+                  ),
+                ),
+              );
+            },
+          })(foundToken);
+        }
+        if (!isTokenObj(foundToken) && !isTokenObj(token)) {
+          _token = iterateToken<Token>({
+            data: {},
+            foundTokenObjCallback: (__tokenNames, __token, __data) => {
+              iterateToken<Token>({
+                data: {},
+                foundTokenObjCallback: (___tokenNames, ___token, ___data) => {
+                  assignToken(
+                    [...__tokenNames, ...___tokenNames],
+                    __data,
+                    replaceTokenValue(
+                      ___token,
+                      [...splitedMatchedTokenRef, __tokenNames].join(
+                        TOKEN_REF_SEPERATOR,
+                      ),
+                    ),
+                  );
+                },
+              })(token);
+            },
+          })(foundToken);
+        }
 
-	const result = {};
+        if (_tokenName.length === 0 && isTokenObj(_token)) {
+          throw new Error(
+            `최상위 레벨에 토큰 객체를 정의할 수 없습니다. ${tokenNames.join(".")}`,
+          );
+        }
 
-	// 4. 일반화된 토큰을 다시 토큰 형태로 변경합니다.
-	for (const [tokenNames, tokenObj] of normalizedToken[Symbol.iterator]()) {
-		let target = result;
-		const _splitTokenNames = tokenNames.split("/");
-		const targetName = _splitTokenNames.pop()!;
+        deleteToken(tokenNames, data);
+        assignToken(_tokenNames, data, _token);
+        skipTokenNames.push([...tokenNames]);
+      } else {
+        if (!skipAssignToken(tokenNames)) {
+          assignToken(tokenNames, data, token);
+        }
+      }
+    },
+  })(token);
 
-		for (const tokenName of _splitTokenNames) {
-			target = target[tokenName] ??= {};
-		}
+  function deleteToken(tokenNames: string[], data: Token) {
+    const _tokenNames = [...tokenNames];
+    let target = _tokenNames.pop()!;
 
-		target[targetName] = tokenObj;
-	}
+    for (const tokenName of _tokenNames) {
+      if (data[tokenName] === undefined) {
+        data[tokenName] = {};
+      }
 
-	return result;
+      data = data[tokenName] as Token;
+    }
+
+    delete data[target];
+  }
+
+  function skipAssignToken(tokenNames: string[]) {
+    const tokenNamesStr = tokenNames.join(TOKEN_REF_SEPERATOR);
+
+    return skipTokenNames.some((skipTokenName) =>
+      tokenNamesStr.includes(skipTokenName.join(TOKEN_REF_SEPERATOR)),
+    );
+  }
+
+  function replaceTokenValue(token: TokenObj, replacer: string) {
+    return {
+      ...token,
+      $value: token.$value.replace("$value", replacer),
+    };
+  }
 };
 
 export default transformer;

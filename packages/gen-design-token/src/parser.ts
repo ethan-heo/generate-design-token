@@ -1,47 +1,37 @@
-import { Token, TokenObj } from "./generateToken.token";
-import findValueToToken from "./utils/findValueToToken";
+import { Token } from "./generateToken.types";
+import assignToken from "./utils/assignToken";
+import findToken from "./utils/findToken";
 import isTokenObj from "./utils/isTokenObj";
-import transformTokenToArray from "./utils/transformTokenToArray";
+import iterateToken from "./utils/iterateToken";
+import matchTokenRefs from "./utils/matchTokenRefs";
 
-const parser = (mappedToken: Record<string, TokenObj>, baseTokens: Token[]) => {
-	const result = {};
+const parser = (token: Token, baseTokens: Token[]) => {
+  return iterateToken<Token>({
+    data: {},
+    iterateCallback: (tokenNames, token, data) => {
+      if (isTokenObj(token)) {
+        assignToken(tokenNames, data, {
+          ...token,
+          $value: token.$value.replace(/\{[^{}]+\}/g, (matcher) => {
+            const matchedTokenRef = matchTokenRefs(matcher)[0];
+            const foundToken = findToken(matchedTokenRef, baseTokens);
 
-	for (const [name, tokenObj] of transformTokenToArray(mappedToken)) {
-		const matcher = (tokenObj as TokenObj).$value.match(/\{[^{}]*\}/g);
+            if (foundToken === undefined) {
+              throw new Error(`토큰을 찾을 수 없습니다. [${matcher}]`);
+            }
 
-		if (matcher === null) {
-			result[name] = tokenObj;
-			continue;
-		}
+            if (!isTokenObj(foundToken)) {
+              throw new Error(`토큰 객체가 아닙니다. [${matcher}]`);
+            }
 
-		for (const referredTokenValue of matcher) {
-			const foundToken = findValueToToken(
-				referredTokenValue.slice(1, referredTokenValue.length - 1).split("."),
-				baseTokens,
-			);
-
-			if (foundToken === undefined) {
-				throw new Error(
-					`[parser] 토큰을 찾을 수 없습니다. [${referredTokenValue}]`,
-				);
-			}
-
-			if (!isTokenObj(foundToken)) {
-				throw new Error(
-					`[parser] 토큰 객체가 아닌 토큰 구조 객체가 사용되었습니다. [${referredTokenValue}]`,
-				);
-			}
-
-			tokenObj.$value = (tokenObj as TokenObj).$value.replace(
-				referredTokenValue,
-				foundToken.$value,
-			);
-		}
-
-		result[name] = tokenObj;
-	}
-
-	return result;
+            return foundToken.$value;
+          }),
+        });
+      } else {
+        assignToken(tokenNames, data, token);
+      }
+    },
+  })(token);
 };
 
 export default parser;

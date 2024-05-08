@@ -1,5 +1,5 @@
 const isTransformWord = (value: string) => {
-	return /\{[^{}]*\}/.test(value);
+  return /\{[^{}]*\}/.test(value);
 };
 
 export default isTransformWord;
