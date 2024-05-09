@@ -7,7 +7,7 @@ export default {
 	input: INPUT_PATH + "/index.ts",
 	output: {
 		file: OUTPUT_PATH + "/index.js",
-		format: "esm",
+		format: "cjs",
 		sourcemap: true,
 	},
 	plugins: [

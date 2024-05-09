@@ -5,7 +5,7 @@
 		"design token",
 		"design system"
 	],
-	"type": "module",
+  "type": "module",
 	"main": "./dist/index.js",
 	"license": "MIT",
 	"author": {

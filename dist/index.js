@@ -1,3 +1,5 @@
+'use strict';
+
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
 
@@ -347,5 +349,5 @@ var generateDesignToken = function (token, baseTokens) {
     return parser(transformer(token, baseTokens), baseTokens);
 };
 
-export { generateDesignToken as default };
+module.exports = generateDesignToken;
 //# sourceMappingURL=index.js.map
