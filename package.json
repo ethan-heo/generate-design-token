@@ -1,13 +1,13 @@
 {
 	"name": "generate-design-token",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"keywords": [
 		"design token",
 		"design system"
 	],
 	"main": "./dist/index.js",
 	"module": "./dist/index.es.js",
-  "types": "./dist/index.d.ts",
+	"types": "./dist/index.d.ts",
 	"license": "MIT",
 	"author": {
 		"email": "ethanheo.dev@gmail.com",
