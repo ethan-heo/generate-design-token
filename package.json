@@ -5,8 +5,9 @@
 		"design token",
 		"design system"
 	],
-	"type": "module",
 	"main": "./dist/index.js",
+	"module": "./dist/index.es.js",
+  "types": "./dist/index.d.ts",
 	"license": "MIT",
 	"author": {
 		"email": "ethanheo.dev@gmail.com",

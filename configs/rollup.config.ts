@@ -5,15 +5,21 @@ const OUTPUT_PATH = "./dist";
 
 export default {
 	input: INPUT_PATH + "/index.ts",
-	output: {
-		file: OUTPUT_PATH + "/index.js",
-		format: "cjs",
-		sourcemap: true,
-	},
+	output: [
+    {
+      file: OUTPUT_PATH + "/index.js",
+      format: "cjs",
+      sourcemap: true,
+    },
+    {
+      file: OUTPUT_PATH + "/index.es.js",
+      format: "es",
+      sourcemap: true,
+    }
+  ],
 	plugins: [
 		tsPlugin({
-			declaration: true,
-			declarationDir: OUTPUT_PATH,
-		}),
+      
+    }),
 	],
 };
