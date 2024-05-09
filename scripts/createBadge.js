@@ -1,6 +1,6 @@
-import packages from "../package.json" assert { type: "json" };
-import { makeBadge } from "badge-maker";
-import fs from "fs/promises";
+const packages = require("../package.json") 
+const { makeBadge } = require("badge-maker");
+const fs = require("fs/promises");
 
 const LABEL = {
 	version: {
