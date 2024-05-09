@@ -1,11 +1,11 @@
 {
 	"name": "generate-design-token",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"keywords": [
 		"design token",
 		"design system"
 	],
-  "type": "module",
+	"type": "module",
 	"main": "./dist/index.js",
 	"license": "MIT",
 	"author": {
