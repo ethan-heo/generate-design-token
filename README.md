@@ -379,3 +379,7 @@ generateDesignToken(token, [token]); // result JSON
     }
     ```
     - **color.red** 토큰의 형식은 색상이고, 값은 빨강색입니다.
+
+## Licence
+
+[MIT](./LICENSE.md)
