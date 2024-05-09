@@ -1,10 +1,11 @@
 {
-  "compilerOptions": {
-    "lib": ["ESNext"],
-    "downlevelIteration": true,
-    "noImplicitAny": false,
-    "strict": true
-  },
-  "include": ["./src/index.ts"],
-  "exclude": ["dist", "build", "node_modules"]
+	"compilerOptions": {
+		"lib": ["ESNext"],
+		"downlevelIteration": true,
+		"noImplicitAny": false,
+		"strict": true,
+		"resolveJsonModule": true
+	},
+	"include": ["./src/index.ts"],
+	"exclude": ["dist", "build", "node_modules"]
 }

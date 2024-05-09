@@ -5,7 +5,7 @@ import themeResultToken from "./_mock/theme.result.tokens.json";
 import generateDesignToken from ".";
 
 it(`generateToken`, () => {
-  expect(
-    generateDesignToken(themeToken, [themeToken, globalToken]),
-  ).toStrictEqual(themeResultToken);
+	expect(
+		generateDesignToken(themeToken, [themeToken, globalToken]),
+	).toStrictEqual(themeResultToken);
 });

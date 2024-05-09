@@ -1,0 +1,13 @@
+{
+	"ts-node": {
+		"esm": true,
+		"compilerOptions": {
+			"resolveJsonModule": true,
+			"esModuleInterop": true,
+			"moduleResolution": "Node",
+			"target": "ESNext",
+			"module": "ESNext"
+		}
+	},
+	"include": ["scripts/**/*.ts"]
+}
