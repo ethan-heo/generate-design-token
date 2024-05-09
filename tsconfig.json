@@ -1,9 +1,10 @@
 {
-  "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
+    "lib": ["ESNext"],
     "downlevelIteration": true,
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "strict": true
   },
-  "include": ["."],
+  "include": ["./src/index.ts"],
   "exclude": ["dist", "build", "node_modules"]
 }
