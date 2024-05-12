@@ -1,40 +1,12 @@
 {
-	"name": "generate-design-token",
-	"version": "0.0.5",
-	"keywords": [
-		"design token",
-		"design system"
+	"private": true,
+	"workspaces": [
+		"packages/*"
 	],
-	"main": "./dist/index.js",
-	"module": "./dist/index.es.js",
-	"types": "./dist/index.d.ts",
-	"license": "MIT",
-	"author": {
-		"email": "ethanheo.dev@gmail.com",
-		"name": "ethan-heo",
-		"url": "https://github.com/ethan-heo/generate-design-token"
-	},
 	"scripts": {
-		"test": "vitest --config ./configs/vitest.config.js",
-		"build": "rollup --config ./configs/rollup.config.ts --bundleConfigAsCjs --configPlugin typescript ",
-		"prettier": "prettier . --write",
-		"badge": "node ./scripts/createBadge.js"
-	},
-	"devDependencies": {
-		"@rollup/plugin-typescript": "^11.1.6",
-		"@types/node": "^20.12.11",
-		"badge-maker": "^3.3.1",
-		"prettier": "^3.2.5",
-		"rollup": "^4.17.2",
-		"ts-node": "^10.9.2",
-		"tslib": "^2.6.2",
-		"typescript": "^5.4.5",
-		"vitest": "^1.5.3"
-	},
-	"engines": {
-		"node": ">=18.0.0"
-	},
-	"publishConfig": {
-		"access": "public"
+		"build:lib": "yarn workspace generate-design-token build",
+		"test:lib": "yarn workspace generate-design-token test",
+		"build:web": "yarn workspace website build",
+		"dev:web": "yarn workspace website start"
 	}
 }
