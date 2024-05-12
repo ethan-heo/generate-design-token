@@ -1,8 +1,8 @@
 ## generate-design-token
 
-![version](./assets/version.svg)
-![node](./assets/node.svg)
-![environment](./assets/env.svg)
+![version](./packages/generate-design-token/assets/version.svg)
+![node](./packages/generate-design-token/assets/node.svg)
+![environment](./packages/generate-design-token/assets/env.svg)
 
 > 디자인 토큰을 편리하게 정의할 수 있게 해주는 라이브러리입니다.
 

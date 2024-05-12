@@ -1,8 +1,8 @@
 ## generate-design-token
 
-![version](./assets/version.svg)
-![node](./assets/node.svg)
-![environment](./assets/env.svg)
+![version](./packages/generate-design-token/assets/version.svg)
+![node](./packages/generate-design-token/assets/node.svg)
+![environment](./packages/generate-design-token/assets/env.svg)
 
 > A library that allows you to conveniently define design tokens.
 
