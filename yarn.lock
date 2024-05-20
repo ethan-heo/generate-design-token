@@ -1295,6 +1295,14 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
+"@ethanheo/ui@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@ethanheo/ui/-/ui-0.0.1.tgz#34afa721525e9fd073817aa99e9a86243f90dd39"
+  integrity sha512-FWrErBqlKBGmk/s4tXUFGYS4Ta+MnKD2YsxYzed5Cmo5mjbKBq2B1Lxu6LUR5l8KDMjj3D2xBc4HonO7rAr+Lg==
+  dependencies:
+    react "^18.2.0"
+    react-dom "^18.2.0"
+
 "@gatsbyjs/parcel-namer-relative-to-cwd@^2.13.1":
   version "2.13.1"
   resolved "https://registry.npmjs.org/@gatsbyjs/parcel-namer-relative-to-cwd/-/parcel-namer-relative-to-cwd-2.13.1.tgz"

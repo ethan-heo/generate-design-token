@@ -1,0 +1,13 @@
+{
+	"compilerOptions": {
+		"lib": ["ES2017", "DOM", "DOM.Iterable"],
+		"strict": true,
+		"noImplicitAny": false,
+		"jsx": "react-jsx",
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"moduleResolution": "NodeNext",
+		"module": "NodeNext"
+	},
+	"include": ["src/**/*"]
+}

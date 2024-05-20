@@ -1,0 +1,9 @@
+header {
+	background-color: var(--color-primary);
+	padding: var(--spacing-1) var(--spacing-2);
+	width: 100%;
+}
+
+header h2.title.logo {
+	color: var(--color-accent);
+}
