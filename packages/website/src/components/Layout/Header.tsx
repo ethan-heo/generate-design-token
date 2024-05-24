@@ -1,25 +1,36 @@
 import React from "react";
 import "./Header.styles.css";
-import { Flex, Title } from "@ethanheo/ui";
+import { Flex, useMediaQuery } from "@ethanheo/ui";
+import { StaticImage } from "gatsby-plugin-image";
+import { Link } from "gatsby";
 
 const Header = () => {
-	// const data = useStaticQuery(graphql`
-	// 	query SiteTitleQuery {
-	// 		site {
-	// 			siteMetadata {
-	// 				title
-	// 			}
-	// 		}
-	// 	}
-	// `);
+	const platform = useMediaQuery();
+
 	return (
 		<header>
-			<Flex justify="space-between" align="center">
-				<Title className="logo" level={2}>
-					generate-design-token
-				</Title>
+			<Flex className={platform} justify="space-between" align="center">
+				<Link to="/">
+					<StaticImage
+						src="../../images/logo-icon.webp"
+						alt="generate-design-token logo"
+						width={60}
+						height={60}
+					/>
+				</Link>
 				<Flex>
-					<div>github</div>
+					<Link
+						to="https://github.com/ethan-heo/generate-design-token"
+						target="_blank"
+						referrerPolicy="no-referrer"
+					>
+						<StaticImage
+							src="../../images/github-icon.webp"
+							alt="ethan-heo github"
+							width={24}
+							height={24}
+						/>
+					</Link>
 				</Flex>
 			</Flex>
 		</header>

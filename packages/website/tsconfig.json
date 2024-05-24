@@ -3,7 +3,7 @@
 		"lib": ["ES2017", "DOM", "DOM.Iterable"],
 		"strict": true,
 		"noImplicitAny": false,
-		"jsx": "react-jsx",
+		"jsx": "react",
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
 		"moduleResolution": "NodeNext",

@@ -1295,10 +1295,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@ethanheo/ui@^0.0.1":
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/@ethanheo/ui/-/ui-0.0.1.tgz#34afa721525e9fd073817aa99e9a86243f90dd39"
-  integrity sha512-FWrErBqlKBGmk/s4tXUFGYS4Ta+MnKD2YsxYzed5Cmo5mjbKBq2B1Lxu6LUR5l8KDMjj3D2xBc4HonO7rAr+Lg==
+"@ethanheo/ui@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@ethanheo/ui/-/ui-0.0.4.tgz#fd9d1fe384c9f5fbda99d696fd83437697e2c915"
+  integrity sha512-qFQ3GXUduO02J9FdOX8nUOW+2210dfqBt8x2k+qNwH4tgUcwp4VIRV4bseSR3jyVAeUeYZVqc2M0Dbd7YrLdiQ==
   dependencies:
     react "^18.2.0"
     react-dom "^18.2.0"
