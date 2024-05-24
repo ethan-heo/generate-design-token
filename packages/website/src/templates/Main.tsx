@@ -1,7 +1,7 @@
 import React from "react";
 import Layout from "../components/Layout";
 import { Flex, Paragraph, Title } from "@ethanheo/ui";
-import TitleSection from "../components/TitleSection/TitleSection";
+import TitleSection from "../components/TitleSection";
 
 function Main() {
 	return (
