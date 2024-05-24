@@ -1,10 +1,12 @@
 import React from "react";
 import Layout from "../components/Layout";
 import { Flex, Paragraph, Title } from "@ethanheo/ui";
+import TitleSection from "../components/TitleSection/TitleSection";
 
 function Main() {
 	return (
 		<Layout>
+			<TitleSection />
 			<Flex vertical>
 				<Title level={2} variant="primary">
 					Overview
@@ -12,9 +14,6 @@ function Main() {
 				이미지 추가
 			</Flex>
 			<Flex vertical>
-				<Title level={2} variant="primary">
-					Useage
-				</Title>
 				<Paragraph variant="accent" strong>
 					Rule 1.
 				</Paragraph>
