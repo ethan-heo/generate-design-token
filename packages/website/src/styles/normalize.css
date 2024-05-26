@@ -28,7 +28,24 @@ body {
 	margin: 0 auto;
 }
 
-.section {
+.section--width-mobile-portrait {
+	width: 100%;
+	margin: 0 auto;
+}
+.section--width-mobile-landscape {
+	width: 100%;
+	margin: 0 auto;
+}
+.section--width-tablet {
 	width: 80%;
 	margin: 0 auto;
+}
+.section--width-desktop {
+	width: 70%;
+	margin: 0 auto;
+}
+
+.section__inner {
+	padding: var(--spacing-4) var(--spacing-2);
+	width: 100%;
 }
