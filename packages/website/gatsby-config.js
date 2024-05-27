@@ -10,9 +10,9 @@
 module.exports = {
 	siteMetadata: {
 		title: `generate-design-token`,
-		description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
+		description: `디자인 토큰을 손쉽게 다룰 수 있는 라이브러리인 generate-design-token을 소개합니다.`,
 		author: `ethan-heo`,
-		siteUrl: `https://gatsbystarterdefaultsource.gatsbyjs.io/`,
+		siteUrl: `https://ethan-heo.github.io/generate-design-token`,
 	},
 	plugins: [
 		`gatsby-plugin-image`,
