@@ -1,4 +1,4 @@
-import { Button, Flex, Title } from "@ethanheo/ui";
+import { Button, Flex, Platform, Title, useMediaQuery } from "@ethanheo/ui";
 import React, { useState } from "react";
 import useMediaSection from "../../hooks/useMediaSection";
 import JSONEditor from "./JSONEditor";
@@ -8,19 +8,40 @@ import generateDesignToken from "generate-design-token";
 
 const TryitSection = () => {
 	const section = useMediaSection();
+	const platform = useMediaQuery();
 	const [value, setValue] = useState(
 		JSON.stringify(REFERENCE_VALUE_TOKEN, null, 4)
 	);
 	const [token, setToken] = useState({});
+	const TRYIT_LAYOUT_BY_PLATFORM: Record<Platform, any> = {
+		desktop: {
+			gap: 2,
+			align: "center",
+		},
+		tablet: {
+			gap: 2,
+			align: "center",
+		},
+		"mobile-landscape": {
+			gap: 2,
+			justify: "center",
+			align: "center",
+			vertical: true,
+		},
+		"mobile-portrait": {
+			gap: 2,
+			justify: "center",
+			align: "center",
+			vertical: true,
+		},
+	};
 
 	const transformObjToString = (obj: Record<any, any>) => {
 		return JSON.stringify(obj, null, 4);
 	};
-
 	const transformStringToObj = (str: string) => {
 		return JSON.parse(str);
 	};
-
 	const handleGenerateToken = () => {
 		try {
 			const parsedToken = transformStringToObj(value);
@@ -31,7 +52,6 @@ const TryitSection = () => {
 			console.error(e);
 		}
 	};
-
 	const handleSetValue = (value: string) => {
 		setValue(value);
 	};
@@ -68,9 +88,7 @@ const TryitSection = () => {
 			</Flex>
 			<Flex
 				className="tryit-section__editor"
-				justify="space-between"
-				align="center"
-				gap={2}
+				{...TRYIT_LAYOUT_BY_PLATFORM[platform]}
 			>
 				<JSONEditor value={value} onChangeValue={setValue} />
 				<Button variant="primary" onClick={handleGenerateToken}>
