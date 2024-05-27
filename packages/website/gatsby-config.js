@@ -4,8 +4,6 @@
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-config/
  */
 
-const path = require("path");
-
 /**
  * @type {import('gatsby').GatsbyConfig}
  */
@@ -32,7 +30,7 @@ module.exports = {
 			options: {
 				name: `gatsby-starter-default`,
 				short_name: `starter`,
-				start_url: `/`,
+				start_url: `/generate-design-token`,
 				// This will impact how browsers show your PWA/website
 				// https://css-tricks.com/meta-theme-color-and-trickery/
 				// theme_color: `#663399`,
