@@ -8,6 +8,7 @@
  * @type {import('gatsby').GatsbyConfig}
  */
 module.exports = {
+	pathPrefix: "/generate-design-token",
 	siteMetadata: {
 		title: `generate-design-token`,
 		description: `디자인 토큰을 손쉽게 다룰 수 있는 라이브러리인 generate-design-token을 소개합니다.`,
@@ -30,7 +31,7 @@ module.exports = {
 			options: {
 				name: `gatsby-starter-default`,
 				short_name: `starter`,
-				start_url: `/generate-design-token`,
+				start_url: `/`,
 				// This will impact how browsers show your PWA/website
 				// https://css-tricks.com/meta-theme-color-and-trickery/
 				// theme_color: `#663399`,
