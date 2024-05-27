@@ -8,7 +8,13 @@ const Footer = () => {
 
 	return (
 		<footer>
-			<Flex className={platform}>Footer????</Flex>
+			<Flex
+				className={`footer__inner ${platform}`}
+				align="center"
+				justify="center"
+			>
+				Copyright (c) {new Date().getFullYear()} ethan-heo
+			</Flex>
 		</footer>
 	);
 };
