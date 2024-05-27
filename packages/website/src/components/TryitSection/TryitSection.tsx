@@ -6,11 +6,18 @@ import "./TryitSection.styles.css";
 import { REFERENCE_VALUE_TOKEN, REFERENCE_KEY_TOKEN } from "./constants";
 import generateDesignToken from "generate-design-token";
 
+const transformObjToString = (obj: Record<any, any>) => {
+	return JSON.stringify(obj, null, 4);
+};
+const transformStringToObj = (str: string) => {
+	return JSON.parse(str);
+};
+
 const TryitSection = () => {
 	const section = useMediaSection();
 	const platform = useMediaQuery();
 	const [value, setValue] = useState(
-		JSON.stringify(REFERENCE_VALUE_TOKEN, null, 4)
+		transformObjToString(REFERENCE_VALUE_TOKEN)
 	);
 	const [token, setToken] = useState({});
 	const TRYIT_LAYOUT_BY_PLATFORM: Record<Platform, any> = {
@@ -36,12 +43,6 @@ const TryitSection = () => {
 		},
 	};
 
-	const transformObjToString = (obj: Record<any, any>) => {
-		return JSON.stringify(obj, null, 4);
-	};
-	const transformStringToObj = (str: string) => {
-		return JSON.parse(str);
-	};
 	const handleGenerateToken = () => {
 		try {
 			const parsedToken = transformStringToObj(value);
