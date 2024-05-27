@@ -26,7 +26,7 @@
 	],
 	"license": "0BSD",
 	"scripts": {
-		"build": "gatsby build && cp -R ./public ../../docs",
+		"build": "gatsby build && rm -rf ../../docs && cp -R ./public ../../docs",
 		"develop": "gatsby develop",
 		"format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md,css}\"",
 		"start": "gatsby develop",
