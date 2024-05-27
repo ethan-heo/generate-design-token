@@ -1,0 +1,19 @@
+.tryit-section {
+	margin-bottom: var(--spacing-10);
+}
+.tryit-section__title {
+	margin-bottom: var(--spacing-2);
+}
+.tryit-section__examples {
+	margin-bottom: var(--spacing-2);
+}
+.tryit-section__editor {
+	width: 100%;
+}
+.tryit-section__editor .json-editor {
+	align-self: stretch;
+}
+.tryit-section__spacing {
+	width: var(--spacing-4);
+	height: 100%;
+}
