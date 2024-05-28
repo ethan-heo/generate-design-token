@@ -12,7 +12,7 @@
 		"gatsby-plugin-sharp": "^5.13.1",
 		"gatsby-source-filesystem": "^5.13.1",
 		"gatsby-transformer-sharp": "^5.13.1",
-		"generate-design-token": "^0.0.5",
+		"generate-design-token": "^0.0.6",
 		"prismjs": "^1.29.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
