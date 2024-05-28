@@ -148,14 +148,45 @@ var matchTokenRefs = function (tokenRef) {
 };
 
 var findToken = function (tokenRef, tokens) {
+    var e_1, _a, e_2, _b;
     var _tokenRef = tokenRef;
     var result;
     var _tokens = __spreadArray([], __read(tokens), false);
-    while (_tokens.length) {
+    while (true) {
         var tokenKeys = _tokenRef.split(TOKEN_REF_SEPERATOR);
-        var token = tokenKeys.reduce(function (result, tokenKey) { return result === null || result === void 0 ? void 0 : result[tokenKey]; }, _tokens.shift());
+        var token = void 0;
+        try {
+            for (var _tokens_1 = (e_1 = void 0, __values(_tokens)), _tokens_1_1 = _tokens_1.next(); !_tokens_1_1.done; _tokens_1_1 = _tokens_1.next()) {
+                var _token = _tokens_1_1.value;
+                var result_1 = _token;
+                try {
+                    for (var tokenKeys_1 = (e_2 = void 0, __values(tokenKeys)), tokenKeys_1_1 = tokenKeys_1.next(); !tokenKeys_1_1.done; tokenKeys_1_1 = tokenKeys_1.next()) {
+                        var tokenKey = tokenKeys_1_1.value;
+                        result_1 = result_1 === null || result_1 === void 0 ? void 0 : result_1[tokenKey];
+                    }
+                }
+                catch (e_2_1) { e_2 = { error: e_2_1 }; }
+                finally {
+                    try {
+                        if (tokenKeys_1_1 && !tokenKeys_1_1.done && (_b = tokenKeys_1.return)) _b.call(tokenKeys_1);
+                    }
+                    finally { if (e_2) throw e_2.error; }
+                }
+                if (result_1 !== undefined) {
+                    token = result_1;
+                    break;
+                }
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_tokens_1_1 && !_tokens_1_1.done && (_a = _tokens_1.return)) _a.call(_tokens_1);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
         if (token === undefined) {
-            continue;
+            break;
         }
         if (!isTokenObj(token)) {
             result = token;
@@ -346,6 +377,7 @@ var transformer = function (token, baseTokens) {
 };
 
 var generateDesignToken = function (token, baseTokens) {
+    if (baseTokens === void 0) { baseTokens = [token]; }
     return parser(transformer(token, baseTokens), baseTokens);
 };
 
