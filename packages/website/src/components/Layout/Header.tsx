@@ -9,7 +9,11 @@ const Header = () => {
 
 	return (
 		<header>
-			<Flex className={platform} justify="space-between" align="center">
+			<Flex
+				className={`header__inner ${platform}`}
+				justify="space-between"
+				align="center"
+			>
 				<Link to="/">
 					<StaticImage
 						src="../../images/logo-icon.webp"
