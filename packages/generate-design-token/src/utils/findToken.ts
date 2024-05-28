@@ -9,15 +9,25 @@ const findToken = (tokenRef: string, tokens: Token[]) => {
 	let result: Token | TokenObj | undefined;
 	const _tokens = [...tokens];
 
-	while (_tokens.length) {
+	while (true) {
 		const tokenKeys = _tokenRef.split(TOKEN_REF_SEPERATOR);
-		const token = tokenKeys.reduce(
-			(result, tokenKey) => result?.[tokenKey] as any,
-			_tokens.shift(),
-		);
+		let token;
+
+		for (const _token of _tokens) {
+			let result = _token;
+
+			for (const tokenKey of tokenKeys) {
+				result = result?.[tokenKey] as any;
+			}
+
+			if (result !== undefined) {
+				token = result;
+				break;
+			}
+		}
 
 		if (token === undefined) {
-			continue;
+			break;
 		}
 
 		if (!isTokenObj(token)) {
@@ -27,7 +37,6 @@ const findToken = (tokenRef: string, tokens: Token[]) => {
 
 		if (isTokenRef(token.$value)) {
 			_tokenRef = matchTokenRefs(token.$value)[0];
-
 			continue;
 		}
 
