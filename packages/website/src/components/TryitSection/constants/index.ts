@@ -19,6 +19,10 @@ export const REFERENCE_VALUE_TOKEN = {
 			$value: "1px solid {color.red}",
 		},
 	},
+	"box-shadow": {
+		$type: "string",
+		$value: "2px 5px 5px {color.primary}",
+	},
 };
 
 export const REFERENCE_KEY_TOKEN = {
