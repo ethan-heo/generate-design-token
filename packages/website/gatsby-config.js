@@ -55,7 +55,6 @@ module.exports = {
 				languages,
 				defaultLanguage,
 				siteUrl: "https://ethan-heo.github.io/generate-design-token",
-				redirect: true,
 				fallbackLanguage: defaultLanguage,
 				i18nextOptions: {
 					// debug: true,
