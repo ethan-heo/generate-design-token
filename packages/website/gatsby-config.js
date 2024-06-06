@@ -54,7 +54,7 @@ module.exports = {
 			options: {
 				languages,
 				defaultLanguage,
-				siteUrl: "https://ethan-heo.github.io/generate-design-token/",
+				siteUrl: "https://ethan-heo.github.io/generate-design-token",
 				redirect: true,
 				fallbackLanguage: defaultLanguage,
 				i18nextOptions: {
