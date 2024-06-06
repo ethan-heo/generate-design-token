@@ -4,9 +4,12 @@
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-config/
  */
 
+const { languages, defaultLanguage } = require("./languages");
+
 /**
  * @type {import('gatsby').GatsbyConfig}
  */
+
 module.exports = {
 	pathPrefix: "/generate-design-token",
 	siteMetadata: {
@@ -37,6 +40,32 @@ module.exports = {
 				// theme_color: `#663399`,
 				display: `minimal-ui`,
 				icon: `src/images/logo-icon.webp`, // This path is relative to the root of the site.
+			},
+		},
+		{
+			resolve: `gatsby-source-filesystem`,
+			options: {
+				path: `${__dirname}/locales`,
+				name: `locale`,
+			},
+		},
+		{
+			resolve: "gatsby-plugin-react-i18next",
+			options: {
+				languages,
+				defaultLanguage,
+				siteUrl: "https://ethan-heo.github.io/generate-design-token/",
+				redirect: true,
+				fallbackLanguage: defaultLanguage,
+				i18nextOptions: {
+					// debug: true,
+					fallbackLng: defaultLanguage,
+					supportedLngs: languages,
+					defaultNS: "common",
+					interpolation: {
+						escapeValue: false, // not needed for react as it escapes by default
+					},
+				},
 			},
 		},
 	],
