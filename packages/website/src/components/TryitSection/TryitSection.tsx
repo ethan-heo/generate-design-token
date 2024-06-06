@@ -5,6 +5,7 @@ import JSONEditor from "./JSONEditor";
 import "./TryitSection.styles.css";
 import { REFERENCE_VALUE_TOKEN, REFERENCE_KEY_TOKEN } from "./constants";
 import generateDesignToken from "generate-design-token";
+import { useI18next } from "gatsby-plugin-react-i18next";
 
 const transformObjToString = (obj: Record<any, any>) => {
 	return JSON.stringify(obj, null, 4);
@@ -20,6 +21,7 @@ const TryitSection = () => {
 		transformObjToString(REFERENCE_VALUE_TOKEN)
 	);
 	const [token, setToken] = useState({});
+	const { t } = useI18next();
 	const TRYIT_LAYOUT_BY_PLATFORM: Record<Platform, any> = {
 		desktop: {
 			gap: 2,
@@ -77,14 +79,14 @@ const TryitSection = () => {
 						handleSetValue(transformObjToString(REFERENCE_VALUE_TOKEN))
 					}
 				>
-					참조값
+					{t("tryit-section.example1")}
 				</Button>
 				<Button
 					onClick={() =>
 						handleSetValue(transformObjToString(REFERENCE_KEY_TOKEN))
 					}
 				>
-					참조키
+					{t("tryit-section.example2")}
 				</Button>
 			</Flex>
 			<Flex
