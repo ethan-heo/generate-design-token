@@ -1,4 +1,7 @@
-import { TOKEN_REF_SEPERATOR } from "./constants/seperator";
+import {
+	TOKEN_KEY_SEPERATOR,
+	TOKEN_REF_SEPERATOR,
+} from "./constants/seperator";
 import { SequenceFunction, Token, TokenObj } from "./generateToken.types";
 import assignToken from "./utils/assignToken";
 import findToken from "./utils/findToken";
@@ -56,15 +59,11 @@ const transformer: SequenceFunction = (token, baseTokens) => {
 						useCase = USE_CASES.CASE3;
 						break;
 					case !isTokenObj(token) && !isTokenObj(foundToken):
+					default:
 						useCase = USE_CASES.CASE4;
-						break;
 				}
 
-				if (!useCase) {
-					throw new Error("케이스를 찾을 수 없음.");
-				}
-
-				data.set(tokenNames.join(TOKEN_REF_SEPERATOR), {
+				data.set(tokenNames.join(TOKEN_KEY_SEPERATOR), {
 					case: useCase,
 					value: token,
 					token: foundToken,
@@ -73,7 +72,19 @@ const transformer: SequenceFunction = (token, baseTokens) => {
 		},
 	})(token);
 
+	// 2. 각 케이스별 변환을 한다.
+	data.forEach((data, tokenNames) => {
+		switch (data.case) {
+			case USE_CASES.CASE1:
+				transformCase1(token, tokenNames, data);
+				console.log(JSON.stringify(token, null, 2));
+				break;
+		}
+	});
+
 	console.log(data);
+
+	// 3. 할당한다.
 
 	return {};
 
@@ -199,13 +210,44 @@ const transformer: SequenceFunction = (token, baseTokens) => {
 	// 		tokenNamesStr.includes(skipTokenName.join(TOKEN_REF_SEPERATOR)),
 	// 	);
 	// }
-
-	// function replaceTokenValue(token: TokenObj, replacer: string) {
-	// 	return {
-	// 		...token,
-	// 		$value: token.$value.replace("$value", replacer),
-	// 	};
-	// }
 };
 
 export default transformer;
+
+function replaceTokenValue(token: TokenObj, replacer: string) {
+	return {
+		...token,
+		$value: token.$value.replace("$value", replacer),
+	};
+}
+
+function deleteTokenObj(originToken: Token, tokenRef: string) {
+	let foundTokenRefObj = originToken;
+	const tokenKeys = tokenRef.split(TOKEN_KEY_SEPERATOR);
+	const willDeleteKey = tokenKeys.pop()!;
+
+	for (const key of tokenKeys) {
+		foundTokenRefObj = foundTokenRefObj[key] as Token;
+	}
+
+	delete foundTokenRefObj[willDeleteKey];
+}
+
+export function transformCase1(
+	originToken: Token,
+	tokenNames: string,
+	data: Data,
+) {
+	deleteTokenObj(originToken, tokenNames);
+
+	const splitedTokenName = tokenNames.split(TOKEN_KEY_SEPERATOR);
+	const tokenRef = splitedTokenName.pop()!;
+
+	splitedTokenName.push(...parseTokenRef(tokenRef));
+
+	assignToken(
+		splitedTokenName,
+		originToken,
+		replaceTokenValue(data.value as TokenObj, matchTokenRefs(tokenRef).at(0)!),
+	);
+}
