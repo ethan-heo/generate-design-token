@@ -3,6 +3,7 @@ import transformer, {
 	transformCase1,
 	transformCase2,
 	transformCase3,
+	transformCase4,
 } from "./transformer";
 import { USE_CASES } from "./constants/use-cases";
 import { TOKEN_KEY_SEPERATOR } from "./constants/seperator";
@@ -306,13 +307,72 @@ it(`case3. 키값의 참조값이 가리키는 값이 토큰 객체이고 값이
 				white: {
 					thin: {
 						$type: "dimension",
-						$value: "2px solid {color.white.thin}",
+						$value: "2px solid {color.white}",
 					},
 				},
 			},
 		},
 	};
 	transformCase3(originalToken, objPath, data);
+
+	expect(originalToken).toStrictEqual(expected);
+});
+
+it(`case4. 키값의 참조값이 가리키는 값이 토큰 구조 객체이고 값이 토큰 구조 객체일 때`, () => {
+	const originalToken = {
+		border: {
+			"{color}": {
+				thin: {
+					$type: "dimension",
+					$value: "2px solid {$value}",
+				},
+			},
+		},
+	};
+	const data = {
+		token: TOKEN.BASE.color.white,
+		value: {
+			thin: {
+				$type: "dimension",
+				$value: "2px solid {$value}",
+			},
+		},
+		case: USE_CASES.CASE1,
+	};
+	const objPath = ["border", "{color}", "thin"].join(TOKEN_KEY_SEPERATOR);
+	const expected = {
+		border: {
+			color: {
+				white: {
+					thin: {
+						$type: "dimension",
+						$value: "2px solid {color.white.thin}",
+					},
+				},
+				black: {
+					thin: {
+						$type: "dimension",
+						$value: "2px solid {color.white.thin}",
+					},
+				},
+				vintage: {
+					white: {
+						thin: {
+							$type: "dimension",
+							$value: "2px solid {color.white.thin}",
+						},
+					},
+					black: {
+						thin: {
+							$type: "dimension",
+							$value: "2px solid {color.white.thin}",
+						},
+					},
+				},
+			},
+		},
+	};
+	transformCase4(originalToken, objPath, data);
 
 	expect(originalToken).toStrictEqual(expected);
 });

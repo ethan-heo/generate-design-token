@@ -69,11 +69,13 @@ const transformer: SequenceFunction = (token, baseTokens) => {
 				transformCase1(token, objPath, data);
 				break;
 			case USE_CASES.CASE2:
-				console.log("case3", data);
 				transformCase2(token, objPath, data);
 				break;
 			case USE_CASES.CASE3:
 				transformCase3(token, objPath, data);
+				break;
+			case USE_CASES.CASE4:
+				transformCase4(token, objPath, data);
 				break;
 		}
 	});
@@ -311,9 +313,10 @@ export function transformCase3(
 		data: new Map<string, TokenObj>(),
 		foundTokenObjCallback: (objPaths, token, _data) => {
 			const _objPaths = [...parsedTokenRef, ...objPaths];
+
 			_data.set(
 				_objPaths.join(TOKEN_KEY_SEPERATOR),
-				replaceTokenValue(token, _objPaths.join(TOKEN_REF_SEPERATOR)),
+				replaceTokenValue(token, parsedTokenRef.join(TOKEN_REF_SEPERATOR)),
 			);
 		},
 	})(data.value as Token);
@@ -325,4 +328,12 @@ export function transformCase3(
 			tokenObj,
 		);
 	});
+}
+
+export function transformCase4(
+	originalToken: Token,
+	objPath: string,
+	data: NormalizedTransformerData,
+) {
+	deleteTokenObj(originalToken, objPath);
 }
