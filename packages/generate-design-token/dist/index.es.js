@@ -122,6 +122,7 @@ var assignToken = function (tokenNames, data, tokenObj) {
 };
 
 var TOKEN_REF_SEPERATOR = ".";
+var TOKEN_KEY_SEPERATOR = "/";
 
 var isTokenRef = function (tokenRef) {
     return /^\{[^{}\s]+\}$/.test(tokenRef);
@@ -274,105 +275,179 @@ var parser = function (token, baseTokens) {
     })(token);
 };
 
+var USE_CASES = {
+    CASE1: "Case1",
+    CASE2: "Case2",
+    CASE3: "Case3",
+    CASE4: "Case4",
+};
+
+var parseTokenRef = function (refTokenName) {
+    return refTokenName.slice(1, refTokenName.length - 1).split(".");
+};
+
 /**
  * TODO
  * - 리팩토링 필요
  */
 var transformer = function (token, baseTokens) {
-    var skipTokenNames = [];
-    return iterateToken({
-        data: {},
-        iterateCallback: function (tokenNames, token, data) {
-            var _tokenNames = __spreadArray([], __read(tokenNames), false);
-            var _tokenName = _tokenNames.pop();
-            if (isTokenRef(_tokenName)) {
-                var _token = token;
-                var matchedTokenRef_1 = matchTokenRefs(_tokenName)[0];
-                var foundToken = findToken(matchedTokenRef_1, baseTokens);
-                if (foundToken === undefined) {
-                    throw new Error("\uD1A0\uD070\uC744 \uCC3E\uC744 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. [".concat(_tokenName, "]"));
+    // 1. 참조값으로 구성된 키를 가진 객체를 수집한다.
+    var data = iterateToken({
+        data: new Map(),
+        iterateCallback: function (objPaths, token, data) {
+            var tokenKey = objPaths.at(-1);
+            if (isTokenRef(tokenKey)) {
+                // 2. 수집한 객체는 상위 뎁스까지 포함되며 뎁스는 '/'를 기준으로 문자열로 구성되며 키값으로 설정된다. 값은 토큰 객체 및 토큰 구조 객체가 설정된다.
+                var _a = __read(matchTokenRefs(tokenKey), 1), tokenRef = _a[0];
+                var foundToken = findToken(tokenRef, baseTokens);
+                if (!foundToken) {
+                    throw new Error("토큰 찾을 수 없음.");
                 }
-                var splitedMatchedTokenRef_1 = matchedTokenRef_1.split(TOKEN_REF_SEPERATOR);
-                if (isTokenObj(foundToken) && isTokenObj(token)) {
-                    splitedMatchedTokenRef_1.shift();
-                    assignToken(splitedMatchedTokenRef_1, (_token = {}), replaceTokenValue(token, matchedTokenRef_1));
+                var useCase = void 0;
+                switch (true) {
+                    case isTokenObj(token) && isTokenObj(foundToken):
+                        useCase = USE_CASES.CASE1;
+                        break;
+                    case isTokenObj(token) && !isTokenObj(foundToken):
+                        useCase = USE_CASES.CASE2;
+                        break;
+                    case !isTokenObj(token) && isTokenObj(foundToken):
+                        useCase = USE_CASES.CASE3;
+                        break;
+                    case !isTokenObj(token) && !isTokenObj(foundToken):
+                    default:
+                        useCase = USE_CASES.CASE4;
                 }
-                if (isTokenObj(foundToken) && !isTokenObj(token)) {
-                    splitedMatchedTokenRef_1.shift();
-                    _token = iterateToken({
-                        data: {},
-                        foundTokenObjCallback: function (__tokenNames, __token, __data) {
-                            assignToken(__spreadArray(__spreadArray([], __read(splitedMatchedTokenRef_1), false), __read(__tokenNames), false), __data, replaceTokenValue(__token, matchedTokenRef_1));
-                        },
-                    })(token);
-                }
-                if (!isTokenObj(foundToken) && isTokenObj(token)) {
-                    _token = iterateToken({
-                        data: {},
-                        foundTokenObjCallback: function (__tokenNames, __token, __data) {
-                            assignToken(__tokenNames, __data, replaceTokenValue(token, __spreadArray(__spreadArray([], __read(splitedMatchedTokenRef_1), false), [__tokenNames], false).join(TOKEN_REF_SEPERATOR)));
-                        },
-                    })(foundToken);
-                }
-                if (!isTokenObj(foundToken) && !isTokenObj(token)) {
-                    _token = iterateToken({
-                        data: {},
-                        foundTokenObjCallback: function (__tokenNames, __token, __data) {
-                            iterateToken({
-                                data: {},
-                                foundTokenObjCallback: function (___tokenNames, ___token, ___data) {
-                                    assignToken(__spreadArray(__spreadArray([], __read(__tokenNames), false), __read(___tokenNames), false), __data, replaceTokenValue(___token, __spreadArray(__spreadArray([], __read(splitedMatchedTokenRef_1), false), [__tokenNames], false).join(TOKEN_REF_SEPERATOR)));
-                                },
-                            })(token);
-                        },
-                    })(foundToken);
-                }
-                if (_tokenName.length === 0 && isTokenObj(_token)) {
-                    throw new Error("\uCD5C\uC0C1\uC704 \uB808\uBCA8\uC5D0 \uD1A0\uD070 \uAC1D\uCCB4\uB97C \uC815\uC758\uD560 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4. ".concat(tokenNames.join(".")));
-                }
-                deleteToken(tokenNames, data);
-                assignToken(_tokenNames, data, _token);
-                skipTokenNames.push(__spreadArray([], __read(tokenNames), false));
-            }
-            else {
-                if (!skipAssignToken(tokenNames)) {
-                    assignToken(tokenNames, data, token);
-                }
+                data.set(objPaths.join(TOKEN_KEY_SEPERATOR), {
+                    case: useCase,
+                    value: token,
+                    token: foundToken,
+                });
             }
         },
     })(token);
-    function deleteToken(tokenNames, data) {
-        var e_1, _a;
-        var _tokenNames = __spreadArray([], __read(tokenNames), false);
-        var target = _tokenNames.pop();
-        try {
-            for (var _tokenNames_1 = __values(_tokenNames), _tokenNames_1_1 = _tokenNames_1.next(); !_tokenNames_1_1.done; _tokenNames_1_1 = _tokenNames_1.next()) {
-                var tokenName = _tokenNames_1_1.value;
-                if (data[tokenName] === undefined) {
-                    data[tokenName] = {};
-                }
-                data = data[tokenName];
-            }
+    // 2. 각 케이스별 변환을 한다.
+    data.forEach(function (data, objPath) {
+        switch (data.case) {
+            case USE_CASES.CASE1:
+                transformCase1(token, objPath, data);
+                break;
+            case USE_CASES.CASE2:
+                transformCase2(token, objPath, data);
+                break;
+            case USE_CASES.CASE3:
+                transformCase3(token, objPath, data);
+                break;
+            case USE_CASES.CASE4:
+                transformCase4(token, objPath, data);
+                break;
         }
-        catch (e_1_1) { e_1 = { error: e_1_1 }; }
-        finally {
-            try {
-                if (_tokenNames_1_1 && !_tokenNames_1_1.done && (_a = _tokenNames_1.return)) _a.call(_tokenNames_1);
-            }
-            finally { if (e_1) throw e_1.error; }
-        }
-        delete data[target];
-    }
-    function skipAssignToken(tokenNames) {
-        var tokenNamesStr = tokenNames.join(TOKEN_REF_SEPERATOR);
-        return skipTokenNames.some(function (skipTokenName) {
-            return tokenNamesStr.includes(skipTokenName.join(TOKEN_REF_SEPERATOR));
-        });
-    }
-    function replaceTokenValue(token, replacer) {
-        return __assign(__assign({}, token), { $value: token.$value.replace("$value", replacer) });
-    }
+    });
+    return token;
 };
+function replaceTokenValue(token, replacer) {
+    return __assign(__assign({}, token), { $value: token.$value.replace("$value", replacer) });
+}
+function deleteTokenObj(originalToken, tokenRef) {
+    var e_1, _a;
+    var foundTokenRefObj = originalToken;
+    var tokenKeys = tokenRef.split(TOKEN_KEY_SEPERATOR);
+    var foundTokenRefIndex = tokenKeys.findIndex(function (tokenKey) {
+        return isTokenRef(tokenKey);
+    });
+    var willDeleteKey = tokenKeys[foundTokenRefIndex];
+    tokenKeys = tokenKeys.splice(0, foundTokenRefIndex);
+    try {
+        for (var tokenKeys_1 = __values(tokenKeys), tokenKeys_1_1 = tokenKeys_1.next(); !tokenKeys_1_1.done; tokenKeys_1_1 = tokenKeys_1.next()) {
+            var key = tokenKeys_1_1.value;
+            foundTokenRefObj = foundTokenRefObj[key];
+        }
+    }
+    catch (e_1_1) { e_1 = { error: e_1_1 }; }
+    finally {
+        try {
+            if (tokenKeys_1_1 && !tokenKeys_1_1.done && (_a = tokenKeys_1.return)) _a.call(tokenKeys_1);
+        }
+        finally { if (e_1) throw e_1.error; }
+    }
+    delete foundTokenRefObj[willDeleteKey];
+}
+function transformCase1(originalToken, objPath, data) {
+    deleteTokenObj(originalToken, objPath);
+    var parentPaths = objPath.split(TOKEN_KEY_SEPERATOR);
+    var tokenRef = parentPaths.pop();
+    parentPaths.push(parseTokenRef(tokenRef).at(-1));
+    assignToken(parentPaths, originalToken, replaceTokenValue(data.value, matchTokenRefs(tokenRef).at(0)));
+}
+function transformCase2(originalToken, objPath, data) {
+    deleteTokenObj(originalToken, objPath);
+    var parentPaths = objPath.split(TOKEN_KEY_SEPERATOR);
+    var parsedTokenRef = parseTokenRef(parentPaths.pop());
+    // 1. data.token이 토큰 구조 객체이기 때문에 내부의 토큰 객체를 찾아 data.value값으로 치환해주어야 함.
+    var transformedToken = iterateToken({
+        data: new Map(),
+        foundTokenObjCallback: function (objPaths, _, _data) {
+            var objPath = __spreadArray(__spreadArray([], __read(parentPaths), false), __read(objPaths), false).join(TOKEN_KEY_SEPERATOR);
+            var tokenRef = __spreadArray(__spreadArray([], __read(parsedTokenRef), false), __read(objPaths), false).join(TOKEN_REF_SEPERATOR);
+            _data.set(objPath, replaceTokenValue(data.value, tokenRef));
+        },
+    })(data.token);
+    // 2. 변환된 결과물을 originalToken 객체에 override 한다.
+    transformedToken.forEach(function (tokenObj, objPath) {
+        assignToken(objPath.split(TOKEN_KEY_SEPERATOR), originalToken, tokenObj);
+    });
+}
+function transformCase3(originalToken, objPath, data) {
+    deleteTokenObj(originalToken, objPath);
+    var parentPaths = objPath.split(TOKEN_KEY_SEPERATOR);
+    var foundTokenRefIndex = parentPaths.findIndex(function (tokenKey) {
+        return isTokenRef(tokenKey);
+    });
+    var parsedTokenRef = parseTokenRef(parentPaths[foundTokenRefIndex]);
+    parentPaths = parentPaths.splice(0, foundTokenRefIndex);
+    // 1. data.value가 토큰 구조 객체이기 때문에 내부의 토큰 객체를 찾아 data.token의 토큰 객체로 변경한다.
+    var transformedValue = iterateToken({
+        data: new Map(),
+        foundTokenObjCallback: function (objPaths, token, _data) {
+            var objPath = __spreadArray(__spreadArray(__spreadArray([], __read(parentPaths), false), [parsedTokenRef.at(-1)], false), __read(objPaths), false);
+            _data.set(objPath.join(TOKEN_KEY_SEPERATOR), replaceTokenValue(token, parsedTokenRef.join(TOKEN_REF_SEPERATOR)));
+        },
+    })(data.value);
+    transformedValue.forEach(function (tokenObj, objPath) {
+        assignToken(objPath.split(TOKEN_KEY_SEPERATOR), originalToken, tokenObj);
+    });
+}
+function transformCase4(originalToken, objPath, data) {
+    deleteTokenObj(originalToken, objPath);
+    var parentPaths = objPath.split(TOKEN_KEY_SEPERATOR);
+    var foundTokenRefIndex = parentPaths.findIndex(function (tokenKey) {
+        return isTokenRef(tokenKey);
+    });
+    var parsedTokenRef = parseTokenRef(parentPaths[foundTokenRefIndex]);
+    parentPaths = parentPaths.splice(0, foundTokenRefIndex);
+    // 1. data.token이 토큰 구조 객체를 키(objPath), 값(토큰 객체) 형태로 바꾼다.
+    var transformedToken = iterateToken({
+        data: new Map(),
+        foundTokenObjCallback: function (objPaths, token, _data) {
+            _data.set(objPaths.join(TOKEN_KEY_SEPERATOR), token);
+        },
+    })(data.token);
+    // 2. transformedToken의 값을 정의한다.
+    var transformedValue = iterateToken({
+        data: new Map(),
+        foundTokenObjCallback: function (valueObjPaths, token, _data) {
+            transformedToken.forEach(function (_, objPath) {
+                var newObjPaths = objPath.split(TOKEN_KEY_SEPERATOR);
+                var _objPath = __spreadArray(__spreadArray(__spreadArray([], __read(parentPaths), false), __read(newObjPaths), false), __read(valueObjPaths), false).join(TOKEN_KEY_SEPERATOR);
+                var tokenValue = __spreadArray(__spreadArray([], __read(parsedTokenRef), false), __read(newObjPaths), false).join(TOKEN_REF_SEPERATOR);
+                _data.set(_objPath, replaceTokenValue(token, tokenValue));
+            });
+        },
+    })(data.value);
+    transformedValue.forEach(function (tokenObj, objPath) {
+        assignToken(objPath.split(TOKEN_KEY_SEPERATOR), originalToken, tokenObj);
+    });
+}
 
 var generateDesignToken = function (token, baseTokens) {
     if (baseTokens === void 0) { baseTokens = [token]; }
