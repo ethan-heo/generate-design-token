@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import transformer, { transformCase1 } from "./transformer";
+import transformer, { transformCase1, transformCase2 } from "./transformer";
 import { USE_CASES } from "./constants/use-cases";
 import { TOKEN_KEY_SEPERATOR } from "./constants/seperator";
 
@@ -13,6 +13,16 @@ const TOKEN = {
 			black: {
 				$type: "color",
 				$value: "#000000",
+			},
+			vintage: {
+				white: {
+					$type: "color",
+					$value: "#eeeeee",
+				},
+				black: {
+					$type: "color",
+					$value: "#3d3d3d",
+				},
 			},
 		},
 	},
@@ -153,10 +163,7 @@ it(`case1. 키값의 참조값이 가리키는 값이 토큰 객체이고 값이
 		},
 	};
 	const data = {
-		token: {
-			$type: "color",
-			$value: "#ffffff",
-		},
+		token: TOKEN.BASE.color.white,
 		value: {
 			$type: "dimension",
 			$value: "2px solid {$value}",
@@ -179,3 +186,90 @@ it(`case1. 키값의 참조값이 가리키는 값이 토큰 객체이고 값이
 
 	expect(originToken).toStrictEqual(expected);
 });
+it.each([
+	[
+		{
+			border: {
+				"{color}": {
+					$type: "dimension",
+					$value: "2px solid {$value}",
+				},
+			},
+		},
+		{
+			token: TOKEN.BASE.color,
+			value: {
+				$type: "dimension",
+				$value: "2px solid {$value}",
+			},
+			case: USE_CASES.CASE2,
+		},
+		["border", "{color}"].join(TOKEN_KEY_SEPERATOR),
+		{
+			border: {
+				color: {
+					white: {
+						$type: "dimension",
+						$value: "2px solid {color.white}",
+					},
+					black: {
+						$type: "dimension",
+						$value: "2px solid {color.black}",
+					},
+					vintage: {
+						white: {
+							$type: "dimension",
+							$value: "2px solid {color.vintage.white}",
+						},
+						black: {
+							$type: "dimension",
+							$value: "2px solid {color.vintage.black}",
+						},
+					},
+				},
+			},
+		},
+	],
+	[
+		{
+			border: {
+				"{color.vintage}": {
+					$type: "dimension",
+					$value: "2px solid {$value}",
+				},
+			},
+		},
+		{
+			token: TOKEN.BASE.color.vintage,
+			value: {
+				$type: "dimension",
+				$value: "2px solid {$value}",
+			},
+			case: USE_CASES.CASE2,
+		},
+		["border", "{color.vintage}"].join(TOKEN_KEY_SEPERATOR),
+		{
+			border: {
+				color: {
+					vintage: {
+						white: {
+							$type: "dimension",
+							$value: "2px solid {color.vintage.white}",
+						},
+						black: {
+							$type: "dimension",
+							$value: "2px solid {color.vintage.black}",
+						},
+					},
+				},
+			},
+		},
+	],
+])(
+	`case2. 키값의 참조값이 가리키는 값이 토큰 구조 객체이고 값이 토큰 객체일 때`,
+	(originalToken, data, tokenNames, expected) => {
+		transformCase2(originalToken, tokenNames, data);
+
+		expect(originalToken).toStrictEqual(expected);
+	},
+);

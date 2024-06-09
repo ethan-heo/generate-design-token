@@ -24,12 +24,12 @@ const transformer: SequenceFunction = (token, baseTokens) => {
 	// 1. 참조값으로 구성된 키를 가진 객체를 수집한다.
 	const data = iterateToken({
 		data: new Map<string, NormalizedTransformerData>(),
-		iterateCallback: (tokenNames, token, data) => {
-			const tokenName = tokenNames.at(-1)!;
+		iterateCallback: (objPaths, token, data) => {
+			const tokenKey = objPaths.at(-1)!;
 
-			if (isTokenRef(tokenName)) {
+			if (isTokenRef(tokenKey)) {
 				// 2. 수집한 객체는 상위 뎁스까지 포함되며 뎁스는 '/'를 기준으로 문자열로 구성되며 키값으로 설정된다. 값은 토큰 객체 및 토큰 구조 객체가 설정된다.
-				const [tokenRef] = matchTokenRefs(tokenName);
+				const [tokenRef] = matchTokenRefs(tokenKey);
 				const foundToken = findToken(tokenRef, baseTokens);
 
 				if (!foundToken) {
@@ -53,7 +53,7 @@ const transformer: SequenceFunction = (token, baseTokens) => {
 						useCase = USE_CASES.CASE4;
 				}
 
-				data.set(tokenNames.join(TOKEN_KEY_SEPERATOR), {
+				data.set(objPaths.join(TOKEN_KEY_SEPERATOR), {
 					case: useCase,
 					value: token,
 					token: foundToken,
@@ -63,11 +63,13 @@ const transformer: SequenceFunction = (token, baseTokens) => {
 	})(token);
 
 	// 2. 각 케이스별 변환을 한다.
-	data.forEach((data, tokenNames) => {
+	data.forEach((data, objPath) => {
 		switch (data.case) {
 			case USE_CASES.CASE1:
-				transformCase1(token, tokenNames, data);
-				console.log(JSON.stringify(token, null, 2));
+				transformCase1(token, objPath, data);
+				break;
+			case USE_CASES.CASE2:
+				transformCase2(token, objPath, data);
 				break;
 		}
 	});
@@ -78,13 +80,13 @@ const transformer: SequenceFunction = (token, baseTokens) => {
 
 	return {};
 
-	// const skipTokenNames: string[][] = [];
+	// const skipobjPath: string[][] = [];
 
 	// return iterateToken<Token>({
 	// 	data: {},
-	// 	iterateCallback: (tokenNames, token, data) => {
-	// 		const _tokenNames = [...tokenNames];
-	// 		const _tokenName = _tokenNames.pop()!;
+	// 	iterateCallback: (objPath, token, data) => {
+	// 		const _objPath = [...objPath];
+	// 		const _tokenName = _objPath.pop()!;
 
 	// 		if (isTokenRef(_tokenName)) {
 	// 			let _token = token;
@@ -112,9 +114,9 @@ const transformer: SequenceFunction = (token, baseTokens) => {
 
 	// 				_token = iterateToken<Token>({
 	// 					data: {},
-	// 					foundTokenObjCallback: (__tokenNames, __token, __data) => {
+	// 					foundTokenObjCallback: (__objPath, __token, __data) => {
 	// 						assignToken(
-	// 							[...splitedMatchedTokenRef, ...__tokenNames],
+	// 							[...splitedMatchedTokenRef, ...__objPath],
 	// 							__data,
 	// 							replaceTokenValue(__token, matchedTokenRef),
 	// 						);
@@ -124,13 +126,13 @@ const transformer: SequenceFunction = (token, baseTokens) => {
 	// 			if (!isTokenObj(foundToken) && isTokenObj(token)) {
 	// 				_token = iterateToken<Token>({
 	// 					data: {},
-	// 					foundTokenObjCallback: (__tokenNames, __token, __data) => {
+	// 					foundTokenObjCallback: (__objPath, __token, __data) => {
 	// 						assignToken(
-	// 							__tokenNames,
+	// 							__objPath,
 	// 							__data,
 	// 							replaceTokenValue(
 	// 								token,
-	// 								[...splitedMatchedTokenRef, __tokenNames].join(
+	// 								[...splitedMatchedTokenRef, __objPath].join(
 	// 									TOKEN_REF_SEPERATOR,
 	// 								),
 	// 							),
@@ -141,16 +143,16 @@ const transformer: SequenceFunction = (token, baseTokens) => {
 	// 			if (!isTokenObj(foundToken) && !isTokenObj(token)) {
 	// 				_token = iterateToken<Token>({
 	// 					data: {},
-	// 					foundTokenObjCallback: (__tokenNames, __token, __data) => {
+	// 					foundTokenObjCallback: (__objPath, __token, __data) => {
 	// 						iterateToken<Token>({
 	// 							data: {},
-	// 							foundTokenObjCallback: (___tokenNames, ___token, ___data) => {
+	// 							foundTokenObjCallback: (___objPath, ___token, ___data) => {
 	// 								assignToken(
-	// 									[...__tokenNames, ...___tokenNames],
+	// 									[...__objPath, ...___objPath],
 	// 									__data,
 	// 									replaceTokenValue(
 	// 										___token,
-	// 										[...splitedMatchedTokenRef, __tokenNames].join(
+	// 										[...splitedMatchedTokenRef, __objPath].join(
 	// 											TOKEN_REF_SEPERATOR,
 	// 										),
 	// 									),
@@ -163,26 +165,26 @@ const transformer: SequenceFunction = (token, baseTokens) => {
 
 	// 			if (_tokenName.length === 0 && isTokenObj(_token)) {
 	// 				throw new Error(
-	// 					`최상위 레벨에 토큰 객체를 정의할 수 없습니다. ${tokenNames.join(".")}`,
+	// 					`최상위 레벨에 토큰 객체를 정의할 수 없습니다. ${objPath.join(".")}`,
 	// 				);
 	// 			}
 
-	// 			deleteToken(tokenNames, data);
-	// 			assignToken(_tokenNames, data, _token);
-	// 			skipTokenNames.push([...tokenNames]);
+	// 			deleteToken(objPath, data);
+	// 			assignToken(_objPath, data, _token);
+	// 			skipobjPath.push([...objPath]);
 	// 		} else {
-	// 			if (!skipAssignToken(tokenNames)) {
-	// 				assignToken(tokenNames, data, token);
+	// 			if (!skipAssignToken(objPath)) {
+	// 				assignToken(objPath, data, token);
 	// 			}
 	// 		}
 	// 	},
 	// })(token);
 
-	// function deleteToken(tokenNames: string[], data: Token) {
-	// 	const _tokenNames = [...tokenNames];
-	// 	let target = _tokenNames.pop()!;
+	// function deleteToken(objPath: string[], data: Token) {
+	// 	const _objPath = [...objPath];
+	// 	let target = _objPath.pop()!;
 
-	// 	for (const tokenName of _tokenNames) {
+	// 	for (const tokenName of _objPath) {
 	// 		if (data[tokenName] === undefined) {
 	// 			data[tokenName] = {};
 	// 		}
@@ -193,11 +195,11 @@ const transformer: SequenceFunction = (token, baseTokens) => {
 	// 	delete data[target];
 	// }
 
-	// function skipAssignToken(tokenNames: string[]) {
-	// 	const tokenNamesStr = tokenNames.join(TOKEN_REF_SEPERATOR);
+	// function skipAssignToken(objPath: string[]) {
+	// 	const objPathStr = objPath.join(TOKEN_REF_SEPERATOR);
 
-	// 	return skipTokenNames.some((skipTokenName) =>
-	// 		tokenNamesStr.includes(skipTokenName.join(TOKEN_REF_SEPERATOR)),
+	// 	return skipobjPath.some((skipTokenName) =>
+	// 		objPathStr.includes(skipTokenName.join(TOKEN_REF_SEPERATOR)),
 	// 	);
 	// }
 };
@@ -225,12 +227,12 @@ function deleteTokenObj(originToken: Token, tokenRef: string) {
 
 export function transformCase1(
 	originToken: Token,
-	tokenNames: string,
+	objPath: string,
 	data: NormalizedTransformerData,
 ) {
-	deleteTokenObj(originToken, tokenNames);
+	deleteTokenObj(originToken, objPath);
 
-	const splitedTokenName = tokenNames.split(TOKEN_KEY_SEPERATOR);
+	const splitedTokenName = objPath.split(TOKEN_KEY_SEPERATOR);
 	const tokenRef = splitedTokenName.pop()!;
 
 	splitedTokenName.push(...parseTokenRef(tokenRef));
@@ -240,4 +242,40 @@ export function transformCase1(
 		originToken,
 		replaceTokenValue(data.value as TokenObj, matchTokenRefs(tokenRef).at(0)!),
 	);
+}
+
+export function transformCase2(
+	originToken: Token,
+	objPath: string,
+	data: NormalizedTransformerData,
+) {
+	deleteTokenObj(originToken, objPath);
+
+	const originalSplitedObjPath = objPath.split(TOKEN_KEY_SEPERATOR);
+	const parsedTokenRef = parseTokenRef(originalSplitedObjPath.pop()!);
+
+	// 1. data.token이 토큰 구조 객체이기 때문에 내부의 토큰 객체를 찾아 data.value값으로 치환해주어야 함.
+	const transformedToken = iterateToken({
+		data: new Map<string, TokenObj>(),
+		foundTokenObjCallback: (objPaths, _, _data) => {
+			const _objPath = [...parsedTokenRef, ...objPaths];
+
+			_data.set(
+				_objPath.join(TOKEN_KEY_SEPERATOR),
+				replaceTokenValue(
+					data.value as TokenObj,
+					_objPath.join(TOKEN_REF_SEPERATOR),
+				),
+			);
+		},
+	})(data.token as Token);
+
+	// 2. 변환된 결과물을 originalToken 객체에 override 한다.
+	transformedToken.forEach((tokenObj, objPath) => {
+		assignToken(
+			[...originalSplitedObjPath, ...objPath.split(TOKEN_KEY_SEPERATOR)],
+			originToken,
+			tokenObj,
+		);
+	});
 }
