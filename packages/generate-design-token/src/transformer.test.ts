@@ -1,5 +1,7 @@
 import { expect, it } from "vitest";
-import transformer from "./transformer";
+import transformer, { transformCase1 } from "./transformer";
+import { USE_CASES } from "./constants/use-cases";
+import { TOKEN_KEY_SEPERATOR } from "./constants/seperator";
 
 const TOKEN = {
 	BASE: {
@@ -139,4 +141,41 @@ it(`구조를 변환한다.`, () => {
 	};
 
 	expect(transformer(value, [TOKEN.BASE])).toStrictEqual(expected);
+});
+
+it(`case1. 키값의 참조값이 가리키는 값이 토큰 객체이고 값이 토큰 객체일 때`, () => {
+	const originToken = {
+		border: {
+			"{color.white}": {
+				$type: "dimension",
+				$value: "2px solid {$value}",
+			},
+		},
+	};
+	const data = {
+		token: {
+			$type: "color",
+			$value: "#ffffff",
+		},
+		value: {
+			$type: "dimension",
+			$value: "2px solid {$value}",
+		},
+		case: USE_CASES.CASE1,
+	};
+	const tokenNames = ["border", "{color.white}"].join(TOKEN_KEY_SEPERATOR);
+	const expected = {
+		border: {
+			color: {
+				white: {
+					$type: "dimension",
+					$value: "2px solid {color.white}",
+				},
+			},
+		},
+	};
+
+	transformCase1(originToken, tokenNames, data);
+
+	expect(originToken).toStrictEqual(expected);
 });

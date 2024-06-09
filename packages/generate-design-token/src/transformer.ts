@@ -1,4 +1,9 @@
 import {
+	NormalizedTransformerData,
+	USE_CASES,
+	UseCase,
+} from "./constants/use-cases";
+import {
 	TOKEN_KEY_SEPERATOR,
 	TOKEN_REF_SEPERATOR,
 } from "./constants/seperator";
@@ -11,21 +16,6 @@ import iterateToken from "./utils/iterateToken";
 import parseTokenRef from "./utils/parseTokenRef";
 import matchTokenRefs from "./utils/matchTokenRefs";
 
-type UseCase = "Case1" | "Case2" | "Case3" | "Case4";
-
-type Data = {
-	case: UseCase;
-	value: Token | TokenObj;
-	token: Token | TokenObj;
-};
-
-const USE_CASES: Record<Uppercase<UseCase>, UseCase> = {
-	CASE1: "Case1",
-	CASE2: "Case2",
-	CASE3: "Case3",
-	CASE4: "Case4",
-};
-
 /**
  * TODO
  * - 리팩토링 필요
@@ -33,7 +23,7 @@ const USE_CASES: Record<Uppercase<UseCase>, UseCase> = {
 const transformer: SequenceFunction = (token, baseTokens) => {
 	// 1. 참조값으로 구성된 키를 가진 객체를 수집한다.
 	const data = iterateToken({
-		data: new Map<string, Data>(),
+		data: new Map<string, NormalizedTransformerData>(),
 		iterateCallback: (tokenNames, token, data) => {
 			const tokenName = tokenNames.at(-1)!;
 
@@ -236,7 +226,7 @@ function deleteTokenObj(originToken: Token, tokenRef: string) {
 export function transformCase1(
 	originToken: Token,
 	tokenNames: string,
-	data: Data,
+	data: NormalizedTransformerData,
 ) {
 	deleteTokenObj(originToken, tokenNames);
 
