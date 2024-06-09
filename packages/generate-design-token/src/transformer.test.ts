@@ -1,5 +1,9 @@
 import { expect, it } from "vitest";
-import transformer, { transformCase1, transformCase2 } from "./transformer";
+import transformer, {
+	transformCase1,
+	transformCase2,
+	transformCase3,
+} from "./transformer";
 import { USE_CASES } from "./constants/use-cases";
 import { TOKEN_KEY_SEPERATOR } from "./constants/seperator";
 
@@ -154,7 +158,7 @@ it(`구조를 변환한다.`, () => {
 });
 
 it(`case1. 키값의 참조값이 가리키는 값이 토큰 객체이고 값이 토큰 객체일 때`, () => {
-	const originToken = {
+	const originalToken = {
 		border: {
 			"{color.white}": {
 				$type: "dimension",
@@ -170,7 +174,7 @@ it(`case1. 키값의 참조값이 가리키는 값이 토큰 객체이고 값이
 		},
 		case: USE_CASES.CASE1,
 	};
-	const tokenNames = ["border", "{color.white}"].join(TOKEN_KEY_SEPERATOR);
+	const objPath = ["border", "{color.white}"].join(TOKEN_KEY_SEPERATOR);
 	const expected = {
 		border: {
 			color: {
@@ -182,9 +186,9 @@ it(`case1. 키값의 참조값이 가리키는 값이 토큰 객체이고 값이
 		},
 	};
 
-	transformCase1(originToken, tokenNames, data);
+	transformCase1(originalToken, objPath, data);
 
-	expect(originToken).toStrictEqual(expected);
+	expect(originalToken).toStrictEqual(expected);
 });
 it.each([
 	[
@@ -267,9 +271,48 @@ it.each([
 	],
 ])(
 	`case2. 키값의 참조값이 가리키는 값이 토큰 구조 객체이고 값이 토큰 객체일 때`,
-	(originalToken, data, tokenNames, expected) => {
-		transformCase2(originalToken, tokenNames, data);
+	(originalToken, data, objPath, expected) => {
+		transformCase2(originalToken, objPath, data);
 
 		expect(originalToken).toStrictEqual(expected);
 	},
 );
+
+it(`case3. 키값의 참조값이 가리키는 값이 토큰 객체이고 값이 토큰 구조 객체일 때`, () => {
+	const originalToken = {
+		border: {
+			"{color.white}": {
+				thin: {
+					$type: "dimension",
+					$value: "2px solid {$value}",
+				},
+			},
+		},
+	};
+	const data = {
+		token: TOKEN.BASE.color.white,
+		value: {
+			thin: {
+				$type: "dimension",
+				$value: "2px solid {$value}",
+			},
+		},
+		case: USE_CASES.CASE1,
+	};
+	const objPath = ["border", "{color.white}", "thin"].join(TOKEN_KEY_SEPERATOR);
+	const expected = {
+		border: {
+			color: {
+				white: {
+					thin: {
+						$type: "dimension",
+						$value: "2px solid {color.white.thin}",
+					},
+				},
+			},
+		},
+	};
+	transformCase3(originalToken, objPath, data);
+
+	expect(originalToken).toStrictEqual(expected);
+});

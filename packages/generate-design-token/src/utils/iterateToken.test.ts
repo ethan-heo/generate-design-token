@@ -1,39 +1,56 @@
 import { expect, it } from "vitest";
 import iterateToken from "./iterateToken";
 
-it(`토큰을 순회한다.`, () => {
-	const TOKEN = {
-		color: {
-			red: {
-				$type: "color",
-				$value: "#ff0000",
-			},
-			blue: {
-				$type: "color",
-				$value: "#0000ff",
-			},
-			yellow: {
-				1: {
+it.each([
+	[
+		{
+			color: {
+				red: {
 					$type: "color",
-					$value: "#f0f000",
+					$value: "#ff0000",
+				},
+				blue: {
+					$type: "color",
+					$value: "#0000ff",
+				},
+				yellow: {
+					1: {
+						$type: "color",
+						$value: "#f0f000",
+					},
 				},
 			},
 		},
-	};
-	const expected = {
-		"color.red": {
-			$type: "color",
-			$value: "#ff0000",
+		{
+			"color.red": {
+				$type: "color",
+				$value: "#ff0000",
+			},
+			"color.blue": {
+				$type: "color",
+				$value: "#0000ff",
+			},
+			"color.yellow.1": {
+				$type: "color",
+				$value: "#f0f000",
+			},
 		},
-		"color.blue": {
-			$type: "color",
-			$value: "#0000ff",
+	],
+	[
+		{
+			thin: {
+				$type: "string",
+				$value: "1px solid {$value}",
+			},
 		},
-		"color.yellow.1": {
-			$type: "color",
-			$value: "#f0f000",
+		{
+			thin: {
+				$type: "string",
+				$value: "1px solid {$value}",
+			},
 		},
-	};
+	],
+])(`토큰을 순회한다.`, (token, expected) => {
 	const mapToToken = iterateToken({
 		data: {},
 		foundTokenObjCallback: (tokenNames, token, data) => {
@@ -41,5 +58,5 @@ it(`토큰을 순회한다.`, () => {
 		},
 	});
 
-	expect(mapToToken(TOKEN)).toStrictEqual(expected);
+	expect(mapToToken(token)).toStrictEqual(expected);
 });
