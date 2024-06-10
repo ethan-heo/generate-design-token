@@ -2,342 +2,287 @@
 
 ![version](./packages/generate-design-token/assets/version.svg)
 ![node](./packages/generate-design-token/assets/node.svg)
-![environment](./packages/generate-design-token/assets/env.svg)
 
-> 디자인 토큰을 편리하게 정의할 수 있게 해주는 라이브러리입니다.
+> 디자인 토큰을 정의할 때 불필요한 중복 작업을 줄이기 위해 만들어 졌습니다.
 
 ## Goal
 
-디자인 토큰을 구성할 때 단일 속성 뿐만아니라 복합 속성을 만들어 사용하기도 합니다. 그리고 여러 단계를 나누어 구현하기도 합니다. 이러한 상황에서 여러 속성의 값을 중복해서 사용하기도 하고 참조해서 사용하기도 합니다. 하지만 수기로 작성했을 때 이러한 과정은 꽤나 불편함을 줄 수 있습니다. 이 라이브러리는 이러한 불편함을 해결하기위한 목적으로 만들어졌습니다.
+객체 형태로 정의된 스타일 속성을 하드코딩 할 필요 없이 몇몇 규칙을 사용하여 편리하게 정의할 수 있게 만듭니다.
 
 ## Useage
 
-### 1. Install
+1. 값에 참조값을 사용하는 방법
+   - 이미 정의된 스타일 속성을 하드 코딩하지 않고 사용하기 위해 사용합니다.
+   - 객체 형식으로 정의된 스타일 속성을 점 표기법으로 정의합니다.. ex) color.red
+   - 유의할 내용
+     - 값에 참조값을 사용하는 경우 참조값이 가리키는 속성은 토큰 객체여야만 합니다.
+       ```json
+       {
+           "color": {
+               "white": {
+                   "$type": "color",
+                   "$value": "#ffffff",
+               },
+               "black": {
+                   "$type": "color",
+                   "$value": "#000000",
+               }
+           }
+           "border-white-thin": {
+               "$type": "string",
+               "$value": "1px solid {color.white}"
+           }
+       }
+       ```
+2. 키에 참조값을 사용하는 방법
+   - 특정 스타일 속성과 연관하여 구성할 때 사용합니다.
+   - CASE1
+     - 참조값이 가리키는 값이 토큰 객체이고 하위에 구성된 값이 토큰 객체 일 때
+       - before
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"{color.white}": {
+       			"$type": "string",
+       			"$value": "1px solid {$value}"
+       		}
+       	}
+       }
+       ```
+       - after
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"white": {
+       			"$type": "string",
+       			"$value": "1px solid #ffffff"
+       		}
+       	}
+       }
+       ```
+   - CASE2
+     - 참조값이 가리키는 값이 토큰 객체이고 하위에 구성된 값이 토큰 구조 객체 일 때
+       - before
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"{color.white}": {
+       			"thin": {
+       				"$type": "string",
+       				"$value": "1px solid {$value}"
+       			}
+       		}
+       	}
+       }
+       ```
+       - after
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"white": {
+       			"thin": {
+       				"$type": "string",
+       				"$value": "1px solid #ffffff"
+       			}
+       		}
+       	}
+       }
+       ```
+   - CASE3
+     - 참조값이 가리키는 값이 토큰 구조 객체이고 하위에 구성된 값이 토큰 객체 일 때
+       - before
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"{color}": {
+       			"$type": "string",
+       			"$value": "1px solid {$value}"
+       		}
+       	}
+       }
+       ```
+       - after
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"white": {
+       			"$type": "string",
+       			"$value": "1px solid #ffffff"
+       		},
+       		"black": {
+       			"$type": "string",
+       			"$value": "1px solid #000000"
+       		}
+       	}
+       }
+       ```
+   - CASE4
+     - 참조값이 가리키는 값이 토큰 구조 객체이고 하위에 구성된 값이 토큰 구조 객체 일 때
+       - before
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"{color}": {
+       			"thin": {
+       				"$type": "string",
+       				"$value": "1px solid {$value}"
+       			}
+       		}
+       	}
+       }
+       ```
+       - after
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"white": {
+       			"thin": {
+       				"$type": "string",
+       				"$value": "1px solid #ffffff"
+       			}
+       		},
+       		"black": {
+       			"thin": {
+       				"$type": "string",
+       				"$value": "1px solid #000000"
+       			}
+       		}
+       	}
+       }
+       ```
 
-```bash
-npm install -D generate-design-token
-// or
-yarn add -D generate-design-token
-```
+## Glossary of Terms
 
-### 2. JSON으로 정의된 토큰을 생성합니다.
-
-```json
-{
-	"color": {
-		"red": {
-			"$type": "color",
-			"$value": "#ff0000"
-		},
-		"yellow": {
-			"$type": "color",
-			"$value": "#f0f000"
-		},
-		"blue": {
-			"$type": "color",
-			"$value": "#0000ff"
-		}
-	},
-	"border": {
-		"{color}": {
-			"thin": {
-				"$type": "dimension",
-				"$value": "1px solid {$value}"
-			}
-		}
-	}
-}
-```
-
-### 3. generate-design-token 모듈을 사용합니다.
-
-```javascript
-import generateDesignToken from "generate-design-token";
-import token from "<DIR_PATH>/global-token.json";
-
-generateDesignToken(token, [token]); // result JSON
-```
-
-## Rules
-
-이 라이브러리는 디자인 토큰을 만들때 편의성을 주기위한 목적으로 만들어졌습니다. 그래서 편의성을 위한 몇가지 규칙을 가지고 있습니다.
-
-### 1. 값을 정의할 때 참조값을 사용하여 속성을 복합적으로 구성할 수 있습니다.
-
-```json
-{
-	"color": {
-		"black": {
-			"$type": "color",
-			"$value": "#000000"
-		}
-	},
-	"border": {
-		"width": {
-			"1": {
-				"$type": "dimension",
-				"$value": "1px"
-			}
-		},
-		"style": {
-			"solid": {
-				"$type": "string",
-				"$value": "solid"
-			}
-		},
-		"thin": {
-			"$type": "string",
-			"$value": "{border.width.1} {border.style.solid} {color.black}"
-		}
-	}
-}
-```
-
-### 2. 토큰 구조를 정의할 때 참조값을 사용할 수 있습니다.
-
-```json
-{
-	"color": {
-		"black": {
-			"$type": "color",
-			"$value": "#000000"
-		}
-	},
-	"border": {
-		"{color}": {
-			"thin": {
-				"$type": "string",
-				"$value": "1px solid {$value}"
-			}
-		},
-		"{color}": {
-			"$type": "string",
-			"$value": "1px solid {$value}"
-		}
-	}
-}
-```
-
-- 구조적으로 참조값을 사용할 때는 값에서 사용할 위치에 **{$value}**를 정의해주어야 합니다.
-- 구조적으로 사용할 수 있는 방법은 4가지가 있습니다.
-  1.  참조값이 바라보는 값이 토큰 객체이고 값이 참조값인 경우
-  ```json
-  // before
-  {
-    "color": {
-        "black": {
-            "$type": "color",
-            "$value": "#000000"
-        },
-        "white": {
-            "$type": "color",
-            "$value": "#ffffff"
-        }
-    },
-    "border": {
-        "{color.black}": {
-            "$type": "string",
-            "$value": "1px solid {$value}"
-        }
-    }
-  }
-  // after
-  {
-    "color": {
-        "black": {
-            "$type": "color",
-            "$value": "#000000"
-        },
-        "white": {
-            "$type": "color",
-            "$value": "#ffffff"
-        }
-    },
-    "border": {
-        "black": {
-            "$type": "string",
-            "$value": "1px solid #000000"
-        }
-    }
-  }
-  ```
-  2.  참조값이 바라보는 값이 토큰 객체가 아니고 값이 참조값인 경우
-  ```json
-  //before
-  {
-    "color": {
-        "black": {
-            "$type": "color",
-            "$value": "#000000"
-        },
-        "white": {
-            "$type": "color",
-            "$value": "#ffffff"
-        }
-    },
-    "border": {
-        "{color}": {
-            "$type": "string",
-            "$value": "1px solid {$value}"
-        }
-    }
-  }
-  //after
-  {
-    "color": {
-        "black": {
-            "$type": "color",
-            "$value": "#000000"
-        },
-        "white": {
-            "$type": "color",
-            "$value": "#ffffff"
-        }
-    },
-    "border": {
-        "black": {
-            "$type": "string",
-            "$value": "1px solid #000000"
-        },
-        "white": {
-            "$type": "string",
-            "$value": "1px solid #ffffff"
-        },
-    }
-  }
-  ```
-  3.  참조값이 바라보는 값이 토큰 객체이고 값이 참조값이 아닌 경우
-  ```json
-  //before
-  {
-    "color": {
-        "black": {
-            "$type": "color",
-            "$value": "#000000"
-        },
-        "white": {
-            "$type": "color",
-        "$value": "#ffffff"
-        }
-    },
-    "border": {
-        "{color.white}": {
-            "thin": {
-                "$type": "string",
-                "$value": "1px solid {$value}"
-            },
-            "medium": {
-                "$type": "string",
-                "$value": "2px solid {$value}"
-            }
-        }
-    }
-  }
-  //after
-  {
-    "color": {
-        "black": {
-            "$type": "color",
-            "$value": "#000000"
-        },
-        "white": {
-            "$type": "color",
-            "$value": "#ffffff"
-        }
-    },
-    "border": {
-        "white": {
-            "thin": {
-                "$type": "string",
-                "$value": "1px solid #ffffff"
-            },
-            "medium": {
-                "$type": "string",
-                "$value": "2px solid #ffffff"
-            }
-        },
-    }
-  }
-  ```
-  4.  참조값이 바라보는 값이 토큰 객체가 아니고 값이 참조값이 아닌 경우
-  ```json
-  //before
-  {
-    "color": {
-        "black": {
-            "$type": "color",
-            "$value": "#000000"
-        },
-        "white": {
-            "$type": "color",
-            "$value": "#ffffff"
-        }
-        },
-    "border": {
-            "{color}": {
-                "thin": {
-                    "$type": "string",
-                    "$value": "1px solid {$value}"
-                },
-                "medium": {
-                    "$type": "string",
-                    "$value": "2px solid {$value}"
-                }
-            }
-    }
-  }
-  //after
-  {
-    "color": {
-            "black": {
-                "$type": "color",
-                "$value": "#000000"
-            },
-            "white": {
-                "$type": "color",
-                "$value": "#ffffff"
-            }
-    },
-    "border": {
-            "white": {
-                "thin": {
-                    "$type": "string",
-                    "$value": "1px solid #ffffff"
-                },
-                "medium": {
-                    "$type": "string",
-                    "$value": "2px solid #ffffff"
-                }
-            },
-            "black": {
-                "thin": {
-                    "$type": "string",
-                    "$value": "1px solid #000000"
-                },
-                "medium": {
-                    "$type": "string",
-                    "$value": "2px solid #000000"
-                }
-            }
-        }
-  }
-  ```
-
-## FAQ
-
-1. 토큰 객체란?
-     - 토큰 객체는 토큰의 형식와 값을 정의하기 위한 정보를 가지고 있습니다.
+- 토큰 객체
+  - [디자인 토큰 포맷](https://tr.designtokens.org/format/)을 참고하여 만들어 졌습니다.
     ```json
     {
-        "color": {
-            "red": {
-                "$type": "color",
-                "$value": "#ff0000",
-            }
-        }
+    	"$type": "",
+    	"$value": ""
     }
     ```
-    - **color.red** 토큰의 형식은 색상이고, 값은 빨강색입니다.
+- 토큰 구조 객체
+  - 토큰 구조 객체는 토큰 객체를 구성하는 객체 구조입니다.
+    ```json
+    {
+    	"color": {
+    		"$type": "",
+    		"$value": ""
+    	}
+    }
+    ```
+- 단일 속성
+  - 단일 속성은 단 하나의 스타일 속성만 정의된 것을 말합니다.
+    ```json
+    {
+    	"$type": "color",
+    	"$value": "#ffffff"
+    }
+    ```
+- 복합 속성
+  - 복합 속성은 단일 속성을 여러개로 구성한 것을 말합니다. ex) border.thin
+    ```json
+    {
+    	"color": {
+    		"white": {
+    			"$type": "color",
+    			"$value": "#ffffff"
+    		}
+    	},
+    	"size": {
+    		"thin": {
+    			"$type": "dimension",
+    			"$value": "1px"
+    		}
+    	},
+    	"border": {
+    		"thin": {
+    			"$type": "string",
+    			"$value": "{size.thin} solid {color.white}"
+    		}
+    	}
+    }
+    ```
 
 ## Licence
 

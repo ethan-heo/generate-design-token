@@ -2,342 +2,287 @@
 
 ![version](./packages/generate-design-token/assets/version.svg)
 ![node](./packages/generate-design-token/assets/node.svg)
-![environment](./packages/generate-design-token/assets/env.svg)
 
-> A library that allows you to conveniently define design tokens.
+> It was created to reduce unnecessary duplication of effort when defining design tokens.
 
 ## Goal
 
-When constructing design tokens, we often create and use not only single properties, but also compound properties, and we often implement them in multiple steps. In these situations, we may need to duplicate or reference the values of multiple properties. However, this can be quite cumbersome when done by hand. This library was created to solve this problem.
+Makes it convenient to define style properties defined in object form using some rules without having to hardcode them.
 
 ## Useage
 
-### 1. Install
+1. How to use reference values for values
+   - Use to use already defined style properties without hard coding them.
+   - Define style properties defined in object format in dot notation... ex) color.red
+   - Things to keep in mind
+     - If you use a reference for a value, the property that the reference points to must be a token object.
+       ```json
+       {
+           "color": {
+               "white": {
+                   "$type": "color",
+                   "$value": "#ffffff",
+               },
+               "black": {
+                   "$type": "color",
+                   "$value": "#000000",
+               }
+           }
+           "border-white-thin": {
+               "$type": "string",
+               "$value": "1px solid {color.white}"
+           }
+       }
+       ```
+2. How to use reference values for keys
+   - Use when configuring in association with a specific style property.
+   - CASE1
+     - When the value pointed to by the reference value is a token object and the value configured under it is also a token object, use the
+       - before
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"{color.white}": {
+       			"$type": "string",
+       			"$value": "1px solid {$value}"
+       		}
+       	}
+       }
+       ```
+       - after
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"white": {
+       			"$type": "string",
+       			"$value": "1px solid #ffffff"
+       		}
+       	}
+       }
+       ```
+   - CASE2
+     - When the value pointed to by the reference is a token object and the value constructed under it is a token struct object
+       - before
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"{color.white}": {
+       			"thin": {
+       				"$type": "string",
+       				"$value": "1px solid {$value}"
+       			}
+       		}
+       	}
+       }
+       ```
+       - after
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"white": {
+       			"thin": {
+       				"$type": "string",
+       				"$value": "1px solid #ffffff"
+       			}
+       		}
+       	}
+       }
+       ```
+   - CASE3
+     - When the value pointed to by the reference is a token structure object and the value configured in the child is a token object
+       - before
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"{color}": {
+       			"$type": "string",
+       			"$value": "1px solid {$value}"
+       		}
+       	}
+       }
+       ```
+       - after
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"white": {
+       			"$type": "string",
+       			"$value": "1px solid #ffffff"
+       		},
+       		"black": {
+       			"$type": "string",
+       			"$value": "1px solid #000000"
+       		}
+       	}
+       }
+       ```
+   - CASE4
+     - When the value pointed to by the reference is a token-structured object and the value configured in the child is a token-structured object
+       - before
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"{color}": {
+       			"thin": {
+       				"$type": "string",
+       				"$value": "1px solid {$value}"
+       			}
+       		}
+       	}
+       }
+       ```
+       - after
+       ```json
+       {
+       	"color": {
+       		"white": {
+       			"$type": "color",
+       			"$value": "#ffffff"
+       		},
+       		"black": {
+       			"$type": "color",
+       			"$value": "#000000"
+       		}
+       	},
+       	"border": {
+       		"white": {
+       			"thin": {
+       				"$type": "string",
+       				"$value": "1px solid #ffffff"
+       			}
+       		},
+       		"black": {
+       			"thin": {
+       				"$type": "string",
+       				"$value": "1px solid #000000"
+       			}
+       		}
+       	}
+       }
+       ```
 
-```bash
-npm install -D generate-design-token
-// or
-yarn add -D generate-design-token
-```
+## Glossary of Terms
 
-### 2. Generate a token defined in JSON.
-
-```json
-{
-	"color": {
-		"red": {
-			"$type": "color",
-			"$value": "#ff0000"
-		},
-		"yellow": {
-			"$type": "color",
-			"$value": "#f0f000"
-		},
-		"blue": {
-			"$type": "color",
-			"$value": "#0000ff"
-		}
-	},
-	"border": {
-		"{color}": {
-			"thin": {
-				"$type": "dimension",
-				"$value": "1px solid {$value}"
-			}
-		}
-	}
-}
-```
-
-### 3. Use the generate-design-token module.
-
-```javascript
-import generateDesignToken from "generate-design-token";
-import token from "<DIR_PATH>/global-token.json";
-
-generateDesignToken(token, [token]); // result JSON
-```
-
-## Rules
-
-This library is intended to make life easier when creating design tokens, so it has a few conventions for convenience.
-
-### 1. You can compound properties by using reference values when defining values.
-
-```json
-{
-	"color": {
-		"black": {
-			"$type": "color",
-			"$value": "#000000"
-		}
-	},
-	"border": {
-		"width": {
-			"1": {
-				"$type": "dimension",
-				"$value": "1px"
-			}
-		},
-		"style": {
-			"solid": {
-				"$type": "string",
-				"$value": "solid"
-			}
-		},
-		"thin": {
-			"$type": "string",
-			"$value": "{border.width.1} {border.style.solid} {color.black}"
-		}
-	}
-}
-```
-
-### 2. You can use reference values when defining the token structure.
-
-```json
-{
-	"color": {
-		"black": {
-			"$type": "color",
-			"$value": "#000000"
-		}
-	},
-	"border": {
-		"{color}": {
-			"thin": {
-				"$type": "string",
-				"$value": "1px solid {$value}"
-			}
-		},
-		"{color}": {
-			"$type": "string",
-			"$value": "1px solid {$value}"
-		}
-	}
-}
-```
-
-- When using structural references, you need to define **{$value}** where you want to use it in the value.
-- There are four ways you can use it structurally.
-  1.  If the value being viewed by the reference is a token object and the value is a reference value, the
-  ```json
-  // before
-  {
-    "color": {
-        "black": {
-            "$type": "color",
-            "$value": "#000000"
-        },
-        "white": {
-            "$type": "color",
-            "$value": "#ffffff"
-        }
-    },
-    "border": {
-        "{color.black}": {
-            "$type": "string",
-            "$value": "1px solid {$value}"
-        }
-    }
-  }
-  // after
-  {
-    "color": {
-        "black": {
-            "$type": "color",
-            "$value": "#000000"
-        },
-        "white": {
-            "$type": "color",
-            "$value": "#ffffff"
-        }
-    },
-    "border": {
-        "black": {
-            "$type": "string",
-            "$value": "1px solid #000000"
-        }
-    }
-  }
-  ```
-  2.  If the value the reference is looking at is not a token object and the value is a reference
-  ```json
-  //before
-  {
-    "color": {
-        "black": {
-            "$type": "color",
-            "$value": "#000000"
-        },
-        "white": {
-            "$type": "color",
-            "$value": "#ffffff"
-        }
-    },
-    "border": {
-        "{color}": {
-            "$type": "string",
-            "$value": "1px solid {$value}"
-        }
-    }
-  }
-  //after
-  {
-    "color": {
-        "black": {
-            "$type": "color",
-            "$value": "#000000"
-        },
-        "white": {
-            "$type": "color",
-            "$value": "#ffffff"
-        }
-    },
-    "border": {
-        "black": {
-            "$type": "string",
-            "$value": "1px solid #000000"
-        },
-        "white": {
-            "$type": "string",
-            "$value": "1px solid #ffffff"
-        },
-    }
-  }
-  ```
-  3.  If the value being viewed by the reference is a token object and the value is not a reference
-  ```json
-  //before
-  {
-    "color": {
-        "black": {
-            "$type": "color",
-            "$value": "#000000"
-        },
-        "white": {
-            "$type": "color",
-        "$value": "#ffffff"
-        }
-    },
-    "border": {
-        "{color.white}": {
-            "thin": {
-                "$type": "string",
-                "$value": "1px solid {$value}"
-            },
-            "medium": {
-                "$type": "string",
-                "$value": "2px solid {$value}"
-            }
-        }
-    }
-  }
-  //after
-  {
-    "color": {
-        "black": {
-            "$type": "color",
-            "$value": "#000000"
-        },
-        "white": {
-            "$type": "color",
-            "$value": "#ffffff"
-        }
-    },
-    "border": {
-        "white": {
-            "thin": {
-                "$type": "string",
-                "$value": "1px solid #ffffff"
-            },
-            "medium": {
-                "$type": "string",
-                "$value": "2px solid #ffffff"
-            }
-        },
-    }
-  }
-  ```
-  4.  If the value that the reference value looks at is not a token object and the value is not a reference value
-  ```json
-  //before
-  {
-    "color": {
-        "black": {
-            "$type": "color",
-            "$value": "#000000"
-        },
-        "white": {
-            "$type": "color",
-            "$value": "#ffffff"
-        }
-        },
-    "border": {
-            "{color}": {
-                "thin": {
-                    "$type": "string",
-                    "$value": "1px solid {$value}"
-                },
-                "medium": {
-                    "$type": "string",
-                    "$value": "2px solid {$value}"
-                }
-            }
-    }
-  }
-  //after
-  {
-    "color": {
-            "black": {
-                "$type": "color",
-                "$value": "#000000"
-            },
-            "white": {
-                "$type": "color",
-                "$value": "#ffffff"
-            }
-    },
-    "border": {
-            "white": {
-                "thin": {
-                    "$type": "string",
-                    "$value": "1px solid #ffffff"
-                },
-                "medium": {
-                    "$type": "string",
-                    "$value": "2px solid #ffffff"
-                }
-            },
-            "black": {
-                "thin": {
-                    "$type": "string",
-                    "$value": "1px solid #000000"
-                },
-                "medium": {
-                    "$type": "string",
-                    "$value": "2px solid #000000"
-                }
-            }
-        }
-  }
-  ```
-
-## FAQ
-
-1. What is a Token Object?
-     - Token objects hold information to define the format and value of a token.
+- Token Objects
+  - Based on the [Design Token Format](https://tr.designtokens.org/format/).
     ```json
     {
-        "color": {
-            "red": {
-                "$type": "color",
-                "$value": "#ff0000",
-            }
-        }
+    	"$type": "",
+    	"$value": ""
     }
     ```
-    - The **color.red** token has the format color, and the value is red.
+- Token Structure Objects
+  - A token structure object is the object structure that makes up a token object.
+    ```json
+    {
+    	"color": {
+    		"$type": "",
+    		"$value": ""
+    	}
+    }
+    ```
+- Single property
+  - A single property is when only one style attribute is defined.
+    ```json
+    {
+    	"$type": "color",
+    	"$value": "#ffffff"
+    }
+    ```
+- Composite properties
+  - A composite property is a single property composed of multiple properties. ex) border.thin
+    ```json
+    {
+    	"color": {
+    		"white": {
+    			"$type": "color",
+    			"$value": "#ffffff"
+    		}
+    	},
+    	"size": {
+    		"thin": {
+    			"$type": "dimension",
+    			"$value": "1px"
+    		}
+    	},
+    	"border": {
+    		"thin": {
+    			"$type": "string",
+    			"$value": "{size.thin} solid {color.white}"
+    		}
+    	}
+    }
+    ```
 
 ## Licence
 
