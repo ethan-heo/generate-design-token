@@ -22,7 +22,15 @@ class TokenProcessor {
 	 * @description 참조 토큰을 입력받아 토큰 객체를 찾아 반환한다.
 	 * @param tokenRef
 	 */
-	public findTokenObj(tokenRef: string) {}
+	public findTokenObj(tokenRef: string) {
+		const foundToken = this.#tokenIterator.find(
+			([_tokenRef]) => _tokenRef === tokenRef,
+		);
+
+		if (!foundToken) return null;
+
+		return foundToken[1];
+	}
 
 	/**
 	 * @description 참조 토큰을 입력받아 토큰 구조 객체를 찾아 반환한다.
