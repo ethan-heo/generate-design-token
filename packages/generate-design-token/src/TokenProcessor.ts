@@ -100,7 +100,7 @@ class TokenProcessor {
 			paths.push(name);
 
 			if (isTokenObj(token)) {
-				result.push([paths.join("."), token]);
+				result.push([paths.join(this.#SEPERATOR), token]);
 				revertPaths();
 			} else {
 				const items = Object.entries(token);
