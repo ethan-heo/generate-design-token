@@ -5,6 +5,7 @@ type TokenIterator = [string, TokenObj][];
 
 class TokenProcessor {
 	#tokenIterator: TokenIterator;
+	#SEPERATOR = ".";
 
 	constructor(token: Token) {
 		this.#tokenIterator = this.transformTokenToIterator(token);
@@ -36,7 +37,36 @@ class TokenProcessor {
 	 * @description 참조 토큰을 입력받아 토큰 구조 객체를 찾아 반환한다.
 	 * @param tokenRef
 	 */
-	public findTokenStructureObj(tokenRef: string) {}
+	public findTokenStructureObj(tokenRef: string) {
+		const foundTokens: TokenIterator = [];
+
+		for (const [_tokenRef, token] of this.#tokenIterator) {
+			if (_tokenRef.includes(tokenRef)) {
+				foundTokens.push([_tokenRef, token]);
+			}
+		}
+
+		if (foundTokens.length === 0) return null;
+
+		const result = {};
+		const assignTokenProperties = (tokenRef: string, tokenObj: TokenObj) => {
+			const ref = tokenRef.split(this.#SEPERATOR).reduce((acc, prop) => {
+				return (acc[prop] = {});
+			}, result);
+
+			Object.assign(ref, tokenObj);
+
+			return result;
+		};
+
+		for (const [_tokenRef, token] of foundTokens) {
+			const slicedTokenRef = _tokenRef.slice(tokenRef.length + 1);
+
+			assignTokenProperties(slicedTokenRef, token);
+		}
+
+		return result;
+	}
 
 	/**
 	 * @description 토큰을 이터레이터 객체로 변환하는 메서드.
