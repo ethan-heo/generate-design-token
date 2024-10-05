@@ -17,5 +17,5 @@ export interface Usecase {
 	 * @description 베이스 토큰을 참조하여 입력된 토큰 이터레이터 아이템을 변환한다
 	 * @returns
 	 */
-	transform(tokenIteratorItem: TokenIterator[number]): TokenIterator[number];
+	transform(tokenIteratorItem: TokenIterator[number]): TokenIterator;
 }

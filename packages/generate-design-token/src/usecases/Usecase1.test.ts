@@ -68,14 +68,16 @@ it.each([
 			},
 		],
 		[
-			"border.white",
-			{
-				$type: "color",
-				$value: "2px solid {color.white}",
-			},
+			[
+				"border.white",
+				{
+					$type: "color",
+					$value: "2px solid {color.white}",
+				},
+			],
 		],
 	],
-] as [TokenIterator[number], TokenIterator[number]][])(
+] as [TokenIterator[number], TokenIterator][])(
 	`Usecase1. 토큰을 변환한다`,
 	(actual, expected) => {
 		expect(usecase1.transform(actual)).toStrictEqual(expected);

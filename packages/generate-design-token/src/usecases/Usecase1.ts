@@ -46,7 +46,7 @@ class Usecase1 implements Usecase {
 
 		return true;
 	}
-	transform(tokenIteratorItem: TokenIterator[number]): TokenIterator[number] {
+	transform(tokenIteratorItem: TokenIterator[number]): TokenIterator {
 		const [tokenRef, token] = tokenIteratorItem;
 		const matchedBaseTokenRef = tokenRef.match(/\{([^{}]+)\}/)![0];
 		const baseTokenRef = matchedBaseTokenRef.slice(1, -1);
@@ -79,7 +79,7 @@ class Usecase1 implements Usecase {
 			$value: token.$value.replace(/\{\$value\}/, `{${baseTokenRef}}`),
 		};
 
-		return [transformedTokenRef, transformedToken];
+		return [[transformedTokenRef, transformedToken]];
 	}
 }
 
