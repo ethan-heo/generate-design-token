@@ -1,3 +1,4 @@
+import { TOKEN_REF_SEPERATOR } from "../constants/seperator";
 import TokenProcessor from "../TokenProcessor";
 import { TokenIterator, TokenObj } from "../types/token";
 import { Usecase } from "../types/usecase";
@@ -45,7 +46,41 @@ class Usecase1 implements Usecase {
 
 		return true;
 	}
-	transform(tokenIteratorItem: TokenIterator[number]): TokenIterator[number] {}
+	transform(tokenIteratorItem: TokenIterator[number]): TokenIterator[number] {
+		const [tokenRef, token] = tokenIteratorItem;
+		const matchedBaseTokenRef = tokenRef.match(/\{([^{}]+)\}/)![0];
+		const baseTokenRef = matchedBaseTokenRef.slice(1, -1);
+		/**
+		 * 1. 토큰 참조값을 통해 베이스 토큰에서 토큰 참조 객체를 찾는다.
+		 */
+		let baseTokenObj: TokenObj;
+
+		for (const tokenProcessor of this.baseTokens) {
+			const foundTokenObj = tokenProcessor.findTokenObj(baseTokenRef);
+
+			if (foundTokenObj) {
+				baseTokenObj = foundTokenObj;
+				break;
+			}
+		}
+
+		/**
+		 * 2. 유즈 케이스 형태의 참조값을 변환한다.
+		 */
+		const transformedTokenRef = tokenRef.replace(
+			matchedBaseTokenRef,
+			baseTokenRef.split(TOKEN_REF_SEPERATOR).pop()!,
+		);
+		/**
+		 * 3. 입력된 토큰 객체의 값에 주어진 유즈 케이스 형태의 문자열을 베이스 토큰의 참조값으로 변환한다.
+		 */
+		const transformedToken = {
+			...token,
+			$value: token.$value.replace(/\{\$value\}/, `{${baseTokenRef}}`),
+		};
+
+		return [transformedTokenRef, transformedToken];
+	}
 }
 
 export default Usecase1;

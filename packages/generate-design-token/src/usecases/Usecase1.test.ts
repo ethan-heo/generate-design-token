@@ -15,7 +15,7 @@ it.each([
 		[
 			"border.{color.primary}",
 			{
-				$type: "dimension",
+				$type: "color",
 				$value: "2px solid {$value}",
 			},
 		],
@@ -25,7 +25,7 @@ it.each([
 		[
 			"border.{color}",
 			{
-				$type: "dimension",
+				$type: "color",
 				$value: "2px solid {$value}",
 			},
 		],
@@ -35,7 +35,7 @@ it.each([
 		[
 			"border.{color.white}",
 			{
-				$type: "dimension",
+				$type: "color",
 				$value: "2px solid {color.white}",
 			},
 		],
@@ -45,7 +45,7 @@ it.each([
 		[
 			"border.{color.white}",
 			{
-				$type: "dimension",
+				$type: "color",
 				$value: "2px solid $value",
 			},
 		],
@@ -63,16 +63,21 @@ it.each([
 		[
 			"border.{color.white}",
 			{
-				$type: "dimension",
+				$type: "color",
 				$value: "2px solid {$value}",
 			},
 		],
 		[
 			"border.white",
 			{
-				$type: "dimension",
+				$type: "color",
 				$value: "2px solid {color.white}",
 			},
 		],
 	],
-])(`Usecase1. 유효성 검사를 진행한다. `, () => {});
+] as [TokenIterator[number], TokenIterator[number]][])(
+	`Usecase1. 토큰을 변환한다`,
+	(actual, expected) => {
+		expect(usecase1.transform(actual)).toStrictEqual(expected);
+	},
+);
