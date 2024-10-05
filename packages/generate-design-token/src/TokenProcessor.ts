@@ -1,7 +1,7 @@
-import { Token, TokenObj } from "./generateToken.types";
+import { Token } from "./types/token";
+import { TokenIterator } from "./types/token";
 import isTokenObj from "./utils/isTokenObj";
-
-type TokenIterator = [string, TokenObj][];
+import validateTokenObj from "./validator/validateTokenObj";
 
 /**
  * @description 토큰을 처리하기 위한 전반적인 역할을 담당한다
@@ -99,6 +99,7 @@ class TokenProcessor {
 			paths.push(name);
 
 			if (isTokenObj(token)) {
+				validateTokenObj(token);
 				result.push([paths.join(this.#SEPERATOR), token]);
 				revertPaths();
 			} else {
