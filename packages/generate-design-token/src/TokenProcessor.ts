@@ -3,6 +3,9 @@ import isTokenObj from "./utils/isTokenObj";
 
 type TokenIterator = [string, TokenObj][];
 
+/**
+ * @description 토큰을 처리하기 위한 전반적인 역할을 담당한다
+ */
 class TokenProcessor {
 	#tokenIterator: TokenIterator;
 	#SEPERATOR = ".";
@@ -49,20 +52,16 @@ class TokenProcessor {
 		if (foundTokens.length === 0) return null;
 
 		const result = {};
-		const assignTokenProperties = (tokenRef: string, tokenObj: TokenObj) => {
-			const ref = tokenRef.split(this.#SEPERATOR).reduce((acc, prop) => {
-				return (acc[prop] = {});
-			}, result);
-
-			Object.assign(ref, tokenObj);
-
-			return result;
-		};
 
 		for (const [_tokenRef, token] of foundTokens) {
 			const slicedTokenRef = _tokenRef.slice(tokenRef.length + 1);
 
-			assignTokenProperties(slicedTokenRef, token);
+			Object.assign(
+				slicedTokenRef.split(this.#SEPERATOR).reduce((acc, prop) => {
+					return (acc[prop] = {});
+				}, result),
+				token,
+			);
 		}
 
 		return result;
