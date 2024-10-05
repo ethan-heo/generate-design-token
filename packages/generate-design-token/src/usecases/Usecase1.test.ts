@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import Usecase1 from "./Usease1";
+import Usecase1 from "./Usecase1";
 import TokenProcessor from "../TokenProcessor";
 import { TokenIterator } from "../types/token";
 
