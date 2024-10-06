@@ -46,8 +46,14 @@ it(`참조 토큰을 통해 토큰 객체를 찾는다.`, () => {
 
 it(`참조 토큰을 통해 토큰 구조 객체를 찾는다.`, () => {
 	const tokenProcessor = new TokenProcessor(BASE_TOKEN);
-	const actual = "color.teritary";
-	const expected = BASE_TOKEN.color.teritary;
+	const actual1 = "color.teritary";
+	const expected1 = BASE_TOKEN.color.teritary;
 
-	expect(tokenProcessor.findTokenStructureObj(actual)).toStrictEqual(expected);
+	expect(tokenProcessor.findTokenStructureObj(actual1)).toStrictEqual(
+		expected1,
+	);
+
+	const actual2 = "color.teritary.1";
+
+	expect(tokenProcessor.findTokenStructureObj(actual2)).toBeNull();
 });

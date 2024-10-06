@@ -1,3 +1,4 @@
+import { TOKEN_REF_SEPERATOR } from "./constants/seperator";
 import { Token } from "./types/token";
 import { TokenIterator } from "./types/token";
 import isTokenObj from "./utils/isTokenObj";
@@ -8,7 +9,6 @@ import validateTokenObj from "./validator/validateTokenObj";
  */
 class TokenProcessor {
 	#tokenIterator: TokenIterator;
-	#SEPERATOR = ".";
 
 	constructor(token: Token) {
 		this.#tokenIterator = this.transformTokenToIterator(token);
@@ -56,13 +56,17 @@ class TokenProcessor {
 		for (const [_tokenRef, token] of foundTokens) {
 			const slicedTokenRef = _tokenRef.slice(tokenRef.length + 1);
 
+			if (slicedTokenRef.trim().length === 0) break;
+
 			Object.assign(
-				slicedTokenRef.split(this.#SEPERATOR).reduce((acc, prop) => {
+				slicedTokenRef.split(TOKEN_REF_SEPERATOR).reduce((acc, prop) => {
 					return (acc[prop] = {});
 				}, result),
 				token,
 			);
 		}
+
+		if (Object.keys(result).length === 0) return null;
 
 		return result;
 	}
@@ -100,7 +104,7 @@ class TokenProcessor {
 
 			if (isTokenObj(token)) {
 				validateTokenObj(token);
-				result.push([paths.join(this.#SEPERATOR), token]);
+				result.push([paths.join(TOKEN_REF_SEPERATOR), token]);
 				revertPaths();
 			} else {
 				const items = Object.entries(token);
