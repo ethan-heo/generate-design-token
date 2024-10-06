@@ -1,5 +1,7 @@
-import { it } from "vitest";
+import { expect, it } from "vitest";
 import TokenProcessor from "../TokenProcessor";
+import Usecase2 from "./Usecase2";
+import { TokenIterator } from "../types/token";
 
 const baseTokens = [
 	new TokenProcessor({
@@ -12,6 +14,7 @@ const baseTokens = [
 		},
 	}),
 ];
+const usecase2 = new Usecase2(baseTokens);
 
 it.each([
 	[
@@ -64,7 +67,12 @@ it.each([
 		],
 		false,
 	],
-])(`Usecase2. 유효성 검사를 진행한다`, () => {});
+] as [TokenIterator[number], boolean][])(
+	`Usecase2. 유효성 검사를 진행한다`,
+	(actual, expected) => {
+		expect(usecase2.validate(actual)).toStrictEqual(expected);
+	},
+);
 
 it.each([
 	[
