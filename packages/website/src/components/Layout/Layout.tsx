@@ -15,7 +15,11 @@ import Footer from "./Footer";
 
 const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
 	return (
-		<Flex className="layout" vertical>
+		<Flex
+			className="layout"
+			vertical
+			column={["col-10", "col-ml-12", "col-mp-11", "col-tl-11", "col-tp-11"]}
+		>
 			{/* <GridLine /> */}
 			<Header />
 			<Main>{children}</Main>

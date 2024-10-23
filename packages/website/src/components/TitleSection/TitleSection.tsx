@@ -11,16 +11,16 @@ const TitleSection = () => {
 
 	return (
 		<Flex className={`title-section ${section}`} align="center" vertical>
-			<Title className="title-section__title" variant="accent" strong>
+			<Title className="title-section__title" variant="secondary" strong>
 				{t("title-section.title")}
 			</Title>
 			<Flex className="title-section__version" justify="center">
-				<Text variant="accent" strong>
+				<Text variant="secondary" strong>
 					v{pkg.version}
 				</Text>
 			</Flex>
 			<Flex justify="center">
-				<Paragraph className="title-section__description" variant="accent">
+				<Paragraph className="title-section__description" variant="secondary">
 					{t("title-section.description")}
 				</Paragraph>
 			</Flex>

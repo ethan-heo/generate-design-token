@@ -1,10 +1,6 @@
 .title-section {
 	margin-bottom: var(--spacing-10);
 }
-.title-section__title {
-	width: 100%;
-	text-align: center;
-}
 
 .title-section__version {
 	margin-bottom: var(--spacing-7);
@@ -12,6 +8,5 @@
 
 .title-section__description {
 	width: 100%;
-	text-align: center;
 	word-break: keep-all;
 }

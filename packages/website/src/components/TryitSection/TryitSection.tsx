@@ -27,7 +27,11 @@ const TryitSection = () => {
 			gap: 2,
 			align: "center",
 		},
-		tablet: {
+		"tablet-portrait": {
+			gap: 2,
+			align: "center",
+		},
+		"tablet-landscape": {
 			gap: 2,
 			align: "center",
 		},

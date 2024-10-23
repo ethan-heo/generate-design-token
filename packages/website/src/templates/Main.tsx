@@ -8,8 +8,8 @@ function Main() {
 	return (
 		<Layout>
 			<TitleSection />
-			<UseageSection />
-			<TryitSection />
+			{/* <UseageSection />
+			<TryitSection /> */}
 		</Layout>
 	);
 }
