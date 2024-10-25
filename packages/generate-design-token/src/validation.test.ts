@@ -3,14 +3,29 @@ import {
 	hasDollarPrefix,
 	hasNotDollarPrefix,
 	hasRequiredProp,
+	hasNotRequiredProp,
 } from "./validation";
 
 it.each([
 	[{}, false],
 	[{ $type: "color", $value: "#ff0000" }, true],
-])(`토큰 객체의 필수 속성을 검사한다`, (tokenObj, expected) => {
-	expect(hasRequiredProp(tokenObj)).toBe(expected);
-});
+])(
+	`토큰 객체의 필수 속성이 모두 포함되어 있는지 검사한다`,
+	(tokenObj, expected) => {
+		expect(hasRequiredProp(tokenObj)).toBe(expected);
+	},
+);
+
+it.each([
+	[{ $type: "color", $value: "#ff0000" }, false],
+	[{ type: "color", $value: "#fafafa" }, true],
+	[{}, true],
+])(
+	`토큰 객체의 필수 속성이 포함이 안되어 있는지 검사한다`,
+	(tokenObj, expected) => {
+		expect(hasNotRequiredProp(tokenObj)).toBe(expected);
+	},
+);
 
 it.each([
 	[
