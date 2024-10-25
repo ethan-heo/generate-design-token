@@ -1,5 +1,9 @@
 import * as Types from "./types";
-import { validateRequiredTokenProperties } from "./validation";
+import {
+	shouldHaveDollarPrefix,
+	shouldNotHaveDollarPrefix,
+	shouldHaveRequiredProp,
+} from "./validation";
 
 type Iteratee = (tokenName: string, tokenValue: Types.Token) => boolean;
 
@@ -8,6 +12,7 @@ class Token {
 
 	constructor(token: Types.Token) {
 		// 유효성 검사
+		this.#validate(token);
 		this.#token = token;
 	}
 
@@ -27,7 +32,7 @@ class Token {
 			const callback = arg as Iteratee;
 			let result: Types.Token | undefined;
 
-			this.#iterator((name, token) => {
+			this.#iterator(this.#token, (name, token) => {
 				if (callback(name, token)) {
 					result = token;
 				}
@@ -46,7 +51,7 @@ class Token {
 	findAll(arg: RegExp | Iteratee): Types.Token[] {
 		const result: Types.Token[] = [];
 
-		this.#iterator((name, token) => {
+		this.#iterator(this.#token, (name, token) => {
 			if (arg instanceof RegExp) {
 				arg.test(name) && result.push(token);
 			} else {
@@ -57,8 +62,10 @@ class Token {
 		return result;
 	}
 
-	#iterator(callback: (name: string, token: Types.Token) => void) {
-		const token = this.#token;
+	#iterator(
+		token: Types.Token,
+		callback: (name: string, token: Types.Token) => void,
+	) {
 		let stack: [string, Types.Token][][] = [Object.entries(token)];
 		let currentCtx: [string, Types.Token][] = stack.pop()!;
 
@@ -79,8 +86,26 @@ class Token {
 		}
 	}
 
+	#validate(token: Types.Token) {
+		this.#iterator(token, (_, token) => {
+			if (shouldHaveRequiredProp(token)) {
+				if (shouldNotHaveDollarPrefix(token)) {
+					throw new Error(
+						`토큰 객체의 속성값의 이름은 $가 prefix로 시작해야합니다.`,
+					);
+				}
+			} else {
+				if (shouldHaveDollarPrefix(token)) {
+					throw new Error(
+						`토큰 구조 객체의 속성값의 이름은 $가 prefix로 시작되어서는 안됩니다. ${JSON.stringify(token, null, 2)}`,
+					);
+				}
+			}
+		});
+	}
+
 	#isTokenObj(token: Types.Token): token is Types.TokenObj {
-		return validateRequiredTokenProperties(token);
+		return shouldHaveRequiredProp(token);
 	}
 
 	#accessByPath(tokenRef: string): Types.Token | undefined {

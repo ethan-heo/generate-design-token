@@ -62,3 +62,37 @@ it(`[Token.findAll] 특정 조건에 맞는 토큰을 모두 찾아 반환한다
 
 	expect(actual2.every((token) => expected2.includes(token))).toBeTruthy();
 });
+
+it(`토큰 유효성 검사를 진행한다.`, () => {
+	expect(() => {
+		new Token({
+			color: {
+				primary: {
+					$type: "color",
+					$value: "#ff0000",
+				},
+			},
+		});
+	}).not.toThrowError();
+	expect(() => {
+		new Token({
+			color: {
+				$primary: {
+					$type: "color",
+					$description: "#ff0000",
+				},
+			},
+		});
+	}).toThrowError();
+	expect(() => {
+		new Token({
+			color: {
+				primary: {
+					$type: "color",
+					$value: "#ff0000",
+					description: "color",
+				} as Types.TokenObj,
+			},
+		});
+	}).not.toThrowError();
+});
