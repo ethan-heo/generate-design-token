@@ -1,4 +1,4 @@
-import * as Types from "./TokenGenerator.types";
+import * as Types from "./types";
 import { validateRequiredTokenProperties } from "./validation";
 
 type Iteratee = (tokenName: string, tokenValue: Types.Token) => boolean;

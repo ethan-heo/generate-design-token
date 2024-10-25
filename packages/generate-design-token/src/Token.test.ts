@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
 import Token from "./Token";
-import * as Types from "./TokenGenerator.types";
+import * as Types from "./types";
 
 const TOKEN = {
 	color: {
