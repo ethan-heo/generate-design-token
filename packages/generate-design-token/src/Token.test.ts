@@ -43,6 +43,9 @@ it(`[Token.find] 특정 조건에 맞는 토큰을 찾아 반환한다.`, () => 
 			return tokenName === "1";
 		}),
 	).toStrictEqual(TOKEN.color.tertiary[1]);
+
+	expect(token.find("color.primary")).toStrictEqual(TOKEN.color.primary);
+	expect(token.find("color.primary.1")).toStrictEqual(undefined);
 });
 
 it(`[Token.findAll] 특정 조건에 맞는 토큰을 모두 찾아 반환한다.`, () => {

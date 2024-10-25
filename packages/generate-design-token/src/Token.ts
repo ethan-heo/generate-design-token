@@ -16,16 +16,25 @@ class Token {
 	 * @description 주어진 참조값에 해당하는 토큰 객체 및 구조 객체를 반환한다.
 	 * @returns
 	 */
-	find(callback: Iteratee): Types.Token | undefined {
-		let result: Types.Token | undefined;
+	find(tokenRef: string): Types.Token | undefined;
+	find(callback: Iteratee): Types.Token | undefined;
+	find(arg: string | Iteratee): Types.Token | undefined {
+		if (typeof arg === "string") {
+			return this.#accessByPath(arg);
+		}
 
-		this.#iterator((tokenName, tokenValue) => {
-			if (callback(tokenName, tokenValue)) {
-				result = tokenValue;
-			}
-		});
+		if (typeof arg === "function") {
+			const callback = arg as Iteratee;
+			let result: Types.Token | undefined;
 
-		return result;
+			this.#iterator((tokenName, tokenValue) => {
+				if (callback(tokenName, tokenValue)) {
+					result = tokenValue;
+				}
+			});
+
+			return result;
+		}
 	}
 
 	/**
@@ -68,6 +77,16 @@ class Token {
 
 	#isTokenObj(token: Types.Token): token is Types.TokenObj {
 		return validateRequiredTokenProperties(token);
+	}
+
+	#accessByPath(tokenRef: string): Types.Token | undefined {
+		const paths = tokenRef.split(".");
+
+		return paths.reduce((acc, path) => {
+			if (!acc[path]) return undefined;
+
+			return acc[path];
+		}, this.#token);
 	}
 }
 
