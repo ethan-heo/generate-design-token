@@ -27,9 +27,9 @@ class Token {
 			const callback = arg as Iteratee;
 			let result: Types.Token | undefined;
 
-			this.#iterator((tokenName, tokenValue) => {
-				if (callback(tokenName, tokenValue)) {
-					result = tokenValue;
+			this.#iterator((name, token) => {
+				if (callback(name, token)) {
+					result = token;
 				}
 			});
 
@@ -46,30 +46,30 @@ class Token {
 	findAll(arg: RegExp | Iteratee): Types.Token[] {
 		const result: Types.Token[] = [];
 
-		this.#iterator((tokenName, tokenValue) => {
+		this.#iterator((name, token) => {
 			if (arg instanceof RegExp) {
-				arg.test(tokenName) && result.push(tokenValue);
+				arg.test(name) && result.push(token);
 			} else {
-				arg(tokenName, tokenValue) && result.push(tokenValue);
+				arg(name, token) && result.push(token);
 			}
 		});
 
 		return result;
 	}
 
-	#iterator(callback: (tokenName: string, tokenValue: Types.Token) => void) {
+	#iterator(callback: (name: string, token: Types.Token) => void) {
 		const token = this.#token;
 		let stack: [string, Types.Token][][] = [Object.entries(token)];
 		let currentCtx: [string, Types.Token][] = stack.pop()!;
 
 		while (currentCtx.length) {
-			const [tokenName, tokenValue] = currentCtx.pop()!;
+			const [name, token] = currentCtx.pop()!;
 
-			callback(tokenName, tokenValue);
+			callback(name, token);
 
 			// 1. 토큰 구조 객체인 경우 Array<[속성 이름, 토큰]> 형태로 변경하여 stack에 추가한다
-			if (!this.#isTokenObj(tokenValue)) {
-				stack.push(Object.entries(tokenValue));
+			if (!this.#isTokenObj(token)) {
+				stack.push(Object.entries(token));
 			}
 
 			// 2. 컨텍스트(객체, 토큰)의 요소가 없으면 컨텍스트를 변경한다.
