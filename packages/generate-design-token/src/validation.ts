@@ -31,21 +31,3 @@ export const hasNotDollarPrefix = (value: {}): boolean => {
 
 	return true;
 };
-
-export const hasNotTokenObjOrNotTokenStructure = (value: {}): boolean => {
-	if (typeof value === "object") {
-		// 토큰 객체인지 검사
-		if (hasRequiredProp(value) && !hasDollarPrefix(value)) {
-			return false;
-		}
-
-		// 토큰 구조 객체인지 검사
-		if (!hasRequiredProp(value) && !hasNotDollarPrefix(value)) {
-			return false;
-		}
-	} else {
-		return false;
-	}
-
-	return true;
-};
