@@ -11,6 +11,11 @@ class Token {
 		this.#token = token;
 	}
 
+	/**
+	 *
+	 * @description 주어진 참조값에 해당하는 토큰 객체 및 구조 객체를 반환한다.
+	 * @returns
+	 */
 	find(callback: Iteratee): Types.Token | undefined {
 		let result: Types.Token | undefined;
 
@@ -23,6 +28,10 @@ class Token {
 		return result;
 	}
 
+	/**
+	 * @description 주어진 참조값에 해당하는 모든 토큰 객체 및 구조 객체를 반환한다.
+	 * @returns
+	 */
 	findAll(callback: Iteratee): Types.Token[] {
 		const result: Types.Token[] = [];
 
@@ -38,22 +47,21 @@ class Token {
 	#iterator(callback: (tokenName: string, tokenValue: Types.Token) => void) {
 		const token = this.#token;
 		let stack: [string, Types.Token][][] = [Object.entries(token)];
-		let currentCtx: [string, Types.Token][] = stack[0];
+		let currentCtx: [string, Types.Token][] = stack.pop()!;
 
-		while (stack.length) {
-			const [tokenName, tokenValue] = currentCtx.shift()!;
+		while (currentCtx.length) {
+			const [tokenName, tokenValue] = currentCtx.pop()!;
 
 			callback(tokenName, tokenValue);
 
-			if (currentCtx.length === 0) {
-				stack.shift();
-				currentCtx = stack[0];
+			// 1. 토큰 구조 객체인 경우 Array<[속성 이름, 토큰]> 형태로 변경하여 stack에 추가한다
+			if (!this.#isTokenObj(tokenValue)) {
+				stack.push(Object.entries(tokenValue));
 			}
 
-			if (!this.#isTokenObj(tokenValue)) {
-				const item = Object.entries(tokenValue);
-				stack = [item, ...stack];
-				currentCtx = item;
+			// 2. 컨텍스트(객체, 토큰)의 요소가 없으면 컨텍스트를 변경한다.
+			if (currentCtx.length === 0) {
+				currentCtx = stack.pop() ?? [];
 			}
 		}
 	}

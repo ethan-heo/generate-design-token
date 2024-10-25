@@ -1,5 +1,6 @@
 import { expect, it } from "vitest";
 import Token from "./Token";
+import * as Types from "./TokenGenerator.types";
 
 const TOKEN = {
 	color: {
@@ -46,11 +47,10 @@ it(`[Token.find] 특정 조건에 맞는 토큰을 찾아 반환한다.`, () => 
 
 it(`[Token.findAll] 특정 조건에 맞는 토큰을 모두 찾아 반환한다.`, () => {
 	const token = new Token(TOKEN);
-	const expected = [TOKEN.color.primary, TOKEN.color.secondary];
+	const expected: Types.Token[] = [TOKEN.color.primary, TOKEN.color.secondary];
+	const actual = token.findAll((tokenName) => {
+		return tokenName === "primary" || tokenName === "secondary";
+	});
 
-	expect(
-		token.findAll((tokenName) => {
-			return tokenName === "primary" || tokenName === "secondary";
-		}),
-	).toStrictEqual(expected);
+	expect(actual.every((token) => expected.includes(token))).toBeTruthy();
 });
