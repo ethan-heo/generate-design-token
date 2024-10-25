@@ -16,8 +16,8 @@ class Token {
 	 * @description 주어진 참조값에 해당하는 토큰 객체 및 구조 객체를 반환한다.
 	 * @returns
 	 */
-	find(tokenRef: string): Types.Token | undefined;
-	find(callback: Iteratee): Types.Token | undefined;
+	find(arg: string): Types.Token | undefined;
+	find(arg: Iteratee): Types.Token | undefined;
 	find(arg: string | Iteratee): Types.Token | undefined {
 		if (typeof arg === "string") {
 			return this.#accessByPath(arg);
@@ -41,12 +41,16 @@ class Token {
 	 * @description 주어진 참조값에 해당하는 모든 토큰 객체 및 구조 객체를 반환한다.
 	 * @returns
 	 */
-	findAll(callback: Iteratee): Types.Token[] {
+	findAll(arg: RegExp): Types.Token[];
+	findAll(arg: Iteratee): Types.Token[];
+	findAll(arg: RegExp | Iteratee): Types.Token[] {
 		const result: Types.Token[] = [];
 
 		this.#iterator((tokenName, tokenValue) => {
-			if (callback(tokenName, tokenValue)) {
-				result.push(tokenValue);
+			if (arg instanceof RegExp) {
+				arg.test(tokenName) && result.push(tokenValue);
+			} else {
+				arg(tokenName, tokenValue) && result.push(tokenValue);
 			}
 		});
 

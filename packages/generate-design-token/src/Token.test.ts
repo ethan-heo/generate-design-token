@@ -50,10 +50,15 @@ it(`[Token.find] 특정 조건에 맞는 토큰을 찾아 반환한다.`, () => 
 
 it(`[Token.findAll] 특정 조건에 맞는 토큰을 모두 찾아 반환한다.`, () => {
 	const token = new Token(TOKEN);
-	const expected: Types.Token[] = [TOKEN.color.primary, TOKEN.color.secondary];
-	const actual = token.findAll((tokenName) => {
+	const actual1 = token.findAll((tokenName) => {
 		return tokenName === "primary" || tokenName === "secondary";
 	});
+	const expected1: Types.Token[] = [TOKEN.color.primary, TOKEN.color.secondary];
 
-	expect(actual.every((token) => expected.includes(token))).toBeTruthy();
+	expect(actual1.every((token) => expected1.includes(token))).toBeTruthy();
+
+	const actual2 = token.findAll(/(primary)|(secondary)/);
+	const expected2: Types.Token[] = [TOKEN.color.primary, TOKEN.color.secondary];
+
+	expect(actual2.every((token) => expected2.includes(token))).toBeTruthy();
 });
