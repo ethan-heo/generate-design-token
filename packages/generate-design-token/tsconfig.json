@@ -1,10 +1,11 @@
 {
 	"compilerOptions": {
+		"target": "ESNext",
 		"lib": ["ESNext"],
 		"downlevelIteration": true,
+		"moduleResolution": "Bundler",
 		"noImplicitAny": false,
 		"strict": true,
-		"resolveJsonModule": true,
 		"declaration": true,
 		"outDir": "dist"
 	},
