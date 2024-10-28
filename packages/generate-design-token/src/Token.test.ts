@@ -109,3 +109,14 @@ it(`토큰 유효성 검사를 진행한다.`, () => {
 		});
 	}).not.toThrowError();
 });
+
+it(`[Token.has] 입력된 값에 해당하는 토큰이 존재하는지 확인한다.`, () => {
+	const token = new Token(TOKEN);
+	const actual1 = "color.primary";
+	const expected1 = true;
+	const actual2 = (name) => name === "primary";
+	const expected2 = true;
+
+	expect(token.has(actual1)).toBe(expected1);
+	expect(token.has(actual2)).toBe(expected2);
+});

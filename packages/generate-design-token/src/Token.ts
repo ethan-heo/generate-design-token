@@ -66,6 +66,12 @@ class Token {
 		return result;
 	}
 
+	has(arg: string): boolean;
+	has(arg: Iteratee): boolean;
+	has(arg: string | Iteratee): boolean {
+		return !!this.find(arg as any);
+	}
+
 	isTokenObj(token: Types.Token): token is Types.TokenObj {
 		return shouldHaveRequiredProp(token);
 	}
