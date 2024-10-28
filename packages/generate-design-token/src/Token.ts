@@ -5,7 +5,11 @@ import {
 	shouldHaveRequiredProp,
 } from "./validation";
 
-type Iteratee = (tokenName: string, tokenValue: Types.Token) => boolean;
+type Iteratee = (
+	tokenName: string,
+	tokenValue: Types.Token,
+	self: Token,
+) => boolean;
 
 class Token {
 	#token: Types.Token;
@@ -21,20 +25,20 @@ class Token {
 	 * @description 주어진 참조값에 해당하는 토큰 객체 및 구조 객체를 반환한다.
 	 * @returns
 	 */
-	find(arg: string): Types.Token | undefined;
-	find(arg: Iteratee): Types.Token | undefined;
-	find(arg: string | Iteratee): Types.Token | undefined {
+	find(arg: string): [string, Types.Token] | undefined;
+	find(arg: Iteratee): [string, Types.Token] | undefined;
+	find(arg: string | Iteratee): [string, Types.Token] | undefined {
 		if (typeof arg === "string") {
 			return this.#accessByPath(arg);
 		}
 
 		if (typeof arg === "function") {
 			const callback = arg as Iteratee;
-			let result: Types.Token | undefined;
+			let result: [string, Types.Token] | undefined;
 
 			this.#iterator(this.#token, (name, token) => {
-				if (callback(name, token)) {
-					result = token;
+				if (callback(name, token, this)) {
+					result = [name, token];
 				}
 			});
 
@@ -46,20 +50,24 @@ class Token {
 	 * @description 주어진 참조값에 해당하는 모든 토큰 객체 및 구조 객체를 반환한다.
 	 * @returns
 	 */
-	findAll(arg: RegExp): Types.Token[];
-	findAll(arg: Iteratee): Types.Token[];
-	findAll(arg: RegExp | Iteratee): Types.Token[] {
-		const result: Types.Token[] = [];
+	findAll(arg: RegExp): [string, Types.Token][];
+	findAll(arg: Iteratee): [string, Types.Token][];
+	findAll(arg: RegExp | Iteratee): [string, Types.Token][] {
+		const result: [string, Types.Token][] = [];
 
 		this.#iterator(this.#token, (name, token) => {
 			if (arg instanceof RegExp) {
-				arg.test(name) && result.push(token);
+				arg.test(name) && result.push([name, token]);
 			} else {
-				arg(name, token) && result.push(token);
+				arg(name, token, this) && result.push([name, token]);
 			}
 		});
 
 		return result;
+	}
+
+	isTokenObj(token: Types.Token): token is Types.TokenObj {
+		return shouldHaveRequiredProp(token);
 	}
 
 	#iterator(
@@ -75,7 +83,7 @@ class Token {
 			callback(name, token);
 
 			// 1. 토큰 구조 객체인 경우 Array<[속성 이름, 토큰]> 형태로 변경하여 stack에 추가한다
-			if (!this.#isTokenObj(token)) {
+			if (!this.isTokenObj(token)) {
 				stack.push(Object.entries(token));
 			}
 
@@ -104,18 +112,19 @@ class Token {
 		});
 	}
 
-	#isTokenObj(token: Types.Token): token is Types.TokenObj {
-		return shouldHaveRequiredProp(token);
-	}
-
-	#accessByPath(tokenRef: string): Types.Token | undefined {
+	#accessByPath(tokenRef: string): [string, Types.Token] | undefined {
 		const paths = tokenRef.split(".");
+		let token: Types.Token = this.#token;
+		let name: string = "";
 
-		return paths.reduce((acc, path) => {
-			if (!acc[path]) return undefined;
+		for (const path of paths) {
+			token = token[path];
+			name = path;
 
-			return acc[path];
-		}, this.#token);
+			if (!token) return undefined;
+		}
+
+		return [name, token];
 	}
 }
 

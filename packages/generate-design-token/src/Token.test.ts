@@ -42,9 +42,12 @@ it(`[Token.find] 특정 조건에 맞는 토큰을 찾아 반환한다.`, () => 
 		token.find((tokenName) => {
 			return tokenName === "1";
 		}),
-	).toStrictEqual(TOKEN.color.tertiary[1]);
+	).toStrictEqual(["1", TOKEN.color.tertiary[1]]);
 
-	expect(token.find("color.primary")).toStrictEqual(TOKEN.color.primary);
+	expect(token.find("color.primary")).toStrictEqual([
+		"primary",
+		TOKEN.color.primary,
+	]);
 	expect(token.find("color.primary.1")).toStrictEqual(undefined);
 });
 
@@ -53,14 +56,24 @@ it(`[Token.findAll] 특정 조건에 맞는 토큰을 모두 찾아 반환한다
 	const actual1 = token.findAll((tokenName) => {
 		return tokenName === "primary" || tokenName === "secondary";
 	});
-	const expected1: Types.Token[] = [TOKEN.color.primary, TOKEN.color.secondary];
+	const expected1: [string, Types.Token][] = [
+		["primary", TOKEN.color.primary],
+		["secondary", TOKEN.color.secondary],
+	];
 
-	expect(actual1.every((token) => expected1.includes(token))).toBeTruthy();
+	expect(
+		actual1.every(([name]) => expected1.some(([_name]) => name === _name)),
+	).toBeTruthy();
 
 	const actual2 = token.findAll(/(primary)|(secondary)/);
-	const expected2: Types.Token[] = [TOKEN.color.primary, TOKEN.color.secondary];
+	const expected2: [string, Types.Token][] = [
+		["primary", TOKEN.color.primary],
+		["secondary", TOKEN.color.secondary],
+	];
 
-	expect(actual2.every((token) => expected2.includes(token))).toBeTruthy();
+	expect(
+		actual2.every(([name]) => expected2.some(([_name]) => name === _name)),
+	).toBeTruthy();
 });
 
 it(`토큰 유효성 검사를 진행한다.`, () => {
