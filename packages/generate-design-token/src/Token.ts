@@ -4,6 +4,7 @@ import {
 	shouldNotHaveDollarPrefix,
 	shouldHaveRequiredProp,
 } from "./validation";
+import isTokenObj from "./isTokenObj";
 
 type Iteratee = (
 	tokenName: string,
@@ -72,8 +73,10 @@ class Token {
 		return !!this.find(arg as any);
 	}
 
-	isTokenObj(token: Types.Token): token is Types.TokenObj {
-		return shouldHaveRequiredProp(token);
+	replace(tokenName: string) {
+		// 1. 토큰 이름 경로를 구한다. ex) a.b.c
+		// 2. 구한 경로의 부모 토큰을 찾는다.
+		// 3. 부모 토큰에서 tokenName의 속성을 삭제하고 변경된 토큰을 추가한다
 	}
 
 	#iterator(
@@ -89,7 +92,7 @@ class Token {
 			callback(name, token);
 
 			// 1. 토큰 구조 객체인 경우 Array<[속성 이름, 토큰]> 형태로 변경하여 stack에 추가한다
-			if (!this.isTokenObj(token)) {
+			if (!isTokenObj(token)) {
 				stack.push(Object.entries(token));
 			}
 
@@ -127,7 +130,7 @@ class Token {
 			token = token[path];
 			name = path;
 
-			if (!token) return undefined;
+			if (!token) return;
 		}
 
 		return [name, token];
