@@ -1,30 +1,38 @@
+import { TransformedToken } from "./UseCase.types";
+import * as Types from '../types'
 import Token from "../Token";
+import { TOKEN_REF_REGEXP } from "../regexp";
+import transformPropsToTokenRef from "../transformPropsToTokenRef";
 
-const TOKEN_REF_REGEXP = /\{([^{}]+)\}/;
 
-abstract class UseCase<T = any> {
+abstract class UseCase<T extends Types.TokenResult> {
 	transform(baseToken: Token, referredToken: Token[]) {
 		const cases = this.findCases(baseToken);
 
 		if (cases.length === 0) return;
 
 		const transformedTokens: {
-			original: T[];
-			transformed: T[];
+			original: T;
+			transformed: T;
 		}[] = this.transformTokens(cases, referredToken);
 
-		console.log(JSON.stringify(transformedTokens, null, 2));
+		console.log(JSON.stringify(transformedTokens, null, 2))
 
+		transformedTokens.forEach(({ original, transformed }) => {
+			const [originalTokenName] = original
+			const [transformedTokenName, transformedToken] = transformed
+
+			console.log(transformedTokenName, transformedToken)
+			baseToken.add(transformedTokenName, transformedToken);
+			baseToken.delete(originalTokenName);
+		})
 		// replace base token to transformed tokens
 	}
 
 	protected abstract transformTokens(
 		cases: T[],
 		referredTokens: Token[],
-	): {
-		original: T[];
-		transformed: T[];
-	}[];
+	): TransformedToken<T>[];
 
 	protected abstract findCases(baseToken: Token): T[];
 
@@ -40,7 +48,7 @@ abstract class UseCase<T = any> {
 		let result: T | undefined;
 
 		for (const token of tokens) {
-			const foundTokenRef = token.find(tokenRef) as T;
+			const foundTokenRef = token.find((props, _, self) => transformPropsToTokenRef(props) === tokenRef) as T;
 
 			if (foundTokenRef) {
 				result = foundTokenRef;
