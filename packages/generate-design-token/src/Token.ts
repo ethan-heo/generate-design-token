@@ -59,15 +59,17 @@ class Token {
 	 * @throws {Error} parent token이 존재하지 않을 때
 	 */
 	delete(props: string[]) {
-		let parentToken: Types.Token | undefined
+		let parentToken: Types.Token = this.#token
 		const prop = props.pop()!;
 		const tokenRef = transformPropsToTokenRef(props);
 
-		this.#iterator(this.#token, (props, token) => {
-			if (transformPropsToTokenRef(props) === tokenRef) {
-				parentToken = token
-			}
-		})
+		if (props.length > 0) {
+			this.#iterator(this.#token, (props, token) => {
+				if (transformPropsToTokenRef(props) === tokenRef) {
+					parentToken = token
+				}
+			})
+		}
 
 		if (!parentToken) {
 			throw new Error(`Cannot find parent token: ${tokenRef}`);
