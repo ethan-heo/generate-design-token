@@ -16,17 +16,14 @@ abstract class UseCase<T extends Types.TokenResult> {
 			transformed: T;
 		}[] = this.transformTokens(cases, referredToken);
 
-		console.log(JSON.stringify(transformedTokens, null, 2))
 
 		transformedTokens.forEach(({ original, transformed }) => {
-			const [originalTokenName] = original
-			const [transformedTokenName, transformedToken] = transformed
+			const [originalProps] = original
+			const [transformedProps, transformedToken] = transformed
 
-			console.log(transformedTokenName, transformedToken)
-			baseToken.add(transformedTokenName, transformedToken);
-			baseToken.delete(originalTokenName);
+			baseToken.add(transformedProps, transformedToken);
+			baseToken.delete(originalProps);
 		})
-		// replace base token to transformed tokens
 	}
 
 	protected abstract transformTokens(
