@@ -5,6 +5,7 @@ import {
 	shouldHaveRequiredProp,
 } from "./validation";
 import isTokenObj from "./isTokenObj";
+import transformPropsToTokenRef from "./transformPropsToTokenRef";
 
 type Iteratee = (
 	props: string[],
@@ -52,14 +53,35 @@ class Token {
 		return result;
 	}
 
-	delete(tokenRef: string) {
-		const props = this.#transformPropsTo(tokenRef);
+	/**
+	 * @description 주어진 참조값에 해당하는 토큰을 삭제한다.
+	 * @param props 참조값
+	 * @throws {Error} parent token이 존재하지 않을 때
+	 */
+	delete(props: string[]) {
+		let parentToken: Types.Token | undefined
+		const prop = props.pop()!;
+		const tokenRef = transformPropsToTokenRef(props);
 
-		
+		this.#iterator(this.#token, (props, token) => {
+			if (transformPropsToTokenRef(props) === tokenRef) {
+				parentToken = token
+			}
+		})
+
+		if (!parentToken) {
+			throw new Error(`Cannot find parent token: ${tokenRef}`);
+		}
+
+		delete parentToken[prop];
 	}
 
-	add(tokenRef: string, token: Types.Token) {
-		const props = tokenRef.split(".");
+	/**
+	 * @description 주어진 참조값에 토큰을 추가한다.
+	 * @param props 토큰을 추가할 참조값
+	 * @param token 추가할 토큰
+	 */
+	add(props: string[], token: Types.Token) {
 		const newProp = props.pop()!;
 		let temp = this.#token;
 
@@ -73,6 +95,8 @@ class Token {
 
 		temp[newProp] = token;
 	}
+
+
 
 	#iterator(
 		token: Types.Token,
@@ -124,9 +148,7 @@ class Token {
 		});
 	}
 
-	#transformPropsTo(tokenRef: Types.TokenRef) {
-		return tokenRef.split(".");
-	}
+	
 }
 
 export default Token;

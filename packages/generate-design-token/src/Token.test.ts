@@ -1,6 +1,7 @@
 import { expect, it } from "vitest";
 import Token from "./Token";
 import * as Types from "./types";
+import transformPropsToTokenRef from "./transformPropsToTokenRef";
 
 const TOKEN = {
 	color: {
@@ -55,6 +56,45 @@ it(`[Token.findAll] 특정 조건에 맞는 토큰을 모두 찾아 반환한다
 		[["color", "secondary"], TOKEN.color.secondary],
 		[["color", "primary"], TOKEN.color.primary],
 	]);
+});
+
+it(`[Token.add] 토큰 속성을 추가한다`, () => {
+	const token = new Token(TOKEN);
+	const actual = {
+		props: ["color", "tertiary", "2"],
+		token: {
+			$type: "color",
+			$value: "#0000ff",
+		}
+	}
+	const expected = [["color", "tertiary", "2"], {
+		$type: "color",
+		$value: "#0000ff",
+	}];
+	
+	token.add(actual.props, actual.token);
+
+	expect(token.find((props) => transformPropsToTokenRef(props) === "color.tertiary.2")).toStrictEqual(expected);
+});
+
+it(`[Token.delete] 토큰 속성을 삭제한다`, () => {
+	const TOKEN = {
+		color: {
+			tertiary: {
+				1: {
+					$type: "color",
+					$value: "#0000ff",
+				},
+			},
+		}
+	}
+	const token = new Token(TOKEN);
+	
+	token.delete(
+		["color", "tertiary", "1"],
+	);
+
+	expect(token.find((props) => transformPropsToTokenRef(props) === "color.tertiary.1")).toBeUndefined();
 });
 
 it(`토큰 유효성 검사를 진행한다.`, () => {

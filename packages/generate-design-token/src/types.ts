@@ -10,4 +10,6 @@ export interface TokenStructureObj {
 
 export type Token = TokenObj | TokenStructureObj;
 
-export type TokenRef = `{${string}}`;
+export type TokenRef = string;
+
+export type TokenResult = [string[], Token]
