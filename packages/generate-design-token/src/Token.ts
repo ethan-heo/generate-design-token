@@ -102,6 +102,10 @@ class Token {
 		return new Token(structuredClone(this.#token));
 	}
 
+	getToken() {
+		return this.#token;
+	}
+
 	#iterator(
 		token: Types.Token,
 		callback: (props: string[], token: Types.Token) => void,
