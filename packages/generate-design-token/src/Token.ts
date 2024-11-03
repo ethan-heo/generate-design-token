@@ -28,7 +28,8 @@ class Token {
 
 		this.#iterator(this.#token, (props, token) => {
 			if (callback(props, token, this)) {
-				result = [props, token];
+				// props, token을 그대로 할당하면 객체의 참조가 유지됨으로 얕은 복사가 필요한 상황.
+				result = [props.slice(), { ...token }];
 			}
 		});
 
