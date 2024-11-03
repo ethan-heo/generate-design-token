@@ -1,9 +1,8 @@
 import { TransformedToken } from "./UseCase.types";
-import * as Types from '../types'
+import * as Types from "../types";
 import Token from "../Token";
 import { TOKEN_REF_REGEXP } from "../regexp";
 import transformPropsToTokenRef from "../transformPropsToTokenRef";
-
 
 abstract class UseCase<T extends Types.TokenResult> {
 	transform(baseToken: Token, referredToken: Token[]) {
@@ -16,14 +15,13 @@ abstract class UseCase<T extends Types.TokenResult> {
 			transformed: T;
 		}[] = this.transformTokens(cases, referredToken);
 
-
 		transformedTokens.forEach(({ original, transformed }) => {
-			const [originalProps] = original
-			const [transformedProps, transformedToken] = transformed
+			const [originalProps] = original;
+			const [transformedProps, transformedToken] = transformed;
 
 			baseToken.add(transformedProps, transformedToken);
 			baseToken.delete(originalProps);
-		})
+		});
 	}
 
 	protected abstract transformTokens(
@@ -45,10 +43,12 @@ abstract class UseCase<T extends Types.TokenResult> {
 		let result: T | undefined;
 
 		for (const token of tokens) {
-			const foundTokenRef = token.find((props, _, self) => transformPropsToTokenRef(props) === tokenRef) as T;
+			const foundToken = token.find(
+				(props) => transformPropsToTokenRef(props) === tokenRef,
+			) as T;
 
-			if (foundTokenRef) {
-				result = foundTokenRef;
+			if (foundToken) {
+				result = foundToken;
 				break;
 			}
 		}
