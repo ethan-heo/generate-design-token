@@ -7,11 +7,7 @@ import {
 import isTokenObj from "./isTokenObj";
 import transformPropsToTokenRef from "./transformPropsToTokenRef";
 
-type Iteratee = (
-	props: string[],
-	token: Types.Token,
-	self: Token,
-) => boolean;
+type Iteratee = (props: string[], token: Types.Token, self: Token) => boolean;
 
 class Token {
 	#token: Types.Token;
@@ -59,16 +55,16 @@ class Token {
 	 * @throws {Error} parent token이 존재하지 않을 때
 	 */
 	delete(props: string[]) {
-		let parentToken: Types.Token = this.#token
+		let parentToken: Types.Token = this.#token;
 		const prop = props.pop()!;
 		const tokenRef = transformPropsToTokenRef(props);
 
 		if (props.length > 0) {
 			this.#iterator(this.#token, (props, token) => {
 				if (transformPropsToTokenRef(props) === tokenRef) {
-					parentToken = token
+					parentToken = token;
 				}
-			})
+			});
 		}
 
 		if (!parentToken) {
@@ -90,7 +86,7 @@ class Token {
 		for (const prop of props) {
 			if (!temp[prop]) {
 				temp[prop] = {};
-			}	
+			}
 
 			temp = temp[prop] as Types.Token;
 		}
@@ -98,7 +94,13 @@ class Token {
 		temp[newProp] = token;
 	}
 
-
+	/**
+	 * @description 토큰의 복사본을 반환한다.
+	 * @returns 복사된 토큰
+	 */
+	clone() {
+		return new Token(structuredClone(this.#token));
+	}
 
 	#iterator(
 		token: Types.Token,
@@ -106,28 +108,28 @@ class Token {
 	) {
 		let stack: [string, Types.Token][][] = [Object.entries(token)];
 		let currentCtx: [string, Types.Token][] = stack[stack.length - 1]!;
-		let props: string[] = []
+		let props: string[] = [];
 
 		while (currentCtx.length) {
 			const [prop, token] = currentCtx.pop()!;
 
-			props.push(prop)
-			
-			callback(props, token)
+			props.push(prop);
+
+			callback(props, token);
 
 			if (!isTokenObj(token)) {
 				const item = Object.entries(token);
 
 				stack.push(item);
-				currentCtx = item
+				currentCtx = item;
 			} else {
-				props = props.slice(0, stack.length - 1)
+				props = props.slice(0, stack.length - 1);
 			}
 
 			if (currentCtx.length === 0) {
-				stack.pop()
-				currentCtx = stack[stack.length - 1] ?? []
-				props = props.slice(0, stack.length - 1)
+				stack.pop();
+				currentCtx = stack[stack.length - 1] ?? [];
+				props = props.slice(0, stack.length - 1);
 			}
 		}
 	}
@@ -149,8 +151,6 @@ class Token {
 			}
 		});
 	}
-
-	
 }
 
 export default Token;
