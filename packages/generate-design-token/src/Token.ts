@@ -9,6 +9,13 @@ import transformPropsToTokenRef from "./transformPropsToTokenRef";
 
 type Iteratee = (props: string[], token: Types.Token, self: Token) => boolean;
 
+/**
+ * token 필드를 업데이트하는 메서드와 복제하여 사용하는 메서드를 사용하고 있어 예상치 못한 이슈가 발생할 케이스가 있음.
+ * 개선이 필요한 상황.
+ * - 복사가 필요한 메서드에서는 부분적으로 deepClone을 통해 해결하고 있음.
+ * - 예) map 메서드에서 props가 참조값이 유지되어 반환값이 동일하게 처리되는 경우
+ */
+
 class Token {
 	#token: Types.Token;
 
@@ -29,7 +36,7 @@ class Token {
 		this.#iterator(this.#token, (props, token) => {
 			if (callback(props, token, this)) {
 				// props, token을 그대로 할당하면 객체의 참조가 유지됨으로 얕은 복사가 필요한 상황.
-				result = [props.slice(), { ...token }];
+				result = [...this.#clone<Types.TokenResult>([props, token])];
 			}
 		});
 
@@ -100,7 +107,22 @@ class Token {
 	 * @returns 복사된 토큰
 	 */
 	clone() {
-		return new Token(structuredClone(this.#token));
+		return new Token(this.#clone(this.#token));
+	}
+
+	/**
+	 * @description 토큰을 순회하여 주어진 콜백을 적용하고, 그 결과를 반환한다.
+	 * @param callback 토큰을 순회하는 콜백. 첫 번째 인자로 토큰의 경로를, 두 번째 인자로 토큰을 받는다.
+	 * @returns 주어진 콜백을 적용한 결과를 반환한다.
+	 */
+	map(callback: (props: string[], token: Types.Token) => Types.TokenResult) {
+		const result: Types.TokenResult[] = [];
+
+		this.#iterator(this.#clone(this.#token), (props, token) => {
+			result.push(callback(props, token));
+		});
+
+		return result;
 	}
 
 	getToken() {
@@ -120,7 +142,7 @@ class Token {
 
 			props.push(prop);
 
-			callback(props, token);
+			callback(this.#clone(props), token);
 
 			if (!isTokenObj(token)) {
 				const item = Object.entries(token);
@@ -155,6 +177,10 @@ class Token {
 				}
 			}
 		});
+	}
+
+	#clone<T>(value: T) {
+		return structuredClone(value);
 	}
 }
 

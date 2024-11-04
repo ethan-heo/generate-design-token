@@ -2,6 +2,7 @@ import { expect, it } from "vitest";
 import Token from "./Token";
 import * as Types from "./types";
 import transformPropsToTokenRef from "./transformPropsToTokenRef";
+import isTokenObj from "./isTokenObj";
 
 const TOKEN = {
 	color: {
@@ -126,6 +127,61 @@ it(`[Token.clone] 토큰을 복제한다`, () => {
 	)!;
 
 	expect(actual[1] === TOKEN.color.tertiary[1]).toBeFalsy();
+});
+
+it(`[Token.map] 토큰을 변환하여 반환한다.`, () => {
+	const TOKEN = {
+		color: {
+			tertiary: {
+				1: {
+					$type: "color",
+					$value: "#0000ff",
+				},
+			},
+		},
+	};
+	const token = new Token(TOKEN);
+	const expected = [
+		[
+			["color"],
+			{
+				tertiary: {
+					1: {
+						$type: "string",
+						$value: "1px solid {color.tertiary.1}",
+					},
+				},
+			},
+		],
+		[
+			["color", "tertiary"],
+			{
+				1: {
+					$type: "string",
+					$value: "1px solid {color.tertiary.1}",
+				},
+			},
+		],
+		[
+			["color", "tertiary", "1"],
+			{
+				$type: "string",
+				$value: "1px solid {color.tertiary.1}",
+			},
+		],
+	];
+
+	expect(
+		token.map((props, token) => {
+			if (isTokenObj(token)) {
+				token.$type = "string";
+				token.$value = "1px solid {color.tertiary.1}";
+				return [props, token];
+			}
+
+			return [props, token];
+		}),
+	).toStrictEqual(expected);
 });
 
 it(`토큰 유효성 검사를 진행한다.`, () => {
