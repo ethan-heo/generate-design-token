@@ -38,11 +38,15 @@ class UseCase1 extends UseCase<TransformedResult> {
 
 		return result;
 	}
-	protected findCases(baseToken: Token) {
+	protected findCases(baseToken: Token, referredTokens: Token[]) {
 		return baseToken.findAll((props, token) => {
-			return (
-				this.hasTokenRef(transformPropsToTokenRef(props)) && isTokenObj(token)
-			);
+			const tokenRef = transformPropsToTokenRef(props);
+
+			if (!this.hasTokenRef(tokenRef) || !isTokenObj(token)) {
+				return false;
+			}
+
+			return this.isTokenObjByTokens(tokenRef, referredTokens);
 		}) as TransformedResult[];
 	}
 }
