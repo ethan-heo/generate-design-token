@@ -2,59 +2,48 @@ import UseCase from "./UseCase.abstract";
 import * as Types from "../types";
 import isTokenObj from "../isTokenObj";
 import Token from "../Token";
-import { TransformedToken } from "./UseCase.types";
 import transformPropsToTokenRef from "../transformPropsToTokenRef";
 
 type TransformedResult = [string[], Types.TokenObj];
 
 class UseCase1 extends UseCase<TransformedResult> {
-	protected findCases(baseToken: Token) {
-		return baseToken.findAll((props, token, self) => {
-			const tokenRef = transformPropsToTokenRef(props);
-			return this.hasTokenRef(tokenRef) && isTokenObj(token);
-		}) as TransformedResult[];
-	}
-	protected transformTokens(
-		cases: TransformedResult[],
-		referredTokens: Token[],
-	) {
-		const transformedTokens: TransformedToken<TransformedResult>[] = [];
+	protected transformToken(
+		useCase: [string[], Types.TokenObj][],
+		referred: [string[], Types.TokenObj][],
+	): TransformedResult[] {
+		const result: TransformedResult[] = [];
 
-		for (const _case of cases) {
-			const foundReferredToken = this.findReferredToken(
-				transformPropsToTokenRef(_case[0]),
-				referredTokens,
-			);
+		for (const [useCaseProps, useCaseToken] of useCase) {
+			for (const [referredProps] of referred) {
+				result.push([
+					[
+						...useCaseProps.map((prop) => {
+							if (this.hasTokenRef(prop)) {
+								return referredProps[referredProps.length - 1];
+							}
 
-			if (!foundReferredToken) {
-				throw new Error(`Cannot find referred token: ${_case[0]}`);
+							return prop;
+						}),
+					],
+					{
+						...useCaseToken,
+						$value: this.updateTokenObjValue(
+							useCaseToken.$value as string,
+							referredProps,
+						),
+					},
+				]);
 			}
-
-			if (!isTokenObj(foundReferredToken[1])) {
-				throw new Error(`Not token object: ${foundReferredToken[0]}`);
-			}
-
-			const [referredProps, referredToken] = foundReferredToken;
-			const [caseProps, caseToken] = _case;
-			const replacingProp = referredProps.pop()!;
-			const transformedProps = caseProps.map((caseProp) =>
-				caseProp.replace(this.getTokenRef(caseProp), replacingProp),
-			);
-			const transformedToken = {
-				...caseToken,
-				$value: (caseToken.$value as string).replace(
-					`{$value}`,
-					referredToken.$value as string,
-				),
-			};
-
-			transformedTokens.push({
-				original: _case,
-				transformed: [transformedProps, transformedToken],
-			});
 		}
 
-		return transformedTokens;
+		return result;
+	}
+	protected findCases(baseToken: Token) {
+		return baseToken.findAll((props, token) => {
+			return (
+				this.hasTokenRef(transformPropsToTokenRef(props)) && isTokenObj(token)
+			);
+		}) as TransformedResult[];
 	}
 }
 

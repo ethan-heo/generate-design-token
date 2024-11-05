@@ -8,68 +8,49 @@ import { TransformedToken } from "./UseCase.types";
 type TransformedResult = [string[], Types.Token];
 
 class UseCase2 extends UseCase<TransformedResult> {
-	protected findCases(baseToken: Token): TransformedResult[] {
-		return baseToken.findAll((props, token) => {
-			return (
-				this.hasTokenRef(transformPropsToTokenRef(props)) && isTokenObj(token)
-			);
-		});
-	}
-
-	protected transformTokens(
-		cases: TransformedResult[],
-		referredTokens: Token[],
-	): TransformedToken<TransformedResult>[] {
-		const transformedTokens: TransformedToken<TransformedResult>[] = [];
-		const combineProps = (referredProps: string[], tokenObjProps: string[]) => {
-			return transformPropsToTokenRef([
-				...(referredProps.length > 1
-					? referredProps.slice(0, -1)
-					: [referredProps[0]]),
-				...tokenObjProps,
-			]);
+	protected transformToken(
+		useCase: [string[], Types.TokenObj][],
+		referred: [string[], Types.TokenObj][],
+	): TransformedResult[] {
+		const result: TransformedResult[] = [];
+		const getPropCountByTokenRef = (prop: string) => {
+			return this.getTokenRef(prop).replace(/[^.]/g, "").length + 1;
 		};
 
-		for (const _case of cases) {
-			const foundReferredToken = this.findReferredToken(
-				transformPropsToTokenRef(_case[0]),
-				referredTokens,
-			);
+		for (const [useCaseProps, useCaseToken] of useCase) {
+			for (const [referredProps] of referred) {
+				const firstProps = useCaseProps.slice(
+					0,
+					useCaseProps.findIndex(this.hasTokenRef),
+				);
+				const lastProps = referredProps.slice(
+					getPropCountByTokenRef(useCaseProps[useCaseProps.length - 1]),
+				);
 
-			if (!foundReferredToken) {
-				throw new Error(`Cannot find referred token: ${_case[0]}`);
+				result.push([
+					[...firstProps, ...lastProps],
+					{
+						...useCaseToken,
+						$value: this.updateTokenObjValue(
+							useCaseToken.$value as string,
+							referredProps,
+						),
+					},
+				]);
 			}
-
-			if (isTokenObj(foundReferredToken[1])) {
-				throw new Error(`Not token structure object: ${foundReferredToken[0]}`);
-			}
-
-			const transformedToken = new Token({});
-			const [caseProps, caseToken] = _case;
-			const [referredProps, referredToken] = foundReferredToken;
-			const tokenObjsInReferredToken = new Token(referredToken).findAll(
-				(_, token) => isTokenObj(token),
-			);
-			const { $value, $type, ...anything } = caseToken as Types.TokenObj;
-
-			for (const [props] of tokenObjsInReferredToken) {
-				transformedToken.add(props, {
-					...anything,
-					$type,
-					$value: ($value as string).replace(
-						`{$value}`,
-						`{${combineProps(referredProps, props)}}`,
-					),
-				});
-			}
-
-			transformedTokens.push({
-				original: _case,
-				transformed: [caseProps.slice(0, -1), transformedToken.getToken()],
-			});
 		}
 
-		return transformedTokens;
+		return result;
+	}
+	protected findCases(baseToken: Token): TransformedResult[] {
+		return baseToken.findAll((props, token) => {
+			const tokenRef = props.find(this.hasTokenRef);
+
+			if (!tokenRef) return false;
+
+			// 속성명에 토큰 참조값만 포함되어 있고 속성값이 토큰 객체일 때
+			return this.getTokenRef(tokenRef) === tokenRef && isTokenObj(token);
+		});
 	}
 }
 

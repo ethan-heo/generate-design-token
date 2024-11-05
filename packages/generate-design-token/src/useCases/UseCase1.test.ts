@@ -22,21 +22,29 @@ const Tokens = [
 it.each([
 	[
 		{
-			"border.{color.white}": {
+			"{color.white}": {
 				$type: "string",
 				$value: "1px solid {$value}",
 			},
 		},
-		[["border.white"], {
-			$type: "string",
-			$value: "1px solid white",
-		}]
+		[
+			["white"],
+			{
+				$type: "string",
+				$value: "1px solid {color.white}",
+			},
+		],
 	],
-] as [Types.Token, Types.TokenResult][])(`UseCase1. 속성 이름이 토큰 참조값이 포함되어 있고 속성 값이 토큰 객체인 경우`, (actual, expected) => {
-	const token = new Token(actual);
-	const case1 = new UseCase1();
+] as [Types.Token, Types.TokenResult][])(
+	`UseCase1. 속성 이름이 토큰 참조값이 포함되어 있고 속성 값이 토큰 객체인 경우`,
+	(actual, expected) => {
+		const token = new Token(actual);
+		const case1 = new UseCase1();
 
-	case1.transform(token, Tokens);
+		case1.transform(token, Tokens);
 
-	expect(token.find((props) => transformPropsToTokenRef(props) === "border.white")).toStrictEqual(expected);
-});
+		expect(
+			token.find((props) => transformPropsToTokenRef(props) === "white"),
+		).toStrictEqual(expected);
+	},
+);
