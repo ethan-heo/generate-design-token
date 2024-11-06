@@ -1,6 +1,7 @@
 {
 	"name": "generate-design-token",
 	"version": "1.0.0",
+	"private": false,
 	"keywords": [
 		"design token",
 		"design system"
