@@ -6,5 +6,6 @@
 	],
 	"commit": false,
 	"access": "public",
-	"baseBranch": "master"
+	"baseBranch": "master",
+	"ignore": ["website"]
 }
