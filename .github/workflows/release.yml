@@ -30,8 +30,8 @@ jobs:
         with:
           title: "chore: publish pkg"
           commit: "chore: publish pkg"
-          version: pnpm version
-          publish: pnpm publish
+          version: pnpm npm:version
+          publish: pnpm npm:publish
         env:
           GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

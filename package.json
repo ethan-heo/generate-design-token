@@ -5,8 +5,8 @@
 		"test:lib": "pnpm --filter generate-design-token test",
 		"build:web": "pnpm --filter website build",
 		"dev:web": "pnpm --filter website start",
-		"publish": "changeset publish",
-		"version": "changeset version"
+		"npm:publish": "changeset publish",
+		"npm:version": "changeset version"
 	},
 	"dependencies": {
 		"generate-design-token": "^1.0.0"
