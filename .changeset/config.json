@@ -1,0 +1,10 @@
+{
+	"$schema": "https://unpkg.com/@changesets/config@3.0.3/schema.json",
+	"changelog": [
+		"@changesets/changelog-github",
+		{ "repo": "ethan-heo/generate-design-token" }
+	],
+	"commit": false,
+	"access": "public",
+	"baseBranch": "master"
+}

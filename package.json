@@ -7,12 +7,15 @@
 		"build:lib": "yarn workspace generate-design-token build",
 		"test:lib": "yarn workspace generate-design-token test",
 		"build:web": "yarn workspace website build",
-		"dev:web": "yarn workspace website start"
+		"dev:web": "yarn workspace website start",
+		"publish": "changeset publish",
+		"version": "changeset version"
 	},
 	"dependencies": {
 		"generate-design-token": "^1.0.0"
 	},
 	"devDependencies": {
+		"@changesets/cli": "^2.27.9",
 		"typescript": "^5.6.3"
 	}
 }
