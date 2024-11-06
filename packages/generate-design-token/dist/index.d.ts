@@ -1,3 +1,12 @@
-import { Token } from "./generateToken.types";
-declare const generateDesignToken: (token: Token, baseTokens?: Token[]) => Token;
-export default generateDesignToken;
+type TokenObjValue = string | Record<string, string>;
+interface TokenObj {
+    [key: `$${string}`]: TokenObjValue;
+}
+interface TokenStructureObj {
+    [key: string]: TokenStructureObj | TokenObj;
+}
+type Token = TokenObj | TokenStructureObj;
+
+declare const generateDesignToken: (base: Token, raws: Token[]) => Token;
+
+export { generateDesignToken as default };
