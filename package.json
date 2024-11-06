@@ -1,13 +1,10 @@
 {
 	"private": true,
-	"workspaces": [
-		"packages/*"
-	],
 	"scripts": {
-		"build:lib": "yarn workspace generate-design-token build",
-		"test:lib": "yarn workspace generate-design-token test",
-		"build:web": "yarn workspace website build",
-		"dev:web": "yarn workspace website start",
+		"build:lib": "pnpm --filter generate-design-token build",
+		"test:lib": "pnpm --filter generate-design-token test",
+		"build:web": "pnpm --filter website build",
+		"dev:web": "pnpm --filter website start",
 		"publish": "changeset publish",
 		"version": "changeset version"
 	},
@@ -16,8 +13,6 @@
 	},
 	"devDependencies": {
 		"@changesets/changelog-github": "^0.5.0",
-		"@changesets/cli": "^2.27.9",
-		"typescript": "^5.6.3"
-	},
-	"version": "0.0.0"
+		"@changesets/cli": "^2.27.9"
+	}
 }
