@@ -8,5 +8,11 @@
 		"test:lib": "yarn workspace generate-design-token test",
 		"build:web": "yarn workspace website build",
 		"dev:web": "yarn workspace website start"
+	},
+	"dependencies": {
+		"generate-design-token": "^1.0.0"
+	},
+	"devDependencies": {
+		"typescript": "^5.6.3"
 	}
 }

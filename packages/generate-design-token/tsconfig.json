@@ -6,8 +6,6 @@
 		"moduleResolution": "Bundler",
 		"noImplicitAny": false,
 		"strict": true,
-		"declaration": true,
-		"outDir": "dist",
 		"sourceMap": true
 	},
 	"include": ["./src/index.ts"],
