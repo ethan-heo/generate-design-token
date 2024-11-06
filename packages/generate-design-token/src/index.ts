@@ -54,3 +54,5 @@ const generateDesignToken = (base: Types.Token, raws: Types.Token[]) => {
 };
 
 export default generateDesignToken;
+
+export * from "./types";
