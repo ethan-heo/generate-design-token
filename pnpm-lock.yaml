@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      generate-design-token:
-        specifier: ^1.0.0
-        version: 1.0.0
     devDependencies:
       '@changesets/changelog-github':
         specifier: ^0.5.0
@@ -676,10 +672,6 @@ packages:
 
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
-
-  generate-design-token@1.0.0:
-    resolution: {integrity: sha512-cmyD0kHJhTZep/3asPN5UNONi5ekYMoKsAr5dI/nF3oXgLZ6bNKdfawHhWf/Ms+IF0ZZKBlfkafXiBuBecOtmQ==}
-    engines: {node: '>=18.0.0'}
 
   get-func-name@2.0.2:
     resolution: {integrity: sha512-8vXOvuE167CtIc3OyItco7N/dpRtBbYOsPsXCz7X/PMnlGjYjSGuZJgM1Y7mmew7BKf9BqvLX2tnOVy1BBUsxQ==}
@@ -1860,8 +1852,6 @@ snapshots:
     optional: true
 
   function-bind@1.1.2: {}
-
-  generate-design-token@1.0.0: {}
 
   get-func-name@2.0.2: {}
 
