@@ -15,7 +15,7 @@ export default [
 			},
 			{
 				file: OUTPUT_PATH + "/index.es.js",
-				format: "es",
+				format: "esm",
 				sourcemap: true,
 			},
 		],
@@ -25,7 +25,7 @@ export default [
 		input: INPUT_PATH + "/index.ts",
 		output: {
 			file: OUTPUT_PATH + "/index.d.ts",
-			format: "es",
+			format: "esm",
 		},
 		plugins: [dts()],
 	},
