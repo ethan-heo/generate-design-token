@@ -11,22 +11,11 @@ const generateDesignToken = (base: Types.Token, raws: Types.Token[]) => {
 	const tokens = raws.map((raw) => new Token(raw));
 
 	useCases.transform(baseToken, tokens);
+
 	// parse token
-
-	const tokenObjs = baseToken.findAll((_, token) => isTokenObj(token)) as [
-		string[],
-		Types.TokenObj,
-	][];
-
-	for (const [_, tokenObj] of tokenObjs) {
-		const matchedTokenRef = (tokenObj.$value as string).match(TOKEN_REF_REGEXP);
-
-		if (!matchedTokenRef) {
-			continue;
-		}
-
-		const tokenRef = matchedTokenRef[0].slice(1, -1);
+	const parser = (matcher: string) => {
 		let referred: [string[], Types.TokenObj] | undefined;
+		const tokenRef = matcher.slice(1, -1);
 
 		for (const token of tokens) {
 			referred = token.find(
@@ -38,15 +27,18 @@ const generateDesignToken = (base: Types.Token, raws: Types.Token[]) => {
 			}
 		}
 
-		if (!referred) {
-			continue;
-		}
+		return referred ? (referred[1].$value as string) : tokenRef;
+	};
 
-		const [_, referredToken] = referred;
+	const tokenObjs = baseToken.findAll((_, token) => isTokenObj(token)) as [
+		string[],
+		Types.TokenObj,
+	][];
 
+	for (const [_, tokenObj] of tokenObjs) {
 		tokenObj.$value = (tokenObj.$value as string).replace(
-			matchedTokenRef[0],
-			referredToken.$value as string,
+			new RegExp(TOKEN_REF_REGEXP, "g"),
+			parser,
 		);
 	}
 

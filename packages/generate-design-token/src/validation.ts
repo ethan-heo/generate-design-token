@@ -4,7 +4,6 @@
  */
 export const shouldHaveRequiredProp = (value: {}): boolean => {
 	const MUST_HAVE_PROPERTIES = ["$type", "$value"];
-
 	return MUST_HAVE_PROPERTIES.every((prop) => prop in value);
 };
 

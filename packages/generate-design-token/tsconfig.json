@@ -6,7 +6,8 @@
 		"moduleResolution": "Bundler",
 		"noImplicitAny": false,
 		"strict": true,
-		"sourceMap": true
+		"sourceMap": true,
+		"resolveJsonModule": true
 	},
 	"include": ["./src/index.ts"],
 	"exclude": ["dist", "build", "node_modules"]
