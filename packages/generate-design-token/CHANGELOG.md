@@ -1,5 +1,11 @@
 # generate-design-token
 
+## 2.1.0
+
+### Minor Changes
+
+- [`ef4818a`](https://github.com/ethan-heo/generate-design-token/commit/ef4818a6dcf1a6c58f1101a211e6d582ab59c9c4) Thanks [@ethan-heo](https://github.com/ethan-heo)! - 토큰에 대한 케이스가 제대로 변환되지 않는 이슈를 해결한다
+
 ## 2.0.1
 
 ### Patch Changes
