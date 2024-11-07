@@ -47,4 +47,6 @@ const generateDesignToken = (base: Types.Token, raws: Types.Token[]) => {
 
 export default generateDesignToken;
 
-export * from "./types";
+export * as GDTTypes from "./types";
+
+export { default as Token } from "./Token";

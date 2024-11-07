@@ -1,5 +1,7 @@
 'use strict';
 
+Object.defineProperty(exports, '__esModule', { value: true });
+
 /**
  * @description 토큰 객체의 필수 속성이 포함되어 있는지 확인한다
  * @returns
@@ -144,7 +146,7 @@ class Token {
         return this.#token;
     }
     #iterator(token, callback) {
-        let stack = [Object.entries(token)];
+        const stack = [Object.entries(token)];
         let currentCtx = stack[stack.length - 1];
         let props = [];
         while (currentCtx.length) {
@@ -157,12 +159,14 @@ class Token {
                 currentCtx = item;
             }
             else {
-                props = props.slice(0, stack.length - 1);
+                props.pop();
             }
             if (currentCtx.length === 0) {
-                stack.pop();
+                while (stack.length > 0 && stack.at(-1).length === 0) {
+                    stack.pop();
+                    props.pop();
+                }
                 currentCtx = stack[stack.length - 1] ?? [];
-                props = props.slice(0, stack.length - 1);
             }
         }
     }
@@ -195,31 +199,23 @@ class UseCase {
      * @param referredTokens 기본 토큰에서 참조하는 토큰
      */
     transform(baseToken, referredTokens) {
-        const cases = this.findCases(baseToken, referredTokens);
-        if (cases.length === 0)
+        const useCases = this.findUseCases(baseToken, referredTokens);
+        if (useCases.length === 0)
             return;
         const transformedTokens = [];
-        const findTokenObjs = (tokenResult) => {
-            const [resultProps, resultToken] = tokenResult;
-            if (isTokenObj(resultToken))
-                return [[resultProps, resultToken]];
-            return new Token(resultToken)
-                .findAll((_, token) => isTokenObj(token))
-                .map(([props, token]) => [[...resultProps, ...props], token]);
-        };
-        for (const _case of cases) {
-            const foundReferredToken = this.findReferredToken(transformPropsToTokenRef(_case[0]), referredTokens);
+        for (const useCase of useCases) {
+            const foundReferredToken = this.findReferredToken(transformPropsToTokenRef(useCase[0]), referredTokens);
             if (!foundReferredToken) {
-                throw new Error(`Cannot find referred token: ${_case[0]}`);
+                throw new Error(`정의되지 않은 토큰입니다: ${useCase[0]}`);
             }
             transformedTokens.push({
-                original: _case,
-                transformed: this.transformToken(findTokenObjs(_case), findTokenObjs(foundReferredToken)),
+                useCase,
+                transformed: this.transformToken(useCase, foundReferredToken),
             });
         }
-        for (const { original, transformed } of transformedTokens) {
-            const [originalProps] = original;
-            baseToken.delete(originalProps);
+        for (const { useCase, transformed } of transformedTokens) {
+            const [useCaseProps] = useCase;
+            baseToken.delete(useCaseProps);
             for (const [transformedProps, transformedToken] of transformed) {
                 baseToken.add(transformedProps, transformedToken);
             }
@@ -237,12 +233,12 @@ class UseCase {
     /**
      * 주어진 토큰 이름에서 토큰 참조를 추출하고 제공된 토큰 목록에서 검색하여 참조된 토큰을 찾습니다.
      *
-     * @param tokenName - 참조를 추출할 토큰 이름
+     * @param prop - 참조를 추출할 토큰 이름
      * @param tokens - 검색할 토큰 목록
      * @returns 참조된 토큰을 찾으면 T 타입의 토큰을 반환하고, 그렇지 않으면 undefined를 반환합니다.
      */
-    findReferredToken(tokenName, tokens) {
-        const tokenRef = this.getTokenRef(tokenName).slice(1, -1);
+    findReferredToken(prop, tokens) {
+        const tokenRef = this.getTokenRef(prop).slice(1, -1);
         let result;
         for (const token of tokens) {
             const foundToken = token.find((props) => transformPropsToTokenRef(props) === tokenRef);
@@ -256,11 +252,11 @@ class UseCase {
     /**
      * 정규식을 사용하여 주어진 토큰 이름에서 토큰 참조를 추출하고 반환합니다.
      *
-     * @param tokenName 참조를 추출할 토큰 이름
-     * @returns 추출된 토큰 참조를 문자열로 반환합니다.
+     * @param prop 참조를 추출할 토큰 이름
+     * @returns 추출된 토큰 참조를 문자열로 반환합니다. ex) {color.primary}
      */
-    getTokenRef(tokenName) {
-        return tokenName.match(TOKEN_REF_REGEXP)[0];
+    getTokenRef(prop) {
+        return prop.match(TOKEN_REF_REGEXP)[0];
     }
     /**
      * 토큰 객체 값을 업데이트합니다.
@@ -287,33 +283,24 @@ class UseCase {
 class UseCase1 extends UseCase {
     transformToken(useCase, referred) {
         const result = [];
-        for (const [useCaseProps, useCaseToken] of useCase) {
-            for (const [referredProps] of referred) {
-                result.push([
-                    [
-                        ...useCaseProps.map((prop) => {
-                            if (this.hasTokenRef(prop)) {
-                                return referredProps[referredProps.length - 1];
-                            }
-                            return prop;
-                        }),
-                    ],
-                    {
-                        ...useCaseToken,
-                        $value: this.updateTokenObjValue(useCaseToken.$value, referredProps),
-                    },
-                ]);
-            }
-        }
+        const [_, useCaseToken] = useCase;
+        const [referredProps] = referred;
+        result.push([
+            [referredProps.at(-1)],
+            {
+                ...useCaseToken,
+                $value: this.updateTokenObjValue(useCaseToken.$value, referredProps),
+            },
+        ]);
         return result;
     }
-    findCases(baseToken, referredTokens) {
+    findUseCases(baseToken, referredTokens) {
         return baseToken.findAll((props, token) => {
-            const tokenRef = transformPropsToTokenRef(props);
-            if (!this.hasTokenRef(tokenRef) || !isTokenObj(token)) {
+            const lastProp = props.at(-1);
+            if (!this.hasTokenRef(lastProp) || !isTokenObj(token)) {
                 return false;
             }
-            return this.isTokenObjByTokens(tokenRef, referredTokens);
+            return this.isTokenObjByTokens(lastProp, referredTokens);
         });
     }
 }
@@ -321,31 +308,43 @@ class UseCase1 extends UseCase {
 class UseCase2 extends UseCase {
     transformToken(useCase, referred) {
         const result = [];
-        const getPropCountByTokenRef = (prop) => {
-            return this.getTokenRef(prop).replace(/[^.]/g, "").length + 1;
-        };
-        for (const [useCaseProps, useCaseToken] of useCase) {
-            for (const [referredProps] of referred) {
-                const firstProps = useCaseProps.slice(0, useCaseProps.findIndex(this.hasTokenRef));
-                const lastProps = referredProps.slice(getPropCountByTokenRef(useCaseProps[useCaseProps.length - 1]));
-                result.push([
-                    [...firstProps, ...lastProps],
-                    {
-                        ...useCaseToken,
-                        $value: this.updateTokenObjValue(useCaseToken.$value, referredProps),
-                    },
-                ]);
+        const [useCaseProps, useCaseToken] = useCase;
+        const [referredProps, referredToken] = referred;
+        const referredTokenObjs = new Token(referredToken).findAll((_, token) => isTokenObj(token));
+        const getNewProps = (useCaseProps, referredProps) => {
+            const result = [];
+            for (const useCaseProp of useCaseProps) {
+                if (this.hasTokenRef(useCaseProp)) {
+                    result.push(...referredProps);
+                    break;
+                }
+                else {
+                    result.push(useCaseProp);
+                }
             }
+            return result;
+        };
+        for (const [referredTokenProps] of referredTokenObjs) {
+            result.push([
+                getNewProps(useCaseProps, referredTokenProps),
+                {
+                    ...useCaseToken,
+                    $value: this.updateTokenObjValue(useCaseToken.$value, [
+                        ...referredProps,
+                        ...referredTokenProps,
+                    ]),
+                },
+            ]);
         }
         return result;
     }
-    findCases(baseToken) {
+    findUseCases(baseToken, referredTokens) {
         return baseToken.findAll((props, token) => {
-            const tokenRef = props.find(this.hasTokenRef);
-            if (!tokenRef)
+            const lastProp = props.at(-1);
+            if (!this.hasTokenRef(lastProp) || !isTokenObj(token)) {
                 return false;
-            // 속성명에 토큰 참조값만 포함되어 있고 속성값이 토큰 객체일 때
-            return this.getTokenRef(tokenRef) === tokenRef && isTokenObj(token);
+            }
+            return !this.isTokenObjByTokens(lastProp, referredTokens);
         });
     }
 }
@@ -353,30 +352,31 @@ class UseCase2 extends UseCase {
 class UseCase3 extends UseCase {
     transformToken(useCase, referred) {
         const result = [];
-        for (const [useCaseProps, useCaseToken] of useCase) {
-            for (const [referredProps] of referred) {
-                result.push([
-                    useCaseProps.map((prop) => {
-                        if (this.hasTokenRef(prop)) {
-                            return prop.replace(this.getTokenRef(prop), referredProps[referredProps.length - 1]);
-                        }
-                        return prop;
-                    }),
-                    {
-                        ...useCaseToken,
-                        $value: this.updateTokenObjValue(useCaseToken.$value, referredProps),
-                    },
-                ]);
-            }
+        const [useCaseProps, useCaseToken] = useCase;
+        const [referredProps] = referred;
+        const useCaseTokenObjs = new Token(useCaseToken).findAll((_, token) => isTokenObj(token));
+        for (const [useCaseTokenObjProps, useCaseTokenObj] of useCaseTokenObjs) {
+            result.push([
+                [
+                    ...useCaseProps.filter((prop) => !this.hasTokenRef(prop)),
+                    referredProps.at(-1),
+                    ...useCaseTokenObjProps,
+                ],
+                {
+                    ...useCaseTokenObj,
+                    $value: this.updateTokenObjValue(useCaseTokenObj.$value, referredProps),
+                },
+            ]);
         }
         return result;
     }
-    findCases(baseToken, referredTokens) {
+    findUseCases(baseToken, referredTokens) {
         return baseToken.findAll((props, token) => {
-            const tokenRef = transformPropsToTokenRef(props);
-            return (this.hasTokenRef(tokenRef) &&
-                !isTokenObj(token) &&
-                this.isTokenObjByTokens(tokenRef, referredTokens));
+            const lastProp = props.at(-1);
+            if (!this.hasTokenRef(lastProp) || isTokenObj(token)) {
+                return false;
+            }
+            return this.isTokenObjByTokens(lastProp, referredTokens);
         });
     }
 }
@@ -384,27 +384,37 @@ class UseCase3 extends UseCase {
 class UseCase4 extends UseCase {
     transformToken(useCase, referred) {
         const result = [];
-        for (const [useCaseProps, useCaseToken] of useCase) {
-            for (const [referredProps] of referred) {
+        const [useCaseProps, useCaseToken] = useCase;
+        const [referredProps, referredToken] = referred;
+        const referredTokenObjs = new Token(referredToken).findAll((_, token) => isTokenObj(token));
+        const useCaseTokenObjs = new Token(useCaseToken).findAll((_, token) => isTokenObj(token));
+        for (const [useCaseTokenObjProps, useCaseTokenObj] of useCaseTokenObjs) {
+            for (const [referredTokenObjProps] of referredTokenObjs) {
                 result.push([
-                    useCaseProps.map((prop) => {
-                        if (this.hasTokenRef(prop)) {
-                            return prop.replace(this.getTokenRef(prop), referredProps[referredProps.length - 1]);
-                        }
-                        return prop;
-                    }),
+                    [
+                        ...useCaseProps.filter((prop) => !this.hasTokenRef(prop)),
+                        ...referredTokenObjProps,
+                        ...useCaseTokenObjProps,
+                    ],
                     {
-                        ...useCaseToken,
-                        $value: this.updateTokenObjValue(useCaseToken.$value, referredProps),
+                        ...useCaseTokenObj,
+                        $value: this.updateTokenObjValue(useCaseTokenObj.$value, [
+                            ...referredProps,
+                            ...referredTokenObjProps,
+                        ]),
                     },
                 ]);
             }
         }
         return result;
     }
-    findCases(baseToken) {
+    findUseCases(baseToken, referredTokens) {
         return baseToken.findAll((props, token) => {
-            return (this.hasTokenRef(transformPropsToTokenRef(props)) && !isTokenObj(token));
+            const lastProp = props.at(-1);
+            if (!this.hasTokenRef(lastProp) || isTokenObj(token)) {
+                return false;
+            }
+            return !this.isTokenObjByTokens(lastProp, referredTokens);
         });
     }
 }
@@ -419,34 +429,35 @@ class UseCases {
     }
 }
 
+var types = /*#__PURE__*/Object.freeze({
+    __proto__: null
+});
+
 const generateDesignToken = (base, raws) => {
     const baseToken = new Token(base);
     const useCases = new UseCases();
     const tokens = raws.map((raw) => new Token(raw));
     useCases.transform(baseToken, tokens);
     // parse token
-    const tokenObjs = baseToken.findAll((_, token) => isTokenObj(token));
-    for (const [_, tokenObj] of tokenObjs) {
-        const matchedTokenRef = tokenObj.$value.match(TOKEN_REF_REGEXP);
-        if (!matchedTokenRef) {
-            continue;
-        }
-        const tokenRef = matchedTokenRef[0].slice(1, -1);
+    const parser = (matcher) => {
         let referred;
+        const tokenRef = matcher.slice(1, -1);
         for (const token of tokens) {
             referred = token.find((props) => transformPropsToTokenRef(props) === tokenRef);
             if (referred) {
                 break;
             }
         }
-        if (!referred) {
-            continue;
-        }
-        const [_, referredToken] = referred;
-        tokenObj.$value = tokenObj.$value.replace(matchedTokenRef[0], referredToken.$value);
+        return referred ? referred[1].$value : tokenRef;
+    };
+    const tokenObjs = baseToken.findAll((_, token) => isTokenObj(token));
+    for (const [_, tokenObj] of tokenObjs) {
+        tokenObj.$value = tokenObj.$value.replace(new RegExp(TOKEN_REF_REGEXP, "g"), parser);
     }
     return baseToken.getToken();
 };
 
-module.exports = generateDesignToken;
+exports.GDTTypes = types;
+exports.Token = Token;
+exports.default = generateDesignToken;
 //# sourceMappingURL=index.js.map
