@@ -82,8 +82,8 @@ importers:
         specifier: ^5.13.1
         version: 5.13.1(gatsby-plugin-sharp@5.13.1(gatsby@5.13.7(babel-eslint@10.1.0(eslint@7.32.0))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(type-fest@0.21.3)(typescript@5.6.3))(graphql@16.9.0))(gatsby@5.13.7(babel-eslint@10.1.0(eslint@7.32.0))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(type-fest@0.21.3)(typescript@5.6.3))(graphql@16.9.0)
       generate-design-token:
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: workspace:*
+        version: link:../generate-design-token
       i18next:
         specifier: ^23.11.5
         version: 23.16.4
@@ -3554,10 +3554,6 @@ packages:
 
   generate-design-token@1.0.0:
     resolution: {integrity: sha512-cmyD0kHJhTZep/3asPN5UNONi5ekYMoKsAr5dI/nF3oXgLZ6bNKdfawHhWf/Ms+IF0ZZKBlfkafXiBuBecOtmQ==}
-    engines: {node: '>=18.0.0'}
-
-  generate-design-token@2.0.0:
-    resolution: {integrity: sha512-NlafMRE7zi1KW/3Bbk/YAfYnZqkOtt/IsaguAcM5FVzV/YCJn+IwCsXOC1xXVfcKAIXlS+nIXonsq6zQWPPrNQ==}
     engines: {node: '>=18.0.0'}
 
   gensync@1.0.0-beta.2:
@@ -10968,8 +10964,6 @@ snapshots:
       - webpack-plugin-serve
 
   generate-design-token@1.0.0: {}
-
-  generate-design-token@2.0.0: {}
 
   gensync@1.0.0-beta.2: {}
 
