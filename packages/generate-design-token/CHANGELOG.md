@@ -1,5 +1,11 @@
 # generate-design-token
 
+## 2.1.1
+
+### Patch Changes
+
+- [`ff51f88`](https://github.com/ethan-heo/generate-design-token/commit/ff51f884b0cc45ca1d155515be96534a16c18b40) Thanks [@ethan-heo](https://github.com/ethan-heo)! - Token 클래스를 사용할 수 있도록 구성한다
+
 ## 2.1.0
 
 ### Minor Changes
