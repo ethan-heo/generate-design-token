@@ -1,6 +1,8 @@
 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
+var types = /*#__PURE__*/Object.freeze({
+    __proto__: null
+});
 
 /**
  * @description 토큰 객체의 필수 속성이 포함되어 있는지 확인한다
@@ -429,10 +431,6 @@ class UseCases {
     }
 }
 
-var types = /*#__PURE__*/Object.freeze({
-    __proto__: null
-});
-
 const generateDesignToken = (base, raws) => {
     const baseToken = new Token(base);
     const useCases = new UseCases();
@@ -459,5 +457,5 @@ const generateDesignToken = (base, raws) => {
 
 exports.GDTTypes = types;
 exports.Token = Token;
-exports.default = generateDesignToken;
+exports.generateDesignToken = generateDesignToken;
 //# sourceMappingURL=index.js.map

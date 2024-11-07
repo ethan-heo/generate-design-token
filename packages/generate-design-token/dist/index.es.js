@@ -1,3 +1,7 @@
+var types = /*#__PURE__*/Object.freeze({
+    __proto__: null
+});
+
 /**
  * @description 토큰 객체의 필수 속성이 포함되어 있는지 확인한다
  * @returns
@@ -425,10 +429,6 @@ class UseCases {
     }
 }
 
-var types = /*#__PURE__*/Object.freeze({
-    __proto__: null
-});
-
 const generateDesignToken = (base, raws) => {
     const baseToken = new Token(base);
     const useCases = new UseCases();
@@ -453,5 +453,5 @@ const generateDesignToken = (base, raws) => {
     return baseToken.getToken();
 };
 
-export { types as GDTTypes, Token, generateDesignToken as default };
+export { types as GDTTypes, Token, generateDesignToken };
 //# sourceMappingURL=index.es.js.map

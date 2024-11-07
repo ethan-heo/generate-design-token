@@ -66,4 +66,4 @@ declare class Token {
 
 declare const generateDesignToken: (base: Token$1, raws: Token$1[]) => Token$1;
 
-export { types as GDTTypes, Token, generateDesignToken as default };
+export { types as GDTTypes, Token, generateDesignToken };
