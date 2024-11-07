@@ -1,5 +1,11 @@
 # generate-design-token
 
+## 2.1.2
+
+### Patch Changes
+
+- [`719e6b0`](https://github.com/ethan-heo/generate-design-token/commit/719e6b0e049c6eee4e00e9a1314201ddafa5edce) Thanks [@ethan-heo](https://github.com/ethan-heo)! - 내보내기 형식을 변경한다
+
 ## 2.1.1
 
 ### Patch Changes
