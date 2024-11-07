@@ -3,8 +3,6 @@
 	"scripts": {
 		"build:lib": "pnpm --filter generate-design-token build",
 		"test:lib": "pnpm --filter generate-design-token test",
-		"build:web": "pnpm --filter website build",
-		"dev:web": "pnpm --filter website start",
 		"npm:publish": "changeset publish",
 		"npm:version": "changeset version"
 	},
