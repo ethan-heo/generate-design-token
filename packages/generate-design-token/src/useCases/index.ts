@@ -6,7 +6,7 @@ import UseCase3 from "./UseCase3";
 import UseCase4 from "./UseCase4";
 
 class UseCases {
-	#useCases: UseCase<any>[];
+	#useCases: UseCase<any, any>[];
 	constructor() {
 		this.#useCases = [UseCase1, UseCase2, UseCase3, UseCase4].map(
 			(UseCase) => new UseCase(),

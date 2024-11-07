@@ -1,50 +1,56 @@
 import UseCase from "./UseCase.abstract";
 import * as Types from "../types";
 import Token from "../Token";
-import transformPropsToTokenRef from "../transformPropsToTokenRef";
 import isTokenObj from "../isTokenObj";
 
-type TransformedResult = [string[], Types.Token];
+type UseCaseType = [string[], Types.Token];
+type ReferredType = [string[], Types.Token];
 
-class UseCase4 extends UseCase<TransformedResult> {
+class UseCase4 extends UseCase<UseCaseType, ReferredType> {
 	protected transformToken(
-		useCase: [string[], Types.TokenObj][],
-		referred: [string[], Types.TokenObj][],
-	): TransformedResult[] {
-		const result: TransformedResult[] = [];
+		useCase: UseCaseType,
+		referred: ReferredType,
+	): Types.TokenResult[] {
+		const result: Types.TokenResult[] = [];
+		const [useCaseProps, useCaseToken] = useCase;
+		const [referredProps, referredToken] = referred;
+		const referredTokenObjs = new Token(referredToken).findAll((_, token) =>
+			isTokenObj(token),
+		) as [string[], Types.TokenObj][];
+		const useCaseTokenObjs = new Token(useCaseToken).findAll((_, token) =>
+			isTokenObj(token),
+		) as [string[], Types.TokenObj][];
 
-		for (const [useCaseProps, useCaseToken] of useCase) {
-			for (const [referredProps] of referred) {
+		for (const [useCaseTokenObjProps, useCaseTokenObj] of useCaseTokenObjs) {
+			for (const [referredTokenObjProps] of referredTokenObjs) {
 				result.push([
-					useCaseProps.map((prop) => {
-						if (this.hasTokenRef(prop)) {
-							return prop.replace(
-								this.getTokenRef(prop),
-								referredProps[referredProps.length - 1],
-							);
-						}
-
-						return prop;
-					}),
+					[
+						...useCaseProps.filter((prop) => !this.hasTokenRef(prop)),
+						...referredTokenObjProps,
+						...useCaseTokenObjProps,
+					],
 					{
-						...useCaseToken,
-						$value: this.updateTokenObjValue(
-							useCaseToken.$value as string,
-							referredProps,
-						),
+						...useCaseTokenObj,
+						$value: this.updateTokenObjValue(useCaseTokenObj.$value as string, [
+							...referredProps,
+							...referredTokenObjProps,
+						]),
 					},
 				]);
 			}
 		}
-
 		return result;
 	}
-	protected findCases(baseToken: Token): TransformedResult[] {
+	protected findUseCases(baseToken: Token, referredTokens: Token[]) {
 		return baseToken.findAll((props, token) => {
-			return (
-				this.hasTokenRef(transformPropsToTokenRef(props)) && !isTokenObj(token)
-			);
-		});
+			const lastProp = props.at(-1)!;
+
+			if (!this.hasTokenRef(lastProp) || isTokenObj(token)) {
+				return false;
+			}
+
+			return !this.isTokenObjByTokens(lastProp, referredTokens);
+		}) as UseCaseType[];
 	}
 }
 
