@@ -133,7 +133,7 @@ class Token {
 		token: Types.Token,
 		callback: (props: string[], token: Types.Token) => void,
 	) {
-		let stack: [string, Types.Token][][] = [Object.entries(token)];
+		const stack: [string, Types.Token][][] = [Object.entries(token)];
 		let currentCtx: [string, Types.Token][] = stack[stack.length - 1]!;
 		let props: string[] = [];
 
@@ -150,13 +150,16 @@ class Token {
 				stack.push(item);
 				currentCtx = item;
 			} else {
-				props = props.slice(0, stack.length - 1);
+				props.pop();
 			}
 
 			if (currentCtx.length === 0) {
-				stack.pop();
+				while (stack.length > 0 && stack.at(-1)!.length === 0) {
+					stack.pop();
+					props.pop();
+				}
+
 				currentCtx = stack[stack.length - 1] ?? [];
-				props = props.slice(0, stack.length - 1);
 			}
 		}
 	}
