@@ -1,4 +1,4 @@
-import generateDesignToken from ".";
+import { generateDesignToken } from ".";
 import { expect, it } from "vitest";
 import baseToken from "./_mocks/baseToken.json";
 import referredToken from "./_mocks/referredToken.json";
