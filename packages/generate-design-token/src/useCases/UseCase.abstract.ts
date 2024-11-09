@@ -1,13 +1,9 @@
-import * as Types from "../types";
-import Token from "../Token";
+import Token, { TokenResult } from "../Token";
 import { TOKEN_REF_REGEXP } from "../regexp";
 import transformPropsToTokenRef from "../transformPropsToTokenRef";
 import isTokenObj from "../isTokenObj";
 
-abstract class UseCase<
-	UC extends Types.TokenResult,
-	Ref extends Types.TokenResult,
-> {
+abstract class UseCase<UC extends TokenResult, Ref extends TokenResult> {
 	/**
 	 * 참조 토큰에서 기본 토큰과 동일한 이름을 가진 토큰으로 대체합니다.
 	 *
@@ -21,7 +17,7 @@ abstract class UseCase<
 
 		const transformedTokens: {
 			useCase: UC;
-			transformed: Types.TokenResult[];
+			transformed: TokenResult[];
 		}[] = [];
 
 		for (const useCase of useCases) {
@@ -51,10 +47,7 @@ abstract class UseCase<
 		}
 	}
 
-	protected abstract transformToken(
-		useCase: UC,
-		referred: Ref,
-	): Types.TokenResult[];
+	protected abstract transformToken(useCase: UC, referred: Ref): TokenResult[];
 
 	protected abstract findUseCases(
 		baseToken: Token,

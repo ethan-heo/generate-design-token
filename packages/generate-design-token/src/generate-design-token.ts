@@ -14,13 +14,13 @@ const generateDesignToken = (base: Types.Token, raws: Types.Token[]) => {
 
 	// parse token
 	const parser = (matcher: string) => {
-		let referred: [string[], Types.TokenObj] | undefined;
+		let referred: [string[], Types.TokenObjs] | undefined;
 		const tokenRef = matcher.slice(1, -1);
 
 		for (const token of tokens) {
 			referred = token.find(
 				(props) => transformPropsToTokenRef(props) === tokenRef,
-			) as [string[], Types.TokenObj];
+			) as [string[], Types.TokenObjs];
 
 			if (referred) {
 				break;
@@ -32,7 +32,7 @@ const generateDesignToken = (base: Types.Token, raws: Types.Token[]) => {
 
 	const tokenObjs = baseToken.findAll((_, token) => isTokenObj(token)) as [
 		string[],
-		Types.TokenObj,
+		Types.TokenObjs,
 	][];
 
 	for (const [_, tokenObj] of tokenObjs) {

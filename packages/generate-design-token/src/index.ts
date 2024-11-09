@@ -1,4 +1,4 @@
-export * as GDTTypes from "./types";
+export * as GDTTypes from "./types/token-objs.types";
 
 export { default as Token } from "./Token";
 

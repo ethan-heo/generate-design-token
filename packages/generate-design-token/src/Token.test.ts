@@ -21,21 +21,7 @@ const TOKEN = {
 			},
 		},
 	},
-	border: {
-		small: {
-			$type: "string",
-			$value: "1px solid #ff0000",
-		},
-		medium: {
-			$type: "string",
-			$value: "2px solid #00ff00",
-		},
-		large: {
-			$type: "string",
-			$value: "3px solid #0000ff",
-		},
-	},
-};
+} as const;
 
 it(`[Token.find] 특정 조건에 맞는 토큰을 찾아 반환한다.`, () => {
 	const token = new Token(TOKEN);
@@ -203,7 +189,7 @@ it(`토큰 유효성 검사를 진행한다.`, () => {
 					$description: "#ff0000",
 				},
 			},
-		});
+		} as unknown as Types.TokenGroup);
 	}).toThrowError();
 	expect(() => {
 		new Token({
@@ -212,7 +198,7 @@ it(`토큰 유효성 검사를 진행한다.`, () => {
 					$type: "color",
 					$value: "#ff0000",
 					description: "color",
-				} as Types.TokenObj,
+				} as Types.TokenObjs,
 			},
 		});
 	}).not.toThrowError();

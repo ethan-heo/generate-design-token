@@ -1,5 +1,6 @@
 import { expect, it } from "vitest";
-import Token from "../Token";
+import Token, { TokenResult } from "../Token";
+import * as Types from "../types";
 import UseCase3 from "./UseCase3";
 import isTokenObj from "../isTokenObj";
 
@@ -8,14 +9,14 @@ const Tokens = [
 		color: {
 			white: {
 				$type: "color",
-				$value: "white",
+				$value: "#ffffff",
 			},
 			black: {
 				$type: "color",
-				$value: "black",
+				$value: "#000000",
 			},
 		},
-	},
+	} as Types.Token,
 ].map((token) => new Token(token));
 
 it.each([
@@ -75,7 +76,7 @@ it.each([
 			],
 		],
 	],
-])(
+] as unknown as [Types.AnyToken, TokenResult[]][])(
 	`UseCase3.transformTokens() should transform tokens correctly`,
 	(baseToken, expected) => {
 		const token = new Token(baseToken);
