@@ -1,11 +1,11 @@
 import * as Types from "./types";
 import {
-	shouldHaveDollarPrefix,
 	shouldNotHaveDollarPrefix,
 	shouldHaveRequiredProp,
 } from "./validation";
 import isTokenObj from "./isTokenObj";
 import transformPropsToTokenRef from "./transformPropsToTokenRef";
+import checkType from "./checkType";
 
 export type TokenResult = [string[], Types.TokenGroup | Types.TokenObjs];
 
@@ -143,7 +143,7 @@ class Token {
 
 			callback(this.#clone(props), token);
 
-			if (!isTokenObj(token)) {
+			if (checkType(token) === "object" && !isTokenObj(token)) {
 				const item = Object.entries(token) as [string, Types.TokenGroup][];
 
 				stack.push(item);
@@ -164,9 +164,9 @@ class Token {
 	}
 
 	#validate(token: Types.TokenGroup) {
-		this.#iterator(token, (_, token) => {
-			if (shouldHaveRequiredProp(token)) {
-				if (shouldNotHaveDollarPrefix(token)) {
+		this.#iterator(token, (_, _token) => {
+			if (typeof _token === "object" && shouldHaveRequiredProp(_token)) {
+				if (shouldNotHaveDollarPrefix(_token)) {
 					throw new Error(
 						`토큰 객체의 속성값의 이름은 $가 prefix로 시작해야합니다.`,
 					);

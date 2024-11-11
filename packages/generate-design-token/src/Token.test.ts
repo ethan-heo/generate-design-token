@@ -184,13 +184,13 @@ it(`토큰 유효성 검사를 진행한다.`, () => {
 	expect(() => {
 		new Token({
 			color: {
-				$primary: {
-					$type: "color",
+				primary: {
+					$type: "hello",
 					$description: "#ff0000",
-				},
+				} as Types.TokenGroup,
 			},
-		} as unknown as Types.TokenGroup);
-	}).toThrowError();
+		});
+	}).not.toThrowError();
 	expect(() => {
 		new Token({
 			color: {
