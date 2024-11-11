@@ -26,7 +26,7 @@ const Tokens = [
 				},
 			},
 		},
-	} as Types.Token,
+	} as Types.TokenGroup,
 ].map((token) => new Token(token));
 
 it.each([
@@ -70,7 +70,7 @@ it.each([
 			],
 		],
 	],
-] as unknown as [Types.AnyToken, TokenResult[]][])(
+] as unknown as [Types.TokenGroup, TokenResult[]][])(
 	`UseCase2.`,
 	(actual, expected) => {
 		const token = new Token(actual);

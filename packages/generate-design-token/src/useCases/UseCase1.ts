@@ -11,7 +11,7 @@ class UseCase1 extends UseCase<UseCaseType, ReferredType> {
 		useCase: UseCaseType,
 		referred: ReferredType,
 	): TokenResult[] {
-		const result: TokenResult[] = [];
+		const result: [string[], Types.TokenObjs][] = [];
 		const [_, useCaseToken] = useCase;
 		const [referredProps] = referred;
 
@@ -19,10 +19,7 @@ class UseCase1 extends UseCase<UseCaseType, ReferredType> {
 			[referredProps.at(-1)!],
 			{
 				...useCaseToken,
-				$value: this.updateTokenObjValue(
-					useCaseToken.$value as string,
-					referredProps,
-				),
+				$value: this.updateTokenObjValue(useCaseToken.$value, referredProps),
 			},
 		]);
 

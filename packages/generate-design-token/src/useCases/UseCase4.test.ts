@@ -16,7 +16,7 @@ const Tokens = [
 				$value: "#000000",
 			},
 		},
-	} as Types.Token,
+	} as Types.TokenGroup,
 ].map((token) => new Token(token));
 
 it.each([
@@ -66,7 +66,7 @@ it.each([
 			],
 		],
 	],
-] as unknown as [Types.AnyToken, TokenResult[]][])(
+] as unknown as [Types.TokenGroup, TokenResult[]][])(
 	`UseCase4.transformTokens() should transform tokens correctly`,
 	(baseToken, expected) => {
 		const token = new Token(baseToken);

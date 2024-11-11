@@ -2,6 +2,7 @@ import Token, { TokenResult } from "../Token";
 import { TOKEN_REF_REGEXP } from "../regexp";
 import transformPropsToTokenRef from "../transformPropsToTokenRef";
 import isTokenObj from "../isTokenObj";
+import * as Types from "../types";
 
 abstract class UseCase<UC extends TokenResult, Ref extends TokenResult> {
 	/**
@@ -108,8 +109,32 @@ abstract class UseCase<UC extends TokenResult, Ref extends TokenResult> {
 	 * @param props 토큰 객체 참조를 생성하기 위한 속성 배열
 	 * @returns 업데이트된 토큰 객체 값
 	 */
-	protected updateTokenObjValue(value: string, props: string[]) {
-		return value.replace(`{$value}`, `{${transformPropsToTokenRef(props)}}`);
+	protected updateTokenObjValue(value: any, props: string[]) {
+		if (typeof value === "string") {
+			return value.replace(`{$value}`, `{${transformPropsToTokenRef(props)}}`);
+		}
+
+		if (Array.isArray(value)) {
+			const result: unknown[] = [];
+
+			for (const v of value) {
+				result.push(this.updateTokenObjValue(v, props));
+			}
+
+			return result;
+		}
+
+		if (value && typeof value === "object") {
+			const result = {};
+
+			for (const prop in value) {
+				result[prop] = this.updateTokenObjValue(value[prop] as any, props);
+			}
+
+			return result;
+		}
+
+		return value;
 	}
 
 	protected isTokenObjByTokens(prop: string, tokens: Token[]) {

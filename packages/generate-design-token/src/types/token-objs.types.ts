@@ -7,11 +7,6 @@ type TokenObj<T> = T extends { $value: any }
 		} & T
 	: never;
 
-export type AnyTokenObj = TokenObj<{
-	$type: string;
-	$value: any;
-}>;
-
 /**
  *	Dimension
  * @see https://tr.designtokens.org/format/#dimension
@@ -96,6 +91,14 @@ export type Duration = TokenObj<{
 export type CubicBezier = TokenObj<{
 	$type: "cubicBezier";
 	$value: [number, number, number, number];
+}>;
+
+/**
+ * @description Customized TokenObj
+ */
+export type String = TokenObj<{
+	$type: "string";
+	$value: string;
 }>;
 
 /**
@@ -205,6 +208,7 @@ export type TokenObjs =
 	| Duration
 	| CubicBezier
 	| Number
+	| String
 	| Composite
 	| StrokeStyle
 	| Border

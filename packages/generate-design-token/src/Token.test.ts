@@ -54,7 +54,7 @@ it(`[Token.add] 토큰 속성을 추가한다`, () => {
 		token: {
 			$type: "color",
 			$value: "#0000ff",
-		},
+		} as Types.TokenObjs,
 	};
 	const expected = [
 		["color", "tertiary", "2"],
@@ -83,7 +83,7 @@ it(`[Token.delete] 토큰 속성을 삭제한다`, () => {
 				},
 			},
 		},
-	};
+	} as const;
 	const token = new Token(TOKEN);
 
 	token.delete(["color", "tertiary", "1"]);
@@ -105,7 +105,7 @@ it(`[Token.clone] 토큰을 복제한다`, () => {
 				},
 			},
 		},
-	};
+	} as const;
 	const token = new Token(TOKEN);
 	const cloneToken = token.clone();
 	const actual = cloneToken.find(
@@ -125,7 +125,7 @@ it(`[Token.map] 토큰을 변환하여 반환한다.`, () => {
 				},
 			},
 		},
-	};
+	} as const;
 	const token = new Token(TOKEN);
 	const expected = [
 		[

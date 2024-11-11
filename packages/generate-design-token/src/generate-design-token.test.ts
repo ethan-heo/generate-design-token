@@ -7,8 +7,8 @@ import * as Types from "./types";
 
 it(`generateDesignToken`, () => {
 	expect(
-		generateDesignToken(baseToken.token as Types.Token, [
-			referredToken as Types.Token,
+		generateDesignToken(baseToken.token as Types.TokenGroup, [
+			referredToken as Types.TokenGroup,
 		]),
 	).toEqual(generatedToken);
 });

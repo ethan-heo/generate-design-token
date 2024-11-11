@@ -3,8 +3,8 @@ import * as Types from "../types";
 import Token, { TokenResult } from "../Token";
 import isTokenObj from "../isTokenObj";
 
-type UseCaseType = [string[], Types.Token];
-type ReferredType = [string[], Types.Token];
+type UseCaseType = [string[], Types.TokenGroup];
+type ReferredType = [string[], Types.TokenGroup];
 
 class UseCase4 extends UseCase<UseCaseType, ReferredType> {
 	protected transformToken(
