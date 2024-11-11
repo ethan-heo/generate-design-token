@@ -10,11 +10,11 @@ type Result =
 	| "array"
 	| "function";
 
-const checkType = (value: any) => {
+const getType = (value: any) => {
 	return Object.prototype.toString
 		.call(value)
 		.slice(8, -1)
 		.toLowerCase() as Result;
 };
 
-export default checkType;
+export default getType;

@@ -5,7 +5,7 @@ import {
 } from "./validation";
 import isTokenObj from "./isTokenObj";
 import transformPropsToTokenRef from "./transformPropsToTokenRef";
-import checkType from "./checkType";
+import { isObject } from "./typeCheckers";
 
 export type TokenResult = [string[], Types.TokenGroup | Types.TokenObjs];
 
@@ -143,7 +143,7 @@ class Token {
 
 			callback(this.#clone(props), token);
 
-			if (checkType(token) === "object" && !isTokenObj(token)) {
+			if (isObject(token) && !isTokenObj(token)) {
 				const item = Object.entries(token) as [string, Types.TokenGroup][];
 
 				stack.push(item);
