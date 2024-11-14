@@ -15,7 +15,43 @@ class Parser {
 		this.#raws = raws;
 	}
 
-	parse() {}
+	parse() {
+		const base = this.#base;
+		const tokenObjs = base.findAll((_, token) => isTokenObj(token));
+		const transformTokenValue = (value: Types.TokenObjs["$value"]) => {
+			if (isString(value)) {
+				return this.findValueBy(value);
+			}
+
+			if (isArray(value)) {
+				const result: any[] = [];
+
+				for (const v of value) {
+					result.push(
+						transformTokenValue(v as unknown as Types.TokenObjs["$value"]),
+					);
+				}
+
+				return result as Types.TokenObjs["$value"];
+			}
+
+			if (isObject(value)) {
+				const result = {};
+
+				for (const prop in value) {
+					result[prop] = transformTokenValue(value[prop]);
+				}
+
+				return result;
+			}
+
+			return value;
+		};
+
+		for (const [_, tokenObj] of tokenObjs) {
+			tokenObj.$value = transformTokenValue(tokenObj.$value);
+		}
+	}
 
 	/**
 	 * 참조된 토큰값을 재귀적으로 찾아 값을 반환한다.
@@ -101,7 +137,9 @@ class Parser {
 			throw new Error(`정의되지 않은 토큰입니다: ${tokenRef}`);
 		}
 
-		return recur(tokenRef, token[1].$value);
+		const [, tokenObj] = token;
+
+		return recur(tokenRef, tokenObj.$value);
 	}
 }
 

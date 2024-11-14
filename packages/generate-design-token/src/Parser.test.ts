@@ -97,3 +97,35 @@ it.each([["{color.a}"]])(
 		expect(() => parser.findValueBy(tokenRef)).toThrowError();
 	},
 );
+
+it(`Parser.parse()`, () => {
+	const base = new Token({
+		stroke: {
+			$type: "strokeStyle",
+			$value: {
+				dashArray: [
+					`{border-width.1}`,
+					`{border-width.2}`,
+					{ value: 3, unit: "rem" },
+				],
+				lineCap: "butt",
+			},
+		},
+	});
+	const parser = new Parser(base, Tokens);
+	parser.parse();
+
+	expect(base.getToken()).toStrictEqual({
+		stroke: {
+			$type: "strokeStyle",
+			$value: {
+				dashArray: [
+					{ value: 1, unit: "rem" },
+					{ value: 2, unit: "rem" },
+					{ value: 3, unit: "rem" },
+				],
+				lineCap: "butt",
+			},
+		},
+	});
+});
