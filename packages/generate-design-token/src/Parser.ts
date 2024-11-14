@@ -28,7 +28,6 @@ class Parser {
 		circularReferenceMap = new Map<string, string>(),
 	): Types.TokenObjs["$value"] {
 		if (!tokenRef.match(TOKEN_REF_REGEXP)) {
-			console.log(tokenRef);
 			return tokenRef;
 		}
 
@@ -47,23 +46,26 @@ class Parser {
 		};
 		const recur = (referringTokenRef: string, value: unknown) => {
 			if (isString(value)) {
-				return value.replace(
-					new RegExp(TOKEN_REF_REGEXP, "g"),
-					(referredTokenRef) => {
-						circularReferenceMap.set(referringTokenRef, referredTokenRef);
+				const matchedTokenRef = value.match(TOKEN_REF_REGEXP);
 
-						if (checkCircularReference(referringTokenRef, referredTokenRef)) {
-							throw new Error(
-								`${referringTokenRef}와 ${referredTokenRef}가 서로 순환 참조하고 있습니다`,
-							);
-						}
+				if (matchedTokenRef) {
+					const referredTokenRef = matchedTokenRef[0];
 
-						return this.findValueBy(
-							referredTokenRef,
-							circularReferenceMap,
-						) as string;
-					},
-				);
+					circularReferenceMap.set(referringTokenRef, referredTokenRef);
+
+					if (checkCircularReference(referringTokenRef, referredTokenRef)) {
+						throw new Error(
+							`${referringTokenRef}와 ${referredTokenRef}가 서로 순환 참조하고 있습니다`,
+						);
+					}
+
+					return this.findValueBy(
+						referredTokenRef,
+						circularReferenceMap,
+					) as string;
+				} else {
+					return value;
+				}
 			}
 
 			if (isArray(value)) {
