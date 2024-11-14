@@ -1,8 +1,11 @@
+import isTokenObj from "./isTokenObj";
 import { TOKEN_REF_REGEXP } from "./regexp";
 import Token from "./Token";
 import transformPropsToTokenRef from "./transformPropsToTokenRef";
 import { isArray, isObject, isString } from "./typeCheckers";
 import * as Types from "./types";
+
+type TokenValue = [string[], Types.TokenObjs];
 
 class Parser {
 	#base: Token;
@@ -14,38 +17,64 @@ class Parser {
 
 	parse() {}
 
-	findValueByTokenRef<T>(value: T): T {}
-
-	findTokenValue(
+	/**
+	 * 참조된 토큰값을 재귀적으로 찾아 값을 반환한다.
+	 * @param tokenRef 참조값 ex) {color.primary}
+	 * @param raws 참조할 토큰
+	 * @returns
+	 */
+	findValueBy(
 		tokenRef: string,
-		raws: Token[] = this.#raws,
+		circularReferenceMap = new Map<string, string>(),
 	): Types.TokenObjs["$value"] {
-		if (raws.length === 0) {
-			console.log(tokenRef, raws);
-			throw new Error(`토큰을 찾을 수 없습니다: ${tokenRef}`);
+		if (!tokenRef.match(TOKEN_REF_REGEXP)) {
+			console.log(tokenRef);
+			return tokenRef;
 		}
 
-		let token: [string[], Types.TokenObjs] | null = null;
-		const recur = (value: unknown, raws: Token[]) => {
+		let token: TokenValue | null = null;
+		const checkCircularReference = (
+			referringTokenRef: string,
+			referredTokenRef: string,
+		) => {
+			let temp: string | undefined = referredTokenRef;
+
+			while (temp && temp !== referringTokenRef) {
+				temp = circularReferenceMap.get(temp!);
+			}
+
+			return temp === referringTokenRef;
+		};
+		const recur = (referringTokenRef: string, value: unknown) => {
 			if (isString(value)) {
-				const matchedTokenRef = value.match(TOKEN_REF_REGEXP);
+				return value.replace(
+					new RegExp(TOKEN_REF_REGEXP, "g"),
+					(referredTokenRef) => {
+						circularReferenceMap.set(referringTokenRef, referredTokenRef);
 
-				if (matchedTokenRef) {
-					return this.findTokenValue(matchedTokenRef[1], raws);
-				}
+						if (checkCircularReference(referringTokenRef, referredTokenRef)) {
+							throw new Error(
+								`${referringTokenRef}와 ${referredTokenRef}가 서로 순환 참조하고 있습니다`,
+							);
+						}
 
-				return value;
+						return this.findValueBy(
+							referredTokenRef,
+							circularReferenceMap,
+						) as string;
+					},
+				);
 			}
 
 			if (isArray(value)) {
-				return value.map((value) => recur(value, raws));
+				return value.map((value) => recur(referringTokenRef, value));
 			}
 
 			if (isObject(value)) {
 				return Object.fromEntries(
 					Object.entries(value).map(([key, value]) => [
 						key,
-						recur(value, raws),
+						recur(referringTokenRef, value),
 					]),
 				);
 			}
@@ -53,10 +82,12 @@ class Parser {
 			return value;
 		};
 
+		const raws = this.#raws;
+
 		for (const raw of raws) {
 			const foundTokenObj = raw.find(
-				(props) => transformPropsToTokenRef(props) === tokenRef,
-			) as [string[], Types.TokenObjs];
+				(props) => transformPropsToTokenRef(props) === tokenRef.slice(1, -1),
+			) as TokenValue;
 
 			if (foundTokenObj) {
 				token = foundTokenObj!;
@@ -68,7 +99,7 @@ class Parser {
 			throw new Error(`정의되지 않은 토큰입니다: ${tokenRef}`);
 		}
 
-		return recur(token[1].$value, raws.slice(1));
+		return recur(tokenRef, token[1].$value);
 	}
 }
 

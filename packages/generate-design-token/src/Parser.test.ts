@@ -1,4 +1,4 @@
-import { it } from "vitest";
+import { expect, it } from "vitest";
 import Parser from "./Parser";
 import Token from "./Token";
 import * as Types from "./types";
@@ -18,6 +18,10 @@ const Tokens = [
 				$type: "color",
 				$value: "#000000",
 			},
+			a: {
+				$type: "color",
+				$value: "{color.b}",
+			},
 		},
 	} as unknown as Types.TokenGroup,
 	{
@@ -32,6 +36,10 @@ const Tokens = [
 					$value: "#00ff00",
 				},
 			},
+			b: {
+				$type: "color",
+				$value: "{color.c}",
+			},
 		},
 	} as unknown as Types.TokenGroup,
 	{
@@ -43,15 +51,49 @@ const Tokens = [
 				},
 				2: {
 					$type: "color",
-					$value: "#f000f0",
+					$value: "{color.a}",
+				},
+			},
+			c: {
+				$type: "color",
+				$value: "{color.b}",
+			},
+		},
+	} as unknown as Types.TokenGroup,
+	{
+		"border-width": {
+			1: {
+				$type: "dimension",
+				$value: {
+					value: 1,
+					unit: "rem",
+				},
+			},
+			2: {
+				$type: "dimension",
+				$value: {
+					value: 2,
+					unit: "rem",
 				},
 			},
 		},
 	} as Types.TokenGroup,
 ].map((token) => new Token(token));
 
-it(`Parser.findTOkenValue`, () => {
+it.each([
+	["{color.white}", [{ color: "#00ff00" }]],
+	["{color.secondary.1}", "#0000ff"],
+])(`Parser.findValueBy(%o)`, (tokenRef, expected) => {
 	const parser = new Parser(new Token({}), Tokens);
 
-	console.log(parser.findTokenValue("color.white"));
+	expect(parser.findValueBy(tokenRef)).toStrictEqual(expected);
 });
+
+it.each([["{color.a}"]])(
+	`Parser.findValueBy 순환 참조 에러 발생`,
+	(tokenRef) => {
+		const parser = new Parser(new Token({}), Tokens);
+
+		expect(() => parser.findValueBy(tokenRef)).toThrowError();
+	},
+);
