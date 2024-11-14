@@ -77,6 +77,12 @@ const Tokens = [
 				},
 			},
 		},
+		border: {
+			style: {
+				$type: "strokeStyle",
+				$value: "groove",
+			},
+		},
 	} as Types.TokenGroup,
 ].map((token) => new Token(token));
 
@@ -108,12 +114,18 @@ it(`Parser.parse()`, () => {
 					`{border-width.2}`,
 					{ value: 3, unit: "rem" },
 				],
-				lineCap: "butt",
+				lineCap: "{border.style}",
 			},
 		},
-	});
-	const parser = new Parser();
-	expect(parser.parse(base, Tokens).getToken()).toStrictEqual({
+		border: {
+			style: {
+				$type: "strokeStyle",
+				$value: "solid",
+			},
+		},
+	} as unknown as Types.TokenGroup);
+
+	expect(new Parser().parse(base, Tokens).getToken()).toStrictEqual({
 		stroke: {
 			$type: "strokeStyle",
 			$value: {
@@ -122,7 +134,13 @@ it(`Parser.parse()`, () => {
 					{ value: 2, unit: "rem" },
 					{ value: 3, unit: "rem" },
 				],
-				lineCap: "butt",
+				lineCap: "solid",
+			},
+		},
+		border: {
+			style: {
+				$type: "strokeStyle",
+				$value: "solid",
 			},
 		},
 	});

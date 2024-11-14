@@ -13,7 +13,7 @@ class Parser {
 		const tokenObjs = clonedBase.findAll((_, token) => isTokenObj(token));
 		const transformTokenValue = (value: Types.TokenObjs["$value"]) => {
 			if (isString(value)) {
-				return this.findValueBy(value, raws);
+				return this.findValueBy(value, [base, ...raws]);
 			}
 
 			if (isArray(value)) {
