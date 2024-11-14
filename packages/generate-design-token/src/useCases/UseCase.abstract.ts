@@ -2,7 +2,6 @@ import Token, { TokenResult } from "../Token";
 import { TOKEN_REF_REGEXP } from "../regexp";
 import transformPropsToTokenRef from "../transformPropsToTokenRef";
 import isTokenObj from "../isTokenObj";
-import * as Types from "../types";
 
 abstract class UseCase<UC extends TokenResult, Ref extends TokenResult> {
 	/**
@@ -12,9 +11,9 @@ abstract class UseCase<UC extends TokenResult, Ref extends TokenResult> {
 	 * @param referredTokens 기본 토큰에서 참조하는 토큰
 	 */
 	transform(baseToken: Token, referredTokens: Token[]) {
-		const useCases = this.findUseCases(baseToken, referredTokens);
+		const useCases = this.findUseCases(baseToken.clone(), referredTokens);
 
-		if (useCases.length === 0) return;
+		if (useCases.length === 0) return baseToken;
 
 		const transformedTokens: {
 			useCase: UC;
@@ -46,6 +45,8 @@ abstract class UseCase<UC extends TokenResult, Ref extends TokenResult> {
 				baseToken.add(transformedProps, transformedToken);
 			}
 		}
+
+		return baseToken;
 	}
 
 	protected abstract transformToken(useCase: UC, referred: Ref): TokenResult[];

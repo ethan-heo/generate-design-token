@@ -9,13 +9,10 @@ const generateDesignToken = (
 ) => {
 	const baseToken = new Token(base);
 	const rawTokens = raws.map((raw) => new Token(raw));
-	const useCases = new UseCases();
-	const parser = new Parser(baseToken, rawTokens);
 
-	useCases.transform(baseToken, rawTokens);
-	parser.parse();
-
-	return baseToken.getToken();
+	return new Parser()
+		.parse(new UseCases().transform(baseToken, rawTokens), rawTokens)
+		.getToken();
 };
 
 export default generateDesignToken;

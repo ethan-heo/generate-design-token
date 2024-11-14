@@ -8,19 +8,12 @@ import * as Types from "./types";
 type TokenValue = [string[], Types.TokenObjs];
 
 class Parser {
-	#base: Token;
-	#raws: Token[];
-	constructor(base: Token, raws: Token[]) {
-		this.#base = base;
-		this.#raws = raws;
-	}
-
-	parse() {
-		const base = this.#base;
-		const tokenObjs = base.findAll((_, token) => isTokenObj(token));
+	parse(base: Token, raws: Token[]) {
+		const clonedBase = base.clone();
+		const tokenObjs = clonedBase.findAll((_, token) => isTokenObj(token));
 		const transformTokenValue = (value: Types.TokenObjs["$value"]) => {
 			if (isString(value)) {
-				return this.findValueBy(value);
+				return this.findValueBy(value, raws);
 			}
 
 			if (isArray(value)) {
@@ -51,6 +44,8 @@ class Parser {
 		for (const [_, tokenObj] of tokenObjs) {
 			tokenObj.$value = transformTokenValue(tokenObj.$value);
 		}
+
+		return clonedBase;
 	}
 
 	/**
@@ -61,6 +56,7 @@ class Parser {
 	 */
 	findValueBy(
 		tokenRef: string,
+		raws: Token[],
 		circularReferenceMap = new Map<string, string>(),
 	): Types.TokenObjs["$value"] {
 		if (!tokenRef.match(TOKEN_REF_REGEXP)) {
@@ -97,6 +93,7 @@ class Parser {
 
 					return this.findValueBy(
 						referredTokenRef,
+						raws,
 						circularReferenceMap,
 					) as string;
 				} else {
@@ -119,8 +116,6 @@ class Parser {
 
 			return value;
 		};
-
-		const raws = this.#raws;
 
 		for (const raw of raws) {
 			const foundTokenObj = raw.find(

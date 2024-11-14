@@ -84,17 +84,17 @@ it.each([
 	["{color.white}", [{ color: "#00ff00" }]],
 	["{color.secondary.1}", "#0000ff"],
 ])(`Parser.findValueBy(%o)`, (tokenRef, expected) => {
-	const parser = new Parser(new Token({}), Tokens);
+	const parser = new Parser();
 
-	expect(parser.findValueBy(tokenRef)).toStrictEqual(expected);
+	expect(parser.findValueBy(tokenRef, Tokens)).toStrictEqual(expected);
 });
 
 it.each([["{color.a}"]])(
 	`Parser.findValueBy 순환 참조 에러 발생`,
 	(tokenRef) => {
-		const parser = new Parser(new Token({}), Tokens);
+		const parser = new Parser();
 
-		expect(() => parser.findValueBy(tokenRef)).toThrowError();
+		expect(() => parser.findValueBy(tokenRef, Tokens)).toThrowError();
 	},
 );
 
@@ -112,10 +112,8 @@ it(`Parser.parse()`, () => {
 			},
 		},
 	});
-	const parser = new Parser(base, Tokens);
-	parser.parse();
-
-	expect(base.getToken()).toStrictEqual({
+	const parser = new Parser();
+	expect(parser.parse(base, Tokens).getToken()).toStrictEqual({
 		stroke: {
 			$type: "strokeStyle",
 			$value: {
