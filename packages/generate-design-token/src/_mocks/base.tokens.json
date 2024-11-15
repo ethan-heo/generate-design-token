@@ -318,7 +318,7 @@
 				"$type": "number",
 				"$value": "{border-radius.2}"
 			},
-			"full": {
+			"max": {
 				"$type": "number",
 				"$value": "{border-radius.full}"
 			}

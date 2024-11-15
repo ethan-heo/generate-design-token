@@ -144,7 +144,18 @@ export type Border = TokenObj<{
 	$type: "border";
 	$value: {
 		width: string | Dimension["$value"];
-		style: string | StrokeStyle["$value"];
+		style:
+			| string
+			| "none"
+			| "hidden"
+			| "dotted"
+			| "dashed"
+			| "solid"
+			| "double"
+			| "groove"
+			| "ridge"
+			| "inset"
+			| "outset";
 		color: string | Color["$value"];
 	};
 }>;

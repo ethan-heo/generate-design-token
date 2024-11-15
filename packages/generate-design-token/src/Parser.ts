@@ -2,7 +2,7 @@ import isTokenObj from "./isTokenObj";
 import { TOKEN_REF_REGEXP } from "./regexp";
 import Token from "./Token";
 import transformPropsToTokenRef from "./transformPropsToTokenRef";
-import { isArray, isObject, isString } from "./typeCheckers";
+import { isArray, isNumber, isObject, isString } from "./typeCheckers";
 import * as Types from "./types";
 
 type TokenValue = [string[], Types.TokenObjs];
@@ -11,7 +11,7 @@ class Parser {
 	parse(base: Token, raws: Token[]) {
 		const clonedBase = base.clone();
 		const tokenObjs = clonedBase.findAll((_, token) => isTokenObj(token));
-		const transformTokenValue = (value: Types.TokenObjs["$value"]) => {
+		const transformTokenRefToValue = (value: Types.TokenObjs["$value"]) => {
 			if (isString(value)) {
 				return this.findValueBy(value, [base, ...raws]);
 			}
@@ -21,7 +21,7 @@ class Parser {
 
 				for (const v of value) {
 					result.push(
-						transformTokenValue(v as unknown as Types.TokenObjs["$value"]),
+						transformTokenRefToValue(v as unknown as Types.TokenObjs["$value"]),
 					);
 				}
 
@@ -32,7 +32,7 @@ class Parser {
 				const result = {};
 
 				for (const prop in value) {
-					result[prop] = transformTokenValue(value[prop]);
+					result[prop] = transformTokenRefToValue(value[prop]);
 				}
 
 				return result;
@@ -42,7 +42,28 @@ class Parser {
 		};
 
 		for (const [_, tokenObj] of tokenObjs) {
-			tokenObj.$value = transformTokenValue(tokenObj.$value);
+			if (isString(tokenObj.$value)) {
+				tokenObj.$value = tokenObj.$value.replace(
+					new RegExp(TOKEN_REF_REGEXP, "g"),
+					(tokenRef) => {
+						const transformedValue = transformTokenRefToValue(tokenRef);
+
+						if (!isString(transformedValue)) {
+							throw new Error(
+								`문자열 형식의 값에는 문자열 또는 숫자만 치환할 수 있습니다. ${tokenRef}`,
+							);
+						}
+
+						if (isNumber(transformedValue)) {
+							return `${transformedValue}`;
+						}
+
+						return transformedValue;
+					},
+				);
+			} else {
+				tokenObj.$value = transformTokenRefToValue(tokenObj.$value);
+			}
 		}
 
 		return clonedBase;
