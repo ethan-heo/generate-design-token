@@ -1,13 +1,9 @@
-import * as Types from "../types";
-import Token from "../Token";
+import Token, { TokenResult } from "../Token";
 import { TOKEN_REF_REGEXP } from "../regexp";
 import transformPropsToTokenRef from "../transformPropsToTokenRef";
 import isTokenObj from "../isTokenObj";
 
-abstract class UseCase<
-	UC extends Types.TokenResult,
-	Ref extends Types.TokenResult,
-> {
+abstract class UseCase<UC extends TokenResult, Ref extends TokenResult> {
 	/**
 	 * 참조 토큰에서 기본 토큰과 동일한 이름을 가진 토큰으로 대체합니다.
 	 *
@@ -15,13 +11,13 @@ abstract class UseCase<
 	 * @param referredTokens 기본 토큰에서 참조하는 토큰
 	 */
 	transform(baseToken: Token, referredTokens: Token[]) {
-		const useCases = this.findUseCases(baseToken, referredTokens);
+		const useCases = this.findUseCases(baseToken.clone(), referredTokens);
 
-		if (useCases.length === 0) return;
+		if (useCases.length === 0) return baseToken;
 
 		const transformedTokens: {
 			useCase: UC;
-			transformed: Types.TokenResult[];
+			transformed: TokenResult[];
 		}[] = [];
 
 		for (const useCase of useCases) {
@@ -49,12 +45,11 @@ abstract class UseCase<
 				baseToken.add(transformedProps, transformedToken);
 			}
 		}
+
+		return baseToken;
 	}
 
-	protected abstract transformToken(
-		useCase: UC,
-		referred: Ref,
-	): Types.TokenResult[];
+	protected abstract transformToken(useCase: UC, referred: Ref): TokenResult[];
 
 	protected abstract findUseCases(
 		baseToken: Token,
@@ -115,8 +110,32 @@ abstract class UseCase<
 	 * @param props 토큰 객체 참조를 생성하기 위한 속성 배열
 	 * @returns 업데이트된 토큰 객체 값
 	 */
-	protected updateTokenObjValue(value: string, props: string[]) {
-		return value.replace(`{$value}`, `{${transformPropsToTokenRef(props)}}`);
+	protected updateTokenObjValue(value: any, props: string[]) {
+		if (typeof value === "string") {
+			return value.replace(`{$value}`, `{${transformPropsToTokenRef(props)}}`);
+		}
+
+		if (Array.isArray(value)) {
+			const result: unknown[] = [];
+
+			for (const v of value) {
+				result.push(this.updateTokenObjValue(v, props));
+			}
+
+			return result;
+		}
+
+		if (value && typeof value === "object") {
+			const result = {};
+
+			for (const prop in value) {
+				result[prop] = this.updateTokenObjValue(value[prop] as any, props);
+			}
+
+			return result;
+		}
+
+		return value;
 	}
 
 	protected isTokenObjByTokens(prop: string, tokens: Token[]) {

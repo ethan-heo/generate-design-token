@@ -1,7 +1,9 @@
 import * as Types from "./types";
 import { shouldHaveRequiredProp } from "./validation";
 
-const isTokenObj = (token: Types.Token): token is Types.TokenObj => {
+const isTokenObj = (
+	token: Types.TokenGroup | Types.TokenObjs,
+): token is Types.TokenObjs => {
 	return shouldHaveRequiredProp(token);
 };
 

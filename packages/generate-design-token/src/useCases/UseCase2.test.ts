@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import Token from "../Token";
+import Token, { TokenResult } from "../Token";
 import * as Types from "../types";
 import UseCase2 from "./UseCase2";
 import isTokenObj from "../isTokenObj";
@@ -9,11 +9,11 @@ const Tokens = [
 		color: {
 			white: {
 				$type: "color",
-				$value: "white",
+				$value: "#ffffff",
 			},
 			black: {
 				$type: "color",
-				$value: "black",
+				$value: "#000000",
 			},
 			primary: {
 				1: {
@@ -26,7 +26,7 @@ const Tokens = [
 				},
 			},
 		},
-	},
+	} as Types.TokenGroup,
 ].map((token) => new Token(token));
 
 it.each([
@@ -70,13 +70,16 @@ it.each([
 			],
 		],
 	],
-] as [Types.Token, Types.TokenResult[]][])(`UseCase2.`, (actual, expected) => {
-	const token = new Token(actual);
-	const case2 = new UseCase2();
+] as unknown as [Types.TokenGroup, TokenResult[]][])(
+	`UseCase2.`,
+	(actual, expected) => {
+		const token = new Token(actual);
+		const case2 = new UseCase2();
 
-	case2.transform(token, Tokens);
+		case2.transform(token, Tokens);
 
-	expect(token.findAll((_, token) => isTokenObj(token))).toStrictEqual(
-		expected,
-	);
-});
+		expect(token.findAll((_, token) => isTokenObj(token))).toStrictEqual(
+			expected,
+		);
+	},
+);

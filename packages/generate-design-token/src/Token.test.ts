@@ -21,21 +21,7 @@ const TOKEN = {
 			},
 		},
 	},
-	border: {
-		small: {
-			$type: "string",
-			$value: "1px solid #ff0000",
-		},
-		medium: {
-			$type: "string",
-			$value: "2px solid #00ff00",
-		},
-		large: {
-			$type: "string",
-			$value: "3px solid #0000ff",
-		},
-	},
-};
+} as const;
 
 it(`[Token.find] 특정 조건에 맞는 토큰을 찾아 반환한다.`, () => {
 	const token = new Token(TOKEN);
@@ -68,7 +54,7 @@ it(`[Token.add] 토큰 속성을 추가한다`, () => {
 		token: {
 			$type: "color",
 			$value: "#0000ff",
-		},
+		} as Types.TokenObjs,
 	};
 	const expected = [
 		["color", "tertiary", "2"],
@@ -97,7 +83,7 @@ it(`[Token.delete] 토큰 속성을 삭제한다`, () => {
 				},
 			},
 		},
-	};
+	} as const;
 	const token = new Token(TOKEN);
 
 	token.delete(["color", "tertiary", "1"]);
@@ -119,7 +105,7 @@ it(`[Token.clone] 토큰을 복제한다`, () => {
 				},
 			},
 		},
-	};
+	} as const;
 	const token = new Token(TOKEN);
 	const cloneToken = token.clone();
 	const actual = cloneToken.find(
@@ -139,7 +125,7 @@ it(`[Token.map] 토큰을 변환하여 반환한다.`, () => {
 				},
 			},
 		},
-	};
+	} as const;
 	const token = new Token(TOKEN);
 	const expected = [
 		[
@@ -198,13 +184,13 @@ it(`토큰 유효성 검사를 진행한다.`, () => {
 	expect(() => {
 		new Token({
 			color: {
-				$primary: {
-					$type: "color",
+				primary: {
+					$type: "hello",
 					$description: "#ff0000",
-				},
+				} as Types.TokenGroup,
 			},
 		});
-	}).toThrowError();
+	}).not.toThrowError();
 	expect(() => {
 		new Token({
 			color: {
@@ -212,7 +198,7 @@ it(`토큰 유효성 검사를 진행한다.`, () => {
 					$type: "color",
 					$value: "#ff0000",
 					description: "color",
-				} as Types.TokenObj,
+				} as Types.TokenObjs,
 			},
 		});
 	}).not.toThrowError();

@@ -468,7 +468,7 @@
 			"$type": "number",
 			"$value": "4px"
 		},
-		"full": {
+		"max": {
 			"$type": "number",
 			"$value": "100%"
 		}

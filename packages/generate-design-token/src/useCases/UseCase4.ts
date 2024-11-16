@@ -1,25 +1,25 @@
 import UseCase from "./UseCase.abstract";
 import * as Types from "../types";
-import Token from "../Token";
+import Token, { TokenResult } from "../Token";
 import isTokenObj from "../isTokenObj";
 
-type UseCaseType = [string[], Types.Token];
-type ReferredType = [string[], Types.Token];
+type UseCaseType = [string[], Types.TokenGroup];
+type ReferredType = [string[], Types.TokenGroup];
 
 class UseCase4 extends UseCase<UseCaseType, ReferredType> {
 	protected transformToken(
 		useCase: UseCaseType,
 		referred: ReferredType,
-	): Types.TokenResult[] {
-		const result: Types.TokenResult[] = [];
+	): TokenResult[] {
+		const result: TokenResult[] = [];
 		const [useCaseProps, useCaseToken] = useCase;
 		const [referredProps, referredToken] = referred;
 		const referredTokenObjs = new Token(referredToken).findAll((_, token) =>
 			isTokenObj(token),
-		) as [string[], Types.TokenObj][];
+		) as [string[], Types.TokenObjs][];
 		const useCaseTokenObjs = new Token(useCaseToken).findAll((_, token) =>
 			isTokenObj(token),
-		) as [string[], Types.TokenObj][];
+		) as [string[], Types.TokenObjs][];
 
 		for (const [useCaseTokenObjProps, useCaseTokenObj] of useCaseTokenObjs) {
 			for (const [referredTokenObjProps] of referredTokenObjs) {

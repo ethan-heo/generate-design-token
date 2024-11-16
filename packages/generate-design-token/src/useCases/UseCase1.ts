@@ -1,17 +1,17 @@
 import UseCase from "./UseCase.abstract";
 import * as Types from "../types";
 import isTokenObj from "../isTokenObj";
-import Token from "../Token";
+import Token, { TokenResult } from "../Token";
 
-type UseCaseType = [string[], Types.TokenObj];
-type ReferredType = [string[], Types.TokenObj];
+type UseCaseType = [string[], Types.TokenObjs];
+type ReferredType = [string[], Types.TokenObjs];
 
 class UseCase1 extends UseCase<UseCaseType, ReferredType> {
 	protected transformToken(
 		useCase: UseCaseType,
 		referred: ReferredType,
-	): Types.TokenResult[] {
-		const result: Types.TokenResult[] = [];
+	): TokenResult[] {
+		const result: [string[], Types.TokenObjs][] = [];
 		const [_, useCaseToken] = useCase;
 		const [referredProps] = referred;
 
@@ -19,10 +19,7 @@ class UseCase1 extends UseCase<UseCaseType, ReferredType> {
 			[referredProps.at(-1)!],
 			{
 				...useCaseToken,
-				$value: this.updateTokenObjValue(
-					useCaseToken.$value as string,
-					referredProps,
-				),
+				$value: this.updateTokenObjValue(useCaseToken.$value, referredProps),
 			},
 		]);
 
