@@ -1,6 +1,6 @@
 import UseCase from "./UseCase.abstract";
-import * as Types from "../types";
-import isTokenObj from "../isTokenObj";
+import * as Types from "@types";
+import { isTokenObj } from "@utils";
 import Token, { TokenResult } from "../Token";
 
 type UseCaseType = [string[], Types.TokenObjs];

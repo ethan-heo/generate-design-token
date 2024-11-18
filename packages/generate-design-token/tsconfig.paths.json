@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"paths": {
+			"@utils": ["./src/utils/index"],
+			"@utils/*": ["./src/utils/*"],
+			"@types": ["./src/types/index"],
+			"@types/*": ["./src/types/*"],
+			"@use-cases": ["./src/use-cases/index"],
+			"@use-cases/*": ["./src/use-cases/*"],
+			"@constants": ["./src/constants/index"],
+			"@constants/*": ["./src/constants/*"]
+		}
+	}
+}

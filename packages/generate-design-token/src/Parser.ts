@@ -1,9 +1,7 @@
-import isTokenObj from "./isTokenObj";
-import { TOKEN_REF_REGEXP } from "./regexp";
+import { isTokenObj, transformPropsToTokenRef, TypeCheckers } from "@utils";
+import * as Types from "@types";
 import Token from "./Token";
-import transformPropsToTokenRef from "./transformPropsToTokenRef";
-import { isArray, isNumber, isObject, isString } from "./typeCheckers";
-import * as Types from "./types";
+import { TOKEN_REF_REGEXP } from "@constants";
 
 type TokenValue = [string[], Types.TokenObjs];
 
@@ -12,11 +10,11 @@ class Parser {
 		const clonedBase = base.clone();
 		const tokenObjs = clonedBase.findAll((_, token) => isTokenObj(token));
 		const transformTokenRefToValue = (value: Types.TokenObjs["$value"]) => {
-			if (isString(value)) {
+			if (TypeCheckers.isString(value)) {
 				return this.findValueBy(value, [base, ...raws]);
 			}
 
-			if (isArray(value)) {
+			if (TypeCheckers.isArray(value)) {
 				const result: any[] = [];
 
 				for (const v of value) {
@@ -28,7 +26,7 @@ class Parser {
 				return result as Types.TokenObjs["$value"];
 			}
 
-			if (isObject(value)) {
+			if (TypeCheckers.isObject(value)) {
 				const result = {};
 
 				for (const prop in value) {
@@ -42,19 +40,19 @@ class Parser {
 		};
 
 		for (const [_, tokenObj] of tokenObjs) {
-			if (isString(tokenObj.$value)) {
+			if (TypeCheckers.isString(tokenObj.$value)) {
 				tokenObj.$value = tokenObj.$value.replace(
 					new RegExp(TOKEN_REF_REGEXP, "g"),
 					(tokenRef) => {
 						const transformedValue = transformTokenRefToValue(tokenRef);
 
-						if (!isString(transformedValue)) {
+						if (!TypeCheckers.isString(transformedValue)) {
 							throw new Error(
 								`문자열 형식의 값에는 문자열 또는 숫자만 치환할 수 있습니다. ${tokenRef}`,
 							);
 						}
 
-						if (isNumber(transformedValue)) {
+						if (TypeCheckers.isNumber(transformedValue)) {
 							return `${transformedValue}`;
 						}
 
@@ -98,7 +96,7 @@ class Parser {
 			return temp === referringTokenRef;
 		};
 		const recur = (referringTokenRef: string, value: unknown) => {
-			if (isString(value)) {
+			if (TypeCheckers.isString(value)) {
 				const matchedTokenRef = value.match(TOKEN_REF_REGEXP);
 
 				if (matchedTokenRef) {
@@ -122,11 +120,11 @@ class Parser {
 				}
 			}
 
-			if (isArray(value)) {
+			if (TypeCheckers.isArray(value)) {
 				return value.map((value) => recur(referringTokenRef, value));
 			}
 
-			if (isObject(value)) {
+			if (TypeCheckers.isObject(value)) {
 				return Object.fromEntries(
 					Object.entries(value).map(([key, value]) => [
 						key,

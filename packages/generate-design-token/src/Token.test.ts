@@ -1,8 +1,7 @@
 import { expect, it } from "vitest";
 import Token from "./Token";
-import * as Types from "./types";
-import transformPropsToTokenRef from "./transformPropsToTokenRef";
-import isTokenObj from "./isTokenObj";
+import * as Types from "@types";
+import { isTokenObj, transformPropsToTokenRef } from "@utils";
 
 const TOKEN = {
 	color: {

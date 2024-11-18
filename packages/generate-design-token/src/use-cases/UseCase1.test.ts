@@ -1,8 +1,8 @@
 import { expect, it } from "vitest";
 import UseCase1 from "./UseCase1";
 import Token, { TokenResult } from "../Token";
-import * as Types from "../types";
-import transformPropsToTokenRef from "../transformPropsToTokenRef";
+import * as Types from "@types";
+import { transformPropsToTokenRef } from "@utils";
 
 const Tokens = [
 	{

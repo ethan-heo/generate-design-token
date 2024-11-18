@@ -1,6 +1,6 @@
-import * as Types from "./types";
+import * as Types from "@types";
+import UseCases from "@use-cases";
 import Token from "./Token";
-import UseCases from "./useCases";
 import Parser from "./Parser";
 
 const generateDesignToken = (

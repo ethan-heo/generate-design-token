@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 import Parser from "./Parser";
 import Token from "./Token";
-import * as Types from "./types";
+import * as Types from "@types";
 
 const Tokens = [
 	{

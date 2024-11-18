@@ -1,8 +1,8 @@
 import { expect, it } from "vitest";
 import Token, { TokenResult } from "../Token";
-import UseCase4 from "./UseCase4";
-import isTokenObj from "../isTokenObj";
-import * as Types from "../types";
+import * as Types from "@types";
+import UseCase2 from "./UseCase2";
+import { isTokenObj } from "@utils";
 
 const Tokens = [
 	{
@@ -15,6 +15,16 @@ const Tokens = [
 				$type: "color",
 				$value: "#000000",
 			},
+			primary: {
+				1: {
+					$type: "color",
+					$value: "#ff0000",
+				},
+				2: {
+					$type: "color",
+					$value: "#00ff00",
+				},
+			},
 		},
 	} as Types.TokenGroup,
 ].map((token) => new Token(token));
@@ -24,55 +34,49 @@ it.each([
 		{
 			border: {
 				"{color}": {
-					thin: {
-						$type: "string",
-						$value: "1px solid {$value}",
-					},
-					large: {
-						$type: "string",
-						$value: "2px solid {$value}",
-					},
+					$type: "string",
+					$value: "1px solid {$value}",
 				},
 			},
 		},
 		[
 			[
-				["border", "white", "thin"],
+				["border", "white"],
 				{
 					$type: "string",
 					$value: "1px solid {color.white}",
 				},
 			],
 			[
-				["border", "white", "large"],
-				{
-					$type: "string",
-					$value: "2px solid {color.white}",
-				},
-			],
-			[
-				["border", "black", "thin"],
+				["border", "black"],
 				{
 					$type: "string",
 					$value: "1px solid {color.black}",
 				},
 			],
 			[
-				["border", "black", "large"],
+				["border", "primary", "2"],
 				{
 					$type: "string",
-					$value: "2px solid {color.black}",
+					$value: "1px solid {color.primary.2}",
+				},
+			],
+			[
+				["border", "primary", "1"],
+				{
+					$type: "string",
+					$value: "1px solid {color.primary.1}",
 				},
 			],
 		],
 	],
 ] as unknown as [Types.TokenGroup, TokenResult[]][])(
-	`UseCase4.transformTokens() should transform tokens correctly`,
-	(baseToken, expected) => {
-		const token = new Token(baseToken);
-		const useCase4 = new UseCase4();
+	`UseCase2.`,
+	(actual, expected) => {
+		const token = new Token(actual);
+		const case2 = new UseCase2();
 
-		useCase4.transform(token, Tokens);
+		case2.transform(token, Tokens);
 
 		expect(token.findAll((_, token) => isTokenObj(token))).toStrictEqual(
 			expected,

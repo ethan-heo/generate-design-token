@@ -1,9 +1,5 @@
 import { expect, it } from "vitest";
-import {
-	shouldHaveDollarPrefix,
-	shouldNotHaveDollarPrefix,
-	shouldHaveRequiredProp,
-} from "./validation";
+import { TokenValidators } from "@utils";
 
 it.each([
 	[{}, false],
@@ -11,7 +7,7 @@ it.each([
 ])(
 	`토큰 객체의 필수 속성이 모두 포함되어 있는지 검사한다`,
 	(tokenObj, expected) => {
-		expect(shouldHaveRequiredProp(tokenObj)).toBe(expected);
+		expect(TokenValidators.shouldHaveRequiredProp(tokenObj)).toBe(expected);
 	},
 );
 
@@ -33,7 +29,7 @@ it.each([
 ])(
 	`객체 속성에 $가 prefix로 설정되어 있는지 확인한다`,
 	(tokenObj, expected) => {
-		expect(shouldHaveDollarPrefix(tokenObj)).toBe(expected);
+		expect(TokenValidators.shouldHaveDollarPrefix(tokenObj)).toBe(expected);
 	},
 );
 
@@ -67,6 +63,6 @@ it.each([
 ])(
 	`객체 속성에 $가 prefix로 설정되어 있지 않은지 확인한다`,
 	(tokenObj, expected) => {
-		expect(shouldNotHaveDollarPrefix(tokenObj)).toBe(expected);
+		expect(TokenValidators.shouldNotHaveDollarPrefix(tokenObj)).toBe(expected);
 	},
 );

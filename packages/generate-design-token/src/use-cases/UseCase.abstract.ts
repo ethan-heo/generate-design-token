@@ -1,7 +1,6 @@
 import Token, { TokenResult } from "../Token";
-import { TOKEN_REF_REGEXP } from "../regexp";
-import transformPropsToTokenRef from "../transformPropsToTokenRef";
-import isTokenObj from "../isTokenObj";
+import { TOKEN_REF_REGEXP } from "@constants";
+import { isTokenObj, transformPropsToTokenRef } from "@utils";
 
 abstract class UseCase<UC extends TokenResult, Ref extends TokenResult> {
 	/**

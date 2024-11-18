@@ -1,11 +1,10 @@
-import * as Types from "./types";
+import * as Types from "@types";
 import {
 	shouldNotHaveDollarPrefix,
 	shouldHaveRequiredProp,
-} from "./validation";
-import isTokenObj from "./isTokenObj";
-import transformPropsToTokenRef from "./transformPropsToTokenRef";
-import { isObject } from "./typeCheckers";
+} from "./utils/validation";
+import { isTokenObj, TypeCheckers } from "@utils";
+import transformPropsToTokenRef from "./utils/transformPropsToTokenRef";
 
 export type TokenResult = [string[], Types.TokenGroup | Types.TokenObjs];
 
@@ -143,7 +142,7 @@ class Token {
 
 			callback(this.#clone(props), token);
 
-			if (isObject(token) && !isTokenObj(token)) {
+			if (TypeCheckers.isObject(token) && !isTokenObj(token)) {
 				const item = Object.entries(token) as [string, Types.TokenGroup][];
 
 				stack.push(item);
@@ -164,6 +163,10 @@ class Token {
 	}
 
 	#validate(token: Types.TokenGroup) {
+		//1. 중복 속성 체크
+		//2. $extension 속성은 무조건 JSON
+		//3. 토큰 객체 타입별 값의 형식 체크
+		//3-1. 값의 유효한 값인지 확인
 		this.#iterator(token, (_, _token) => {
 			if (typeof _token === "object" && shouldHaveRequiredProp(_token)) {
 				if (shouldNotHaveDollarPrefix(_token)) {
