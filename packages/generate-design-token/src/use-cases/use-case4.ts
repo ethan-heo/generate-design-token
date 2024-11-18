@@ -16,10 +16,10 @@ class UseCase4 extends UseCase<UseCaseType, ReferredType> {
 		const [referredProps, referredToken] = referred;
 		const referredTokenObjs = new Token(referredToken).findAll((_, token) =>
 			isTokenObj(token),
-		) as [string[], Types.TokenObjs][];
+		) as [string[], Types.TokenObj][];
 		const useCaseTokenObjs = new Token(useCaseToken).findAll((_, token) =>
 			isTokenObj(token),
-		) as [string[], Types.TokenObjs][];
+		) as [string[], Types.TokenObj][];
 
 		for (const [useCaseTokenObjProps, useCaseTokenObj] of useCaseTokenObjs) {
 			for (const [referredTokenObjProps] of referredTokenObjs) {

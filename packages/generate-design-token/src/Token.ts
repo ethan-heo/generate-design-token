@@ -6,7 +6,7 @@ import {
 import { isTokenObj, TypeCheckers } from "@utils";
 import transformPropsToTokenRef from "./utils/transformers/to-token-ref";
 
-export type TokenResult = [string[], Types.TokenGroup | Types.TokenObjs];
+export type TokenResult = [string[], Types.TokenGroup | Types.TokenObj];
 
 type Iteratee = (
 	props: string[],
@@ -85,7 +85,7 @@ class Token {
 	 * @param props 토큰을 추가할 참조값
 	 * @param token 추가할 토큰
 	 */
-	add(props: string[], token: Types.TokenGroup | Types.TokenObjs) {
+	add(props: string[], token: Types.TokenGroup | Types.TokenObj) {
 		const newProp = props.pop()!;
 		let temp = this.#token;
 

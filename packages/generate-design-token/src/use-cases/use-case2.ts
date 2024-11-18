@@ -3,7 +3,7 @@ import * as Types from "@types";
 import Token, { TokenResult } from "../token";
 import { isTokenObj } from "@utils";
 
-type UseCaseType = [string[], Types.TokenObjs];
+type UseCaseType = [string[], Types.TokenObj];
 type ReferredType = [string[], Types.TokenGroup];
 
 class UseCase2 extends UseCase<UseCaseType, ReferredType> {

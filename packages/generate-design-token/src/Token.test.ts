@@ -53,7 +53,7 @@ it(`[Token.add] 토큰 속성을 추가한다`, () => {
 		token: {
 			$type: "color",
 			$value: "#0000ff",
-		} as Types.TokenObjs,
+		} as Types.TokenObj,
 	};
 	const expected = [
 		["color", "tertiary", "2"],
@@ -197,7 +197,7 @@ it(`토큰 유효성 검사를 진행한다.`, () => {
 					$type: "color",
 					$value: "#ff0000",
 					description: "color",
-				} as Types.TokenObjs,
+				} as Types.TokenObj,
 			},
 		});
 	}).not.toThrowError();

@@ -3,15 +3,15 @@ import * as Types from "@types";
 import { isTokenObj } from "@utils";
 import Token, { TokenResult } from "../token";
 
-type UseCaseType = [string[], Types.TokenObjs];
-type ReferredType = [string[], Types.TokenObjs];
+type UseCaseType = [string[], Types.TokenObj];
+type ReferredType = [string[], Types.TokenObj];
 
 class UseCase1 extends UseCase<UseCaseType, ReferredType> {
 	protected transformToken(
 		useCase: UseCaseType,
 		referred: ReferredType,
 	): TokenResult[] {
-		const result: [string[], Types.TokenObjs][] = [];
+		const result: [string[], Types.TokenObj][] = [];
 		const [_, useCaseToken] = useCase;
 		const [referredProps] = referred;
 

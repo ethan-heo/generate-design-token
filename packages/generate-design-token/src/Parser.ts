@@ -3,13 +3,13 @@ import * as Types from "@types";
 import Token from "./token";
 import { TOKEN_REF_REGEXP } from "@constants";
 
-type TokenValue = [string[], Types.TokenObjs];
+type TokenValue = [string[], Types.TokenObj];
 
 class Parser {
 	parse(base: Token, raws: Token[]) {
 		const clonedBase = base.clone();
 		const tokenObjs = clonedBase.findAll((_, token) => isTokenObj(token));
-		const transformTokenRefToValue = (value: Types.TokenObjs["$value"]) => {
+		const transformTokenRefToValue = (value: Types.TokenObj["$value"]) => {
 			if (TypeCheckers.isString(value)) {
 				return this.findValueBy(value, [base, ...raws]);
 			}
@@ -19,11 +19,11 @@ class Parser {
 
 				for (const v of value) {
 					result.push(
-						transformTokenRefToValue(v as unknown as Types.TokenObjs["$value"]),
+						transformTokenRefToValue(v as unknown as Types.TokenObj["$value"]),
 					);
 				}
 
-				return result as Types.TokenObjs["$value"];
+				return result as Types.TokenObj["$value"];
 			}
 
 			if (TypeCheckers.isObject(value)) {
@@ -77,7 +77,7 @@ class Parser {
 		tokenRef: string,
 		raws: Token[],
 		circularReferenceMap = new Map<string, string>(),
-	): Types.TokenObjs["$value"] {
+	): Types.TokenObj["$value"] {
 		if (!tokenRef.match(TOKEN_REF_REGEXP)) {
 			return tokenRef;
 		}
