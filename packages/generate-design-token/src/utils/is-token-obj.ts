@@ -1,10 +1,10 @@
 import * as Types from "@types";
-import { TokenValidators } from "@utils";
+import { Validators } from "@utils";
 
 const isTokenObj = (
 	token: Types.TokenGroup | Types.TokenObjs,
 ): token is Types.TokenObjs => {
-	return TokenValidators.shouldHaveRequiredProp(token);
+	return Validators.format.shouldHaveRequiredProp(token);
 };
 
 export default isTokenObj;

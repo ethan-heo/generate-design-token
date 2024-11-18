@@ -2,7 +2,7 @@ import * as Types from "@types";
 import {
 	shouldNotHaveDollarPrefix,
 	shouldHaveRequiredProp,
-} from "./utils/validation";
+} from "./utils/validators/format";
 import { isTokenObj, TypeCheckers } from "@utils";
 import transformPropsToTokenRef from "./utils/transformers/to-token-ref";
 
