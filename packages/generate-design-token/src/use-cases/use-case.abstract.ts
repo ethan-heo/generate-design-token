@@ -1,6 +1,6 @@
-import Token, { TokenResult } from "../Token";
+import Token, { TokenResult } from "../token";
 import { TOKEN_REF_REGEXP } from "@constants";
-import { isTokenObj, transformPropsToTokenRef } from "@utils";
+import { isTokenObj, Transformers } from "@utils";
 
 abstract class UseCase<UC extends TokenResult, Ref extends TokenResult> {
 	/**
@@ -21,7 +21,7 @@ abstract class UseCase<UC extends TokenResult, Ref extends TokenResult> {
 
 		for (const useCase of useCases) {
 			const foundReferredToken = this.findReferredToken(
-				transformPropsToTokenRef(useCase[0]),
+				Transformers.toTokenRef(useCase[0]),
 				referredTokens,
 			);
 
@@ -78,7 +78,7 @@ abstract class UseCase<UC extends TokenResult, Ref extends TokenResult> {
 
 		for (const token of tokens) {
 			const foundToken = token.find(
-				(props) => transformPropsToTokenRef(props) === tokenRef,
+				(props) => Transformers.toTokenRef(props) === tokenRef,
 			) as Ref;
 
 			if (foundToken) {
@@ -111,7 +111,7 @@ abstract class UseCase<UC extends TokenResult, Ref extends TokenResult> {
 	 */
 	protected updateTokenObjValue(value: any, props: string[]) {
 		if (typeof value === "string") {
-			return value.replace(`{$value}`, `{${transformPropsToTokenRef(props)}}`);
+			return value.replace(`{$value}`, `{${Transformers.toTokenRef(props)}}`);
 		}
 
 		if (Array.isArray(value)) {

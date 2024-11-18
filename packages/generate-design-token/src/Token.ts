@@ -4,7 +4,7 @@ import {
 	shouldHaveRequiredProp,
 } from "./utils/validation";
 import { isTokenObj, TypeCheckers } from "@utils";
-import transformPropsToTokenRef from "./utils/transformPropsToTokenRef";
+import transformPropsToTokenRef from "./utils/transformers/to-token-ref";
 
 export type TokenResult = [string[], Types.TokenGroup | Types.TokenObjs];
 

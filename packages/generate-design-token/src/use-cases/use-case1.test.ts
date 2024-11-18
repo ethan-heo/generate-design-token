@@ -1,8 +1,8 @@
 import { expect, it } from "vitest";
-import UseCase1 from "./UseCase1";
-import Token, { TokenResult } from "../Token";
+import UseCase1 from "./use-case1";
+import Token, { TokenResult } from "../token";
 import * as Types from "@types";
-import { transformPropsToTokenRef } from "@utils";
+import { Transformers } from "@utils";
 
 const Tokens = [
 	{
@@ -44,7 +44,7 @@ it.each([
 		case1.transform(token, Tokens);
 
 		expect(
-			token.find((props) => transformPropsToTokenRef(props) === "white"),
+			token.find((props) => Transformers.toTokenRef(props) === "white"),
 		).toStrictEqual(expected);
 	},
 );

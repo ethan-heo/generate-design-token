@@ -1,6 +1,6 @@
-import { isTokenObj, transformPropsToTokenRef, TypeCheckers } from "@utils";
+import { isTokenObj, Transformers, TypeCheckers } from "@utils";
 import * as Types from "@types";
-import Token from "./Token";
+import Token from "./token";
 import { TOKEN_REF_REGEXP } from "@constants";
 
 type TokenValue = [string[], Types.TokenObjs];
@@ -138,7 +138,7 @@ class Parser {
 
 		for (const raw of raws) {
 			const foundTokenObj = raw.find(
-				(props) => transformPropsToTokenRef(props) === tokenRef.slice(1, -1),
+				(props) => Transformers.toTokenRef(props) === tokenRef.slice(1, -1),
 			) as TokenValue;
 
 			if (foundTokenObj) {

@@ -1,7 +1,7 @@
 import * as Types from "@types";
 import UseCases from "@use-cases";
-import Token from "./Token";
-import Parser from "./Parser";
+import Token from "./token";
+import Parser from "./parser";
 
 const generateDesignToken = (
 	base: Types.TokenGroup,

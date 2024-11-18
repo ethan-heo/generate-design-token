@@ -1,9 +1,9 @@
-import Token from "../Token";
-import UseCase from "./UseCase.abstract";
-import UseCase1 from "./UseCase1";
-import UseCase2 from "./UseCase2";
-import UseCase3 from "./UseCase3";
-import UseCase4 from "./UseCase4";
+import Token from "../token";
+import UseCase from "./use-case.abstract";
+import UseCase1 from "./use-case1";
+import UseCase2 from "./use-case2";
+import UseCase3 from "./use-case3";
+import UseCase4 from "./use-case4";
 
 class UseCases {
 	#useCases: UseCase<any, any>[];

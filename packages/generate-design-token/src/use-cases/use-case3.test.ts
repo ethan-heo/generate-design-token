@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
-import Token, { TokenResult } from "../Token";
-import UseCase4 from "./UseCase4";
+import Token, { TokenResult } from "../token";
 import * as Types from "@types";
+import UseCase3 from "./use-case3";
 import { isTokenObj } from "@utils";
 
 const Tokens = [
@@ -23,7 +23,7 @@ it.each([
 	[
 		{
 			border: {
-				"{color}": {
+				"{color.white}": {
 					thin: {
 						$type: "string",
 						$value: "1px solid {$value}",
@@ -34,8 +34,32 @@ it.each([
 					},
 				},
 			},
+			"{color.white}": {
+				thin: {
+					$type: "string",
+					$value: "1px solid {$value}",
+				},
+				large: {
+					$type: "string",
+					$value: "2px solid {$value}",
+				},
+			},
 		},
 		[
+			[
+				["white", "thin"],
+				{
+					$type: "string",
+					$value: "1px solid {color.white}",
+				},
+			],
+			[
+				["white", "large"],
+				{
+					$type: "string",
+					$value: "2px solid {color.white}",
+				},
+			],
 			[
 				["border", "white", "thin"],
 				{
@@ -50,29 +74,15 @@ it.each([
 					$value: "2px solid {color.white}",
 				},
 			],
-			[
-				["border", "black", "thin"],
-				{
-					$type: "string",
-					$value: "1px solid {color.black}",
-				},
-			],
-			[
-				["border", "black", "large"],
-				{
-					$type: "string",
-					$value: "2px solid {color.black}",
-				},
-			],
 		],
 	],
 ] as unknown as [Types.TokenGroup, TokenResult[]][])(
-	`UseCase4.transformTokens() should transform tokens correctly`,
+	`UseCase3.transformTokens() should transform tokens correctly`,
 	(baseToken, expected) => {
 		const token = new Token(baseToken);
-		const useCase4 = new UseCase4();
+		const useCase3 = new UseCase3();
 
-		useCase4.transform(token, Tokens);
+		useCase3.transform(token, Tokens);
 
 		expect(token.findAll((_, token) => isTokenObj(token))).toStrictEqual(
 			expected,

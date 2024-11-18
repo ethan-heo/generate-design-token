@@ -1,4 +1,4 @@
-export { default as isTokenObj } from "./isTokenObj";
-export { default as transformPropsToTokenRef } from "./transformPropsToTokenRef";
-export * as TypeCheckers from "./typeCheckers";
+export { default as isTokenObj } from "./is-token-obj";
+export * as Transformers from "./transformers";
+export * as TypeCheckers from "./type-checker";
 export * as TokenValidators from "./validation";
