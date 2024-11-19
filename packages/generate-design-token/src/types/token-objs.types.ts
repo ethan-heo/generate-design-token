@@ -132,7 +132,7 @@ export type StrokeStyle = CreateTokenObj<{
 		| "outset"
 		| "inset"
 		| {
-				dashArray: ({ value: number; unit: "px" | "rem" } | string)[];
+				dashArray: (Dimension["$value"] | string)[];
 				lineCap: "round" | "butt" | "square";
 		  };
 }>;
@@ -205,7 +205,7 @@ export type Typography = CreateTokenObj<{
 	$value: {
 		fontFamily: FontFamily["$value"];
 		fontSize: string | Dimension["$value"];
-		fontWeight: number;
+		fontWeight: FontWeight["$value"];
 		letterSpacing: string | Dimension["$value"];
 		lineHeight: number;
 	};

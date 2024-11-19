@@ -1,4 +1,4 @@
 export { default as isTokenObj } from "./is-token-obj";
 export * as Transformers from "./transformers";
 export * as TypeCheckers from "./type-checker";
-export * as Validators from "./validators";
+export * as Validate from "./validate";
