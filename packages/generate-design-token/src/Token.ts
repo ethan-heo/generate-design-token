@@ -2,9 +2,8 @@ import * as Types from "@types";
 import {
 	shouldNotHaveDollarPrefix,
 	shouldHaveRequiredProp,
-} from "./utils/validators/format";
-import { isTokenObj, TypeCheckers } from "@utils";
-import transformPropsToTokenRef from "./utils/transformers/to-token-ref";
+} from "./utils/validate/format";
+import { isTokenObj, TypeCheckers, Transformers } from "@utils";
 
 export type TokenResult = [string[], Types.TokenGroup | Types.TokenObj];
 
@@ -63,11 +62,11 @@ class Token {
 	delete(props: string[]) {
 		let parentToken: Types.TokenGroup = this.#token;
 		const prop = props.pop()!;
-		const tokenRef = transformPropsToTokenRef(props);
+		const tokenRef = Transformers.toTokenRef(props);
 
 		if (props.length > 0) {
 			this.#iterator(this.#token, (props, token) => {
-				if (transformPropsToTokenRef(props) === tokenRef) {
+				if (Transformers.toTokenRef(props) === tokenRef) {
 					parentToken = token;
 				}
 			});
