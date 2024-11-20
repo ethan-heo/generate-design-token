@@ -40,28 +40,7 @@ class Parser {
 		};
 
 		for (const [_, tokenObj] of tokenObjs) {
-			if (TypeCheckers.isString(tokenObj.$value)) {
-				tokenObj.$value = tokenObj.$value.replace(
-					new RegExp(TOKEN_REF_REGEXP, "g"),
-					(tokenRef) => {
-						const transformedValue = transformTokenRefToValue(tokenRef);
-
-						if (!TypeCheckers.isString(transformedValue)) {
-							throw new Error(
-								`문자열 형식의 값에는 문자열 또는 숫자만 치환할 수 있습니다. ${tokenRef}`,
-							);
-						}
-
-						if (TypeCheckers.isNumber(transformedValue)) {
-							return `${transformedValue}`;
-						}
-
-						return transformedValue;
-					},
-				);
-			} else {
-				tokenObj.$value = transformTokenRefToValue(tokenObj.$value);
-			}
+			tokenObj.$value = transformTokenRefToValue(tokenObj.$value);
 		}
 
 		return clonedBase;
