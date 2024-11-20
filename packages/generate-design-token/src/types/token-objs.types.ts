@@ -14,6 +14,7 @@ type CreateTokenObj<T> = T extends { $value: any }
 export type Dimension = CreateTokenObj<{
 	$type: "dimension";
 	$value:
+		| string
 		| `${number}${"px" | "rem"}`
 		| {
 				value: number;
@@ -27,7 +28,7 @@ export type Dimension = CreateTokenObj<{
  */
 export type Color = CreateTokenObj<{
 	$type: "color";
-	$value: `#${string}`;
+	$value: string | `#${string}`;
 }>;
 
 /**
@@ -44,6 +45,7 @@ export type FontFamily = CreateTokenObj<{
 export type FontWeight = CreateTokenObj<{
 	$type: "fontWeight";
 	$value:
+		| string
 		| 100
 		| 200
 		| 300
@@ -79,10 +81,12 @@ export type FontWeight = CreateTokenObj<{
  */
 export type Duration = CreateTokenObj<{
 	$type: "duration";
-	$value: {
-		value: number;
-		unit: `${"ms" | "s"}`;
-	};
+	$value:
+		| string
+		| {
+				value: number;
+				unit: `${"ms" | "s"}`;
+		  };
 }>;
 
 /**
@@ -90,7 +94,7 @@ export type Duration = CreateTokenObj<{
  */
 export type CubicBezier = CreateTokenObj<{
 	$type: "cubicBezier";
-	$value: [number, number, number, number];
+	$value: string | [number, number, number, number];
 }>;
 
 /**
@@ -106,7 +110,7 @@ export type String = CreateTokenObj<{
  */
 export type Number = CreateTokenObj<{
 	$type: "number";
-	$value: number;
+	$value: string | number;
 }>;
 
 /**
@@ -114,7 +118,7 @@ export type Number = CreateTokenObj<{
  */
 export type Composite = CreateTokenObj<{
 	$type: "composite";
-	$value: Record<string, any>;
+	$value: string | Record<string, any>;
 }>;
 
 /**
@@ -123,6 +127,7 @@ export type Composite = CreateTokenObj<{
 export type StrokeStyle = CreateTokenObj<{
 	$type: "strokeStyle";
 	$value:
+		| string
 		| "solid"
 		| "dashed"
 		| "dotted"
@@ -142,22 +147,24 @@ export type StrokeStyle = CreateTokenObj<{
  */
 export type Border = CreateTokenObj<{
 	$type: "border";
-	$value: {
-		width: string | Dimension["$value"];
-		style:
-			| string
-			| "none"
-			| "hidden"
-			| "dotted"
-			| "dashed"
-			| "solid"
-			| "double"
-			| "groove"
-			| "ridge"
-			| "inset"
-			| "outset";
-		color: string | Color["$value"];
-	};
+	$value:
+		| string
+		| {
+				width: string | Dimension["$value"];
+				style:
+					| string
+					| "none"
+					| "hidden"
+					| "dotted"
+					| "dashed"
+					| "solid"
+					| "double"
+					| "groove"
+					| "ridge"
+					| "inset"
+					| "outset";
+				color: string | Color["$value"];
+		  };
 }>;
 
 /**
@@ -165,11 +172,13 @@ export type Border = CreateTokenObj<{
  */
 export type Transition = CreateTokenObj<{
 	$type: "transition";
-	$value: {
-		duration: string | Duration["$value"];
-		delay: string | Duration["$value"];
-		timingFunction: string | CubicBezier["$value"];
-	};
+	$value:
+		| string
+		| {
+				duration: string | Duration["$value"];
+				delay: string | Duration["$value"];
+				timingFunction: string | CubicBezier["$value"];
+		  };
 }>;
 
 /**
@@ -177,13 +186,15 @@ export type Transition = CreateTokenObj<{
  */
 export type Shadow = CreateTokenObj<{
 	$type: "shadow";
-	$value: {
-		offsetX: string | Dimension["$value"];
-		offsetY: string | Dimension["$value"];
-		blur: string | Dimension["$value"];
-		spread: string | Dimension["$value"];
-		color: string | Color["$value"];
-	};
+	$value:
+		| string
+		| {
+				offsetX: string | Dimension["$value"];
+				offsetY: string | Dimension["$value"];
+				blur: string | Dimension["$value"];
+				spread: string | Dimension["$value"];
+				color: string | Color["$value"];
+		  };
 }>;
 
 /**
@@ -191,10 +202,12 @@ export type Shadow = CreateTokenObj<{
  */
 export type Gradient = CreateTokenObj<{
 	$type: "gradient";
-	$value: {
-		color: string | Color["$value"];
-		position: number;
-	}[];
+	$value:
+		| string
+		| {
+				color: string | Color["$value"];
+				position: number;
+		  }[];
 }>;
 
 /**
@@ -202,13 +215,15 @@ export type Gradient = CreateTokenObj<{
  */
 export type Typography = CreateTokenObj<{
 	$type: "typography";
-	$value: {
-		fontFamily: FontFamily["$value"];
-		fontSize: string | Dimension["$value"];
-		fontWeight: FontWeight["$value"];
-		letterSpacing: string | Dimension["$value"];
-		lineHeight: number;
-	};
+	$value:
+		| string
+		| {
+				fontFamily: string | FontFamily["$value"];
+				fontSize: string | Dimension["$value"];
+				fontWeight: string | FontWeight["$value"];
+				letterSpacing: string | Dimension["$value"];
+				lineHeight: string | number;
+		  };
 }>;
 
 type TokenObj =

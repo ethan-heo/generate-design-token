@@ -1,3 +1,5 @@
+import { TOKEN_REF_REGEXP } from "@constants";
+
 /**
  * @description 토큰 객체의 필수 속성이 포함되어 있는지 확인한다
  * @returns
@@ -39,4 +41,19 @@ export const shouldNotHaveDollarPrefix = (value: {}): boolean => {
 	}
 
 	return result;
+};
+
+/**
+ * @description 주어진 문자열이 토큰 참조값만 포함되어 있는지 확인한다.
+ * @param {string} tokenRef
+ * @returns {boolean} 토큰 참조가 포함된 문자열이면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+export const shouldBeOnlyTokenRef = (tokenRef: string) => {
+	const matchedTokenRef = tokenRef.match(TOKEN_REF_REGEXP);
+
+	if (!matchedTokenRef) {
+		return false;
+	}
+
+	return matchedTokenRef[0] === tokenRef;
 };
