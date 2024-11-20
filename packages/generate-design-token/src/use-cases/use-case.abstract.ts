@@ -22,7 +22,7 @@ abstract class UseCase<UC extends TokenResult, Ref extends TokenResult> {
 		for (const useCase of useCases) {
 			const foundReferredToken = this.findReferredToken(
 				Transformers.toTokenRef(useCase[0]),
-				referredTokens,
+				[baseToken, ...referredTokens],
 			);
 
 			if (!foundReferredToken) {
