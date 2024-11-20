@@ -1,3 +1,3 @@
 export * as format from "./format";
-export * as tokenObjs from "./token-objs";
+export * as token from "./token";
 export * as is from "./is";
