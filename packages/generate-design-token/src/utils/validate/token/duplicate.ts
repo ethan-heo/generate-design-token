@@ -2,6 +2,13 @@ import * as Types from "@types";
 import { Transformers } from "@utils";
 import Token from "../../../token";
 
+/**
+ * 주어진 토큰 경로가 토큰 내부에 중복으로 존재하는지 확인합니다.
+ *
+ * @param {Token | Types.TokenGroup} token
+ * @param {string} tokenRef
+ * @returns {boolean}
+ */
 const duplicate = (token: Token | Types.TokenGroup, tokenRef: string) => {
 	let _token = token;
 
