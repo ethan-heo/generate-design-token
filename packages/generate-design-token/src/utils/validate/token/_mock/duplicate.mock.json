@@ -1,0 +1,12 @@
+{
+	"color": {
+		"primary": {
+			"$type": "'color'",
+			"$value": "'#ff0000'"
+		},
+		"primary": {
+			"$type": "'color'",
+			"$value": "'#ff0000'"
+		}
+	}
+}

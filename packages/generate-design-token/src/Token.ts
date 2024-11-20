@@ -1,8 +1,5 @@
 import * as Types from "@types";
-import {
-	shouldNotHaveDollarPrefix,
-	shouldHaveRequiredProp,
-} from "./utils/validate/format";
+import { Validate } from "@utils";
 import { isTokenObj, TypeCheckers, Transformers } from "@utils";
 
 export type TokenResult = [string[], Types.TokenGroup | Types.TokenObj];
@@ -167,8 +164,11 @@ class Token {
 		//3. 토큰 객체 타입별 값의 형식 체크
 		//3-1. 값의 유효한 값인지 확인
 		this.#iterator(token, (_, _token) => {
-			if (typeof _token === "object" && shouldHaveRequiredProp(_token)) {
-				if (shouldNotHaveDollarPrefix(_token)) {
+			if (
+				typeof _token === "object" &&
+				Validate.format.shouldHaveRequiredProp(_token)
+			) {
+				if (Validate.format.shouldNotHaveDollarPrefix(_token)) {
 					throw new Error(
 						`토큰 객체의 속성값의 이름은 $가 prefix로 시작해야합니다.`,
 					);

@@ -115,18 +115,18 @@ const TOKEN_OBJS: Record<Types.TokenObj["$type"], Types.TokenObj> = {
 };
 
 it(`Validator.tokenObj.is`, () => {
-	expect(Validate.is.border(TOKEN_OBJS.border)).toBeTruthy();
-	expect(Validate.is.color(TOKEN_OBJS.color)).toBeTruthy();
-	expect(Validate.is.fontFamily(TOKEN_OBJS.fontFamily)).toBeTruthy();
-	expect(Validate.is.fontWeight(TOKEN_OBJS.fontWeight)).toBeTruthy();
-	expect(Validate.is.duration(TOKEN_OBJS.duration)).toBeTruthy();
-	expect(Validate.is.cubicBezier(TOKEN_OBJS.cubicBezier)).toBeTruthy();
-	expect(Validate.is.number(TOKEN_OBJS.number)).toBeTruthy();
-	expect(Validate.is.string(TOKEN_OBJS.string)).toBeTruthy();
-	expect(Validate.is.composite(TOKEN_OBJS.composite)).toBeTruthy();
-	expect(Validate.is.strokeStyle(TOKEN_OBJS.strokeStyle)).toBeTruthy();
-	expect(Validate.is.transition(TOKEN_OBJS.transition)).toBeTruthy();
-	expect(Validate.is.shadow(TOKEN_OBJS.shadow)).toBeTruthy();
-	expect(Validate.is.gradient(TOKEN_OBJS.gradient)).toBeTruthy();
-	expect(Validate.is.typography(TOKEN_OBJS.typography)).toBeTruthy();
+	expect(Validate.token.is.border(TOKEN_OBJS.border)).toBeTruthy();
+	expect(Validate.token.is.color(TOKEN_OBJS.color)).toBeTruthy();
+	expect(Validate.token.is.fontFamily(TOKEN_OBJS.fontFamily)).toBeTruthy();
+	expect(Validate.token.is.fontWeight(TOKEN_OBJS.fontWeight)).toBeTruthy();
+	expect(Validate.token.is.duration(TOKEN_OBJS.duration)).toBeTruthy();
+	expect(Validate.token.is.cubicBezier(TOKEN_OBJS.cubicBezier)).toBeTruthy();
+	expect(Validate.token.is.number(TOKEN_OBJS.number)).toBeTruthy();
+	expect(Validate.token.is.string(TOKEN_OBJS.string)).toBeTruthy();
+	expect(Validate.token.is.composite(TOKEN_OBJS.composite)).toBeTruthy();
+	expect(Validate.token.is.strokeStyle(TOKEN_OBJS.strokeStyle)).toBeTruthy();
+	expect(Validate.token.is.transition(TOKEN_OBJS.transition)).toBeTruthy();
+	expect(Validate.token.is.shadow(TOKEN_OBJS.shadow)).toBeTruthy();
+	expect(Validate.token.is.gradient(TOKEN_OBJS.gradient)).toBeTruthy();
+	expect(Validate.token.is.typography(TOKEN_OBJS.typography)).toBeTruthy();
 });
