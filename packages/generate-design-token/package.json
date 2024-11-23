@@ -12,10 +12,10 @@
 	"license": "MIT",
 	"author": "ethan-heo <ethanheo.dev@gmail.com> (https://github.com/ethan-heo/generate-design-token)",
 	"scripts": {
-		"test": "vitest --config ./configs/vitest.config.js",
+		"test": "vitest --config ./configs/vitest.config.ts",
 		"build": "rollup --config ./configs/rollup.config.ts --bundleConfigAsCjs --configPlugin typescript ",
 		"prettier": "prettier . --write",
-		"badge": "node ./scripts/createBadge.js"
+		"badge": "node ./scripts/create-badge.js"
 	},
 	"devDependencies": {
 		"@ethanheo/ts-utils": "^0.3.0",

@@ -1,18 +1,13 @@
 import { expect, it } from "vitest";
-import Parser from "./Parser";
-import Token from "./Token";
-import * as Types from "./types";
+import Parser from "./parser";
+import Token from "./token";
 
 const Tokens = [
 	{
 		color: {
 			white: {
 				$type: "color",
-				$value: [
-					{
-						color: "{color.primary.2}",
-					},
-				],
+				$value: "{color.primary.2}",
 			},
 			black: {
 				$type: "color",
@@ -23,7 +18,7 @@ const Tokens = [
 				$value: "{color.b}",
 			},
 		},
-	} as unknown as Types.TokenGroup,
+	},
 	{
 		color: {
 			primary: {
@@ -41,7 +36,7 @@ const Tokens = [
 				$value: "{color.c}",
 			},
 		},
-	} as unknown as Types.TokenGroup,
+	},
 	{
 		color: {
 			secondary: {
@@ -59,7 +54,7 @@ const Tokens = [
 				$value: "{color.b}",
 			},
 		},
-	} as unknown as Types.TokenGroup,
+	},
 	{
 		"border-width": {
 			1: {
@@ -83,11 +78,11 @@ const Tokens = [
 				$value: "groove",
 			},
 		},
-	} as Types.TokenGroup,
+	},
 ].map((token) => new Token(token));
 
 it.each([
-	["{color.white}", [{ color: "#00ff00" }]],
+	["{color.white}", "#00ff00"],
 	["{color.secondary.1}", "#0000ff"],
 ])(`Parser.findValueBy(%o)`, (tokenRef, expected) => {
 	const parser = new Parser();
@@ -123,7 +118,7 @@ it(`Parser.parse()`, () => {
 				$value: "solid",
 			},
 		},
-	} as unknown as Types.TokenGroup);
+	});
 
 	expect(new Parser().parse(base, Tokens).getToken()).toStrictEqual({
 		stroke: {

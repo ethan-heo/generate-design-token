@@ -1,34 +1,32 @@
-import isTokenObj from "./isTokenObj";
-import { TOKEN_REF_REGEXP } from "./regexp";
-import Token from "./Token";
-import transformPropsToTokenRef from "./transformPropsToTokenRef";
-import { isArray, isNumber, isObject, isString } from "./typeCheckers";
-import * as Types from "./types";
+import { isTokenObj, Transformers, TypeCheckers } from "@utils";
+import * as Types from "@types";
+import Token from "./token";
+import { TOKEN_REF_REGEXP } from "@constants";
 
-type TokenValue = [string[], Types.TokenObjs];
+type TokenValue = [string[], Types.TokenObj];
 
 class Parser {
 	parse(base: Token, raws: Token[]) {
 		const clonedBase = base.clone();
 		const tokenObjs = clonedBase.findAll((_, token) => isTokenObj(token));
-		const transformTokenRefToValue = (value: Types.TokenObjs["$value"]) => {
-			if (isString(value)) {
+		const transformTokenRefToValue = (value: Types.TokenObj["$value"]) => {
+			if (TypeCheckers.isString(value)) {
 				return this.findValueBy(value, [base, ...raws]);
 			}
 
-			if (isArray(value)) {
+			if (TypeCheckers.isArray(value)) {
 				const result: any[] = [];
 
 				for (const v of value) {
 					result.push(
-						transformTokenRefToValue(v as unknown as Types.TokenObjs["$value"]),
+						transformTokenRefToValue(v as unknown as Types.TokenObj["$value"]),
 					);
 				}
 
-				return result as Types.TokenObjs["$value"];
+				return result as Types.TokenObj["$value"];
 			}
 
-			if (isObject(value)) {
+			if (TypeCheckers.isObject(value)) {
 				const result = {};
 
 				for (const prop in value) {
@@ -42,28 +40,7 @@ class Parser {
 		};
 
 		for (const [_, tokenObj] of tokenObjs) {
-			if (isString(tokenObj.$value)) {
-				tokenObj.$value = tokenObj.$value.replace(
-					new RegExp(TOKEN_REF_REGEXP, "g"),
-					(tokenRef) => {
-						const transformedValue = transformTokenRefToValue(tokenRef);
-
-						if (!isString(transformedValue)) {
-							throw new Error(
-								`문자열 형식의 값에는 문자열 또는 숫자만 치환할 수 있습니다. ${tokenRef}`,
-							);
-						}
-
-						if (isNumber(transformedValue)) {
-							return `${transformedValue}`;
-						}
-
-						return transformedValue;
-					},
-				);
-			} else {
-				tokenObj.$value = transformTokenRefToValue(tokenObj.$value);
-			}
+			tokenObj.$value = transformTokenRefToValue(tokenObj.$value);
 		}
 
 		return clonedBase;
@@ -79,7 +56,7 @@ class Parser {
 		tokenRef: string,
 		raws: Token[],
 		circularReferenceMap = new Map<string, string>(),
-	): Types.TokenObjs["$value"] {
+	): Types.TokenObj["$value"] {
 		if (!tokenRef.match(TOKEN_REF_REGEXP)) {
 			return tokenRef;
 		}
@@ -98,7 +75,7 @@ class Parser {
 			return temp === referringTokenRef;
 		};
 		const recur = (referringTokenRef: string, value: unknown) => {
-			if (isString(value)) {
+			if (TypeCheckers.isString(value)) {
 				const matchedTokenRef = value.match(TOKEN_REF_REGEXP);
 
 				if (matchedTokenRef) {
@@ -122,11 +99,11 @@ class Parser {
 				}
 			}
 
-			if (isArray(value)) {
+			if (TypeCheckers.isArray(value)) {
 				return value.map((value) => recur(referringTokenRef, value));
 			}
 
-			if (isObject(value)) {
+			if (TypeCheckers.isObject(value)) {
 				return Object.fromEntries(
 					Object.entries(value).map(([key, value]) => [
 						key,
@@ -140,7 +117,7 @@ class Parser {
 
 		for (const raw of raws) {
 			const foundTokenObj = raw.find(
-				(props) => transformPropsToTokenRef(props) === tokenRef.slice(1, -1),
+				(props) => Transformers.toTokenRef(props) === tokenRef.slice(1, -1),
 			) as TokenValue;
 
 			if (foundTokenObj) {

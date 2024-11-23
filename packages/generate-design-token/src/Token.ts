@@ -1,13 +1,8 @@
-import * as Types from "./types";
-import {
-	shouldNotHaveDollarPrefix,
-	shouldHaveRequiredProp,
-} from "./validation";
-import isTokenObj from "./isTokenObj";
-import transformPropsToTokenRef from "./transformPropsToTokenRef";
-import { isObject } from "./typeCheckers";
+import * as Types from "@types";
+import { Validate } from "@utils";
+import { isTokenObj, TypeCheckers, Transformers } from "@utils";
 
-export type TokenResult = [string[], Types.TokenGroup | Types.TokenObjs];
+export type TokenResult = [string[], Types.TokenGroup | Types.TokenObj];
 
 type Iteratee = (
 	props: string[],
@@ -64,11 +59,11 @@ class Token {
 	delete(props: string[]) {
 		let parentToken: Types.TokenGroup = this.#token;
 		const prop = props.pop()!;
-		const tokenRef = transformPropsToTokenRef(props);
+		const tokenRef = Transformers.toTokenRef(props);
 
 		if (props.length > 0) {
 			this.#iterator(this.#token, (props, token) => {
-				if (transformPropsToTokenRef(props) === tokenRef) {
+				if (Transformers.toTokenRef(props) === tokenRef) {
 					parentToken = token;
 				}
 			});
@@ -86,7 +81,7 @@ class Token {
 	 * @param props 토큰을 추가할 참조값
 	 * @param token 추가할 토큰
 	 */
-	add(props: string[], token: Types.TokenGroup | Types.TokenObjs) {
+	add(props: string[], token: Types.TokenGroup | Types.TokenObj) {
 		const newProp = props.pop()!;
 		let temp = this.#token;
 
@@ -143,7 +138,7 @@ class Token {
 
 			callback(this.#clone(props), token);
 
-			if (isObject(token) && !isTokenObj(token)) {
+			if (TypeCheckers.isObject(token) && !isTokenObj(token)) {
 				const item = Object.entries(token) as [string, Types.TokenGroup][];
 
 				stack.push(item);
@@ -164,9 +159,16 @@ class Token {
 	}
 
 	#validate(token: Types.TokenGroup) {
+		//1. 중복 속성 체크
+		//2. $extension 속성은 무조건 JSON
+		//3. 토큰 객체 타입별 값의 형식 체크
+		//3-1. 값의 유효한 값인지 확인
 		this.#iterator(token, (_, _token) => {
-			if (typeof _token === "object" && shouldHaveRequiredProp(_token)) {
-				if (shouldNotHaveDollarPrefix(_token)) {
+			if (
+				typeof _token === "object" &&
+				Validate.format.shouldHaveRequiredProp(_token)
+			) {
+				if (Validate.format.shouldNotHaveDollarPrefix(_token)) {
 					throw new Error(
 						`토큰 객체의 속성값의 이름은 $가 prefix로 시작해야합니다.`,
 					);

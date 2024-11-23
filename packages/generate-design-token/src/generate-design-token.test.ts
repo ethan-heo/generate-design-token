@@ -1,14 +1,9 @@
-import { generateDesignToken } from ".";
+import generateDesignToken from "./generate-design-token";
 import { expect, it } from "vitest";
-import baseToken from "./_mocks/baseToken.json";
-import referredToken from "./_mocks/referredToken.json";
-import generatedToken from "./_mocks/generated.json";
-import * as Types from "./types";
+import base from "./_mocks/base.tokens.json";
+import raws from "./_mocks/raws.tokens.json";
+import generatedToken from "./_mocks/generated.tokens.json";
 
 it(`generateDesignToken`, () => {
-	expect(
-		generateDesignToken(baseToken.token as Types.TokenGroup, [
-			referredToken as Types.TokenGroup,
-		]),
-	).toEqual(generatedToken);
+	expect(generateDesignToken(base.token, [raws])).toEqual(generatedToken);
 });
