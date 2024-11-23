@@ -1,0 +1,142 @@
+import { isTokenObj, isTokenRef, Transformers, TypeCheckers } from "@utils";
+import Token from "../token";
+import * as Types from "@types";
+
+type TokenObjValue = [string[], Types.TokenObj];
+
+const copyObj = <Obj extends object, T extends (...args: any[]) => any>(
+	obj: Obj,
+	callback: T,
+) => {
+	return Object.fromEntries(
+		Object.entries(obj).map(([key, value]) => [key, callback(value)]),
+	);
+};
+
+const copyArr = <Arr extends any[], T extends (...args: any[]) => any>(
+	arr: Arr,
+	callback: T,
+) => {
+	return arr.map(callback);
+};
+
+const findValueBy = (
+	tokenRef: string,
+	refTokens: Token[],
+	circularRefMap = new Map<string, string>(),
+): Types.TokenObj["$value"] => {
+	let token: TokenObjValue | null = null;
+
+	for (const raw of refTokens) {
+		const foundTokenObj = raw.find(
+			(props) => Transformers.toTokenRef(props) === tokenRef.slice(1, -1),
+		) as TokenObjValue;
+
+		if (foundTokenObj) {
+			token = foundTokenObj!;
+			break;
+		}
+	}
+
+	if (!token) {
+		throw new Error(`정의되지 않은 토큰입니다: ${tokenRef}`);
+	}
+
+	const [, tokenObj] = token;
+
+	return recursiveFindValueBy(tokenRef, tokenObj.$value);
+
+	/**
+	 * 참조하는 토큰 키와 참조되는 토큰 키가 서로 순환 참조하고 있는지 확인합니다.
+	 * 순환 참조가 발견되면 Error를 throw합니다.
+	 * @param referringKey - 참조하는 토큰 키
+	 * @param referredKey - 참조되는 토큰 키
+	 */
+	function checkCircularRef(referringKey: string, referredKey: string) {
+		let temp: string | undefined = referredKey;
+
+		circularRefMap.set(referringKey, referredKey);
+
+		while (temp && temp !== referringKey) {
+			temp = circularRefMap.get(temp!);
+		}
+
+		if (temp === referringKey) {
+			throw new Error(
+				`${referringKey}와 ${referredKey}가 서로 순환 참조하고 있습니다`,
+			);
+		}
+	}
+
+	/**
+	 * 참조된 토큰값을 재귀적으로 찾아 값을 반환합니다.
+	 * @param referringTokenRef - 참조하는 토큰 키
+	 * @param value - 찾을 토큰의 값
+	 * @returns 찾은 토큰의 값
+	 */
+	function recursiveFindValueBy<T extends Types.TokenObj["$value"]>(
+		referringTokenRef: string,
+		value: T,
+	) {
+		if (TypeCheckers.isString(value)) {
+			if (isTokenRef(value)) {
+				checkCircularRef(referringTokenRef, value);
+
+				return findValueBy(value, refTokens, circularRefMap) as string;
+			} else {
+				return value;
+			}
+		}
+
+		if (TypeCheckers.isArray(value)) {
+			return copyArr(value, (_value) => {
+				return recursiveFindValueBy(referringTokenRef, _value);
+			});
+		}
+
+		if (TypeCheckers.isObject(value)) {
+			return copyObj(value, (_value) => {
+				return recursiveFindValueBy(referringTokenRef, _value);
+			});
+		}
+
+		return value;
+	}
+};
+
+const parse = (base: Token, refTokens: Token[]): Token => {
+	const result = base.clone();
+
+	for (const [, tokenObj] of result.findAll((_, token) =>
+		isTokenObj(token),
+	) as TokenObjValue[]) {
+		tokenObj.$value = recursiveParse(
+			tokenObj.$value,
+		) as Types.TokenObj["$value"];
+	}
+
+	return result;
+
+	/**
+	 * 재귀적으로 참조된 토큰값을 찾아 값을 반환합니다.
+	 * @param value - 찾을 토큰의 값
+	 * @returns 찾은 토큰의 값
+	 */
+	function recursiveParse(value: Types.TokenObj["$value"]) {
+		if (TypeCheckers.isString(value) && isTokenRef(value)) {
+			return findValueBy(value, refTokens);
+		} else {
+			if (TypeCheckers.isArray(value)) {
+				return copyArr(value, recursiveParse);
+			}
+
+			if (TypeCheckers.isObject(value)) {
+				return copyObj(value, recursiveParse);
+			}
+		}
+
+		return value;
+	}
+};
+
+export default parse;
