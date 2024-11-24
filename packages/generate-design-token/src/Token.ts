@@ -1,19 +1,15 @@
-import * as Types from "@types";
+import { TokenGroup, TokenObj } from "@types";
 import { Validate } from "@utils";
 import { isTokenObj, TypeCheckers, Transformers } from "@utils";
 
-export type TokenResult = [string[], Types.TokenGroup | Types.TokenObj];
+export type TokenResult = [string[], TokenGroup | TokenObj];
 
-type Iteratee = (
-	props: string[],
-	token: Types.TokenGroup,
-	self: Token,
-) => boolean;
+type Iteratee = (props: string[], token: TokenGroup, self: Token) => boolean;
 
 class Token {
-	#token: Types.TokenGroup;
+	#token: TokenGroup;
 
-	constructor(token: Types.TokenGroup) {
+	constructor(token: TokenGroup) {
 		// 유효성 검사
 		this.#validate(token);
 		this.#token = token;
@@ -57,7 +53,7 @@ class Token {
 	 * @throws {Error} parent token이 존재하지 않을 때
 	 */
 	delete(props: string[]) {
-		let parentToken: Types.TokenGroup = this.#token;
+		let parentToken: TokenGroup = this.#token;
 		const prop = props.pop()!;
 		const tokenRef = Transformers.toTokenRef(props);
 
@@ -81,7 +77,7 @@ class Token {
 	 * @param props 토큰을 추가할 참조값
 	 * @param token 추가할 토큰
 	 */
-	add(props: string[], token: Types.TokenGroup | Types.TokenObj) {
+	add(props: string[], token: TokenGroup | TokenObj) {
 		const newProp = props.pop()!;
 		let temp = this.#token;
 
@@ -90,7 +86,7 @@ class Token {
 				temp[prop] = {};
 			}
 
-			temp = temp[prop] as Types.TokenGroup;
+			temp = temp[prop] as TokenGroup;
 		}
 
 		temp[newProp] = token;
@@ -109,7 +105,7 @@ class Token {
 	 * @param callback 토큰을 순회하는 콜백. 첫 번째 인자로 토큰의 경로를, 두 번째 인자로 토큰을 받는다.
 	 * @returns 주어진 콜백을 적용한 결과를 반환한다.
 	 */
-	map(callback: (props: string[], token: Types.TokenGroup) => TokenResult) {
+	map(callback: (props: string[], token: TokenGroup) => TokenResult) {
 		const result: TokenResult[] = [];
 
 		this.#iterator(this.#clone(this.#token), (props, token) => {
@@ -124,11 +120,11 @@ class Token {
 	}
 
 	#iterator(
-		token: Types.TokenGroup,
-		callback: (props: string[], token: Types.TokenGroup) => void,
+		token: TokenGroup,
+		callback: (props: string[], token: TokenGroup) => void,
 	) {
-		const stack = [Object.entries(token)] as [string, Types.TokenGroup][][];
-		let currentCtx: [string, Types.TokenGroup][] = stack[stack.length - 1]!;
+		const stack = [Object.entries(token)] as [string, TokenGroup][][];
+		let currentCtx: [string, TokenGroup][] = stack[stack.length - 1]!;
 		let props: string[] = [];
 
 		while (currentCtx.length) {
@@ -139,7 +135,7 @@ class Token {
 			callback(this.#clone(props), token);
 
 			if (TypeCheckers.isObject(token) && !isTokenObj(token)) {
-				const item = Object.entries(token) as [string, Types.TokenGroup][];
+				const item = Object.entries(token) as [string, TokenGroup][];
 
 				stack.push(item);
 				currentCtx = item;
@@ -158,7 +154,7 @@ class Token {
 		}
 	}
 
-	#validate(token: Types.TokenGroup) {
+	#validate(token: TokenGroup) {
 		//1. 중복 속성 체크
 		//2. $extension 속성은 무조건 JSON
 		//3. 토큰 객체 타입별 값의 형식 체크

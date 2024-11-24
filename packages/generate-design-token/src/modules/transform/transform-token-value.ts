@@ -1,4 +1,4 @@
-import * as Types from "@types";
+import { TokenObj } from "@types";
 import { mapArray, mapObject, TypeCheckers } from "@utils";
 
 /**
@@ -48,9 +48,9 @@ type UpdateData = {
  * @returns {[string[], Types.TokenObj]} - TokenResult
  */
 const transformTokenResult = (
-	base: Types.TokenObj,
+	base: TokenObj,
 	data: UpdateData,
-): [string[], Types.TokenObj] => {
+): [string[], TokenObj] => {
 	return [
 		data.props,
 		{

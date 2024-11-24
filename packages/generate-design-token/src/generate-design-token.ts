@@ -1,11 +1,8 @@
-import * as Types from "@types";
+import { TokenGroup } from "@types";
 import * as Modules from "./modules";
 import Token from "./token";
 
-const generateDesignToken = (
-	base: Types.TokenGroup,
-	refTokens: Types.TokenGroup[],
-) => {
+const generateDesignToken = (base: TokenGroup, refTokens: TokenGroup[]) => {
 	const _refTokens = refTokens.map((token) => new Token(token));
 
 	return Modules.parse(

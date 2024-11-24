@@ -1,8 +1,8 @@
-import * as Types from "@types";
+import { TokenObj } from "@types";
 import { Validate } from "@utils";
 import { expect, it } from "vitest";
 
-const TOKEN_OBJS: Record<Types.TokenObj["$type"], Types.TokenObj> = {
+const TOKEN_OBJS: Record<TokenObj["$type"], TokenObj> = {
 	dimension: {
 		$type: "dimension",
 		$value: {

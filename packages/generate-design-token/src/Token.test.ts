@@ -1,7 +1,7 @@
 import { expect, it } from "vitest";
 import Token from "./token";
-import * as Types from "@types";
 import { isTokenObj, Transformers } from "@utils";
+import { TokenGroup, TokenObj } from "@types";
 
 const TOKEN = {
 	color: {
@@ -53,7 +53,7 @@ it(`[Token.add] 토큰 속성을 추가한다`, () => {
 		token: {
 			$type: "color",
 			$value: "#0000ff",
-		} as Types.TokenObj,
+		} as TokenObj,
 	};
 	const expected = [
 		["color", "tertiary", "2"],
@@ -186,7 +186,7 @@ it(`토큰 유효성 검사를 진행한다.`, () => {
 				primary: {
 					$type: "hello",
 					$description: "#ff0000",
-				} as Types.TokenGroup,
+				} as TokenGroup,
 			},
 		});
 	}).not.toThrowError();
@@ -197,7 +197,7 @@ it(`토큰 유효성 검사를 진행한다.`, () => {
 					$type: "color",
 					$value: "#ff0000",
 					description: "color",
-				} as Types.TokenObj,
+				} as TokenObj,
 			},
 		});
 	}).not.toThrowError();

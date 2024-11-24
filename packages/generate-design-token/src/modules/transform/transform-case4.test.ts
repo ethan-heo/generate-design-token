@@ -1,8 +1,8 @@
 import { expect, it } from "vitest";
 import Token, { TokenResult } from "../../token";
 import useCase4 from "./transform-case4";
-import * as Types from "@types";
 import transform from "./transform";
+import { TokenGroup } from "@types";
 
 const refTokens = [
 	{
@@ -16,7 +16,7 @@ const refTokens = [
 				$value: "#000000",
 			},
 		},
-	} as Types.TokenGroup,
+	} as TokenGroup,
 ].map((token) => new Token(token));
 
 it.each([
@@ -60,7 +60,7 @@ it.each([
 			},
 		},
 	],
-] as unknown as [Types.TokenGroup, TokenResult[]][])(
+] as unknown as [TokenGroup, TokenResult[]][])(
 	`UseCase4.transformTokens() should transform tokens correctly`,
 	(baseToken, expected) => {
 		const base = new Token(baseToken);

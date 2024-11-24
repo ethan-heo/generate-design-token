@@ -7,15 +7,15 @@ import {
 	TypeCheckers,
 } from "@utils";
 import Token from "../token";
-import * as Types from "@types";
+import { TokenObj } from "@types";
 
-type TokenObjValue = [string[], Types.TokenObj];
+type TokenObjValue = [string[], TokenObj];
 
 const findValueBy = (
 	tokenRef: string,
 	refTokens: Token[],
 	circularRefMap = new Map<string, string>(),
-): Types.TokenObj["$value"] => {
+): TokenObj["$value"] => {
 	let token: TokenObjValue | null = null;
 	const _tokenRef = Transformers.takeOffBracketFromTokenRef(tokenRef);
 
@@ -66,7 +66,7 @@ const findValueBy = (
 	 * @param value - 찾을 토큰의 값
 	 * @returns 찾은 토큰의 값
 	 */
-	function recursiveFindValueBy<T extends Types.TokenObj["$value"]>(
+	function recursiveFindValueBy<T extends TokenObj["$value"]>(
 		referringTokenRef: string,
 		value: T,
 	) {
@@ -102,9 +102,7 @@ const parse = (base: Token, refTokens: Token[]): Token => {
 	for (const [, tokenObj] of result.findAll((_, token) =>
 		isTokenObj(token),
 	) as TokenObjValue[]) {
-		tokenObj.$value = recursiveParse(
-			tokenObj.$value,
-		) as Types.TokenObj["$value"];
+		tokenObj.$value = recursiveParse(tokenObj.$value) as TokenObj["$value"];
 	}
 
 	return result;
@@ -114,7 +112,7 @@ const parse = (base: Token, refTokens: Token[]): Token => {
 	 * @param value - 찾을 토큰의 값
 	 * @returns 찾은 토큰의 값
 	 */
-	function recursiveParse(value: Types.TokenObj["$value"]) {
+	function recursiveParse(value: TokenObj["$value"]) {
 		if (TypeCheckers.isString(value) && isTokenRef(value)) {
 			return findValueBy(value, [base, ...refTokens]);
 		} else {

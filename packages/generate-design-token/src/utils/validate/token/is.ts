@@ -1,76 +1,85 @@
-import * as Types from "@types";
+import {
+	Border,
+	Color,
+	Composite,
+	CubicBezier,
+	Dimension,
+	Duration,
+	FontFamily,
+	FontWeight,
+	Gradient,
+	Number,
+	Shadow,
+	String,
+	StrokeStyle,
+	TokenObj,
+	Transition,
+	Typography,
+} from "@types";
 
 /**
  * 주어진 토큰 객체가 dimension 타입인지 확인합니다.
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 dimension 타입인지 여부
  */
-export const dimension = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.Dimension => tokenObj.$type === "dimension";
+export const dimension = (tokenObj: TokenObj): tokenObj is Dimension =>
+	tokenObj.$type === "dimension";
 
 /**
  * 주어진 토큰 객체가 Color 타입인지 확인합니다.
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 Color 타입인지 여부
  */
-export const color = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.Color => tokenObj.$type === "color";
+export const color = (tokenObj: TokenObj): tokenObj is Color =>
+	tokenObj.$type === "color";
 
 /**
  * 주어진 토큰 객체가 FontFamily 타입인지 확인합니다.
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 FontFamily 타입인지 여부
  */
-export const fontFamily = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.FontFamily => tokenObj.$type === "fontFamily";
+export const fontFamily = (tokenObj: TokenObj): tokenObj is FontFamily =>
+	tokenObj.$type === "fontFamily";
 
 /**
  * 주어진 토큰 객체가 FontWeight 타입인지 확인합니다.
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 FontWeight 타입인지 여부
  */
-export const fontWeight = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.FontWeight => tokenObj.$type === "fontWeight";
+export const fontWeight = (tokenObj: TokenObj): tokenObj is FontWeight =>
+	tokenObj.$type === "fontWeight";
 
 /**
  * 주어진 토큰 객체가 Duration 타입인지 확인합니다.
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 Duration 타입인지 여부
  */
-export const duration = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.Duration => tokenObj.$type === "duration";
+export const duration = (tokenObj: TokenObj): tokenObj is Duration =>
+	tokenObj.$type === "duration";
 
 /**
  * 주어진 토큰 객체가 CubicBezier 타입인지 확인합니다.
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 CubicBezier 타입인지 여부
  */
-export const cubicBezier = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.CubicBezier => tokenObj.$type === "cubicBezier";
+export const cubicBezier = (tokenObj: TokenObj): tokenObj is CubicBezier =>
+	tokenObj.$type === "cubicBezier";
 
 /**
  * 주어진 토큰 객체가 Number 타입인지 확인합니다.
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 Number 타입인지 여부
  */
-export const number = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.Number => tokenObj.$type === "number";
+export const number = (tokenObj: TokenObj): tokenObj is Number =>
+	tokenObj.$type === "number";
 
 /**
  * 주어진 토큰 객체가 String 타입인지 확인합니다.
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 String 타입인지 여부
  */
-export const string = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.String => tokenObj.$type === "string";
+export const string = (tokenObj: TokenObj): tokenObj is String =>
+	tokenObj.$type === "string";
 
 /**
  * 주어진 토큰 객체가 Composite 타입인지 확인합니다.
@@ -78,27 +87,24 @@ export const string = (
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 Composite 타입인지 여부
  */
-export const composite = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.Composite => tokenObj.$type === "composite";
+export const composite = (tokenObj: TokenObj): tokenObj is Composite =>
+	tokenObj.$type === "composite";
 
 /**
  * 주어진 토큰 객체가 StrokeStyle 타입인지 확인합니다.
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 StrokeStyle 타입인지 여부
  */
-export const strokeStyle = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.StrokeStyle => tokenObj.$type === "strokeStyle";
+export const strokeStyle = (tokenObj: TokenObj): tokenObj is StrokeStyle =>
+	tokenObj.$type === "strokeStyle";
 
 /**
  * 주어진 토큰 객체가 Border 타입인지 확인합니다.
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 Border 타입인지 여부
  */
-export const border = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.Border => tokenObj.$type === "border";
+export const border = (tokenObj: TokenObj): tokenObj is Border =>
+	tokenObj.$type === "border";
 
 /**
  * 주어진 토큰 객체가 Transition 타입인지 확인합니다.
@@ -106,33 +112,29 @@ export const border = (
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 Transition 타입인지 여부
  */
-export const transition = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.Transition => tokenObj.$type === "transition";
+export const transition = (tokenObj: TokenObj): tokenObj is Transition =>
+	tokenObj.$type === "transition";
 
 /**
  * 주어진 토큰 객체가 Shadow 타입인지 확인합니다.
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 Shadow 타입인지 여부
  */
-export const shadow = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.Shadow => tokenObj.$type === "shadow";
+export const shadow = (tokenObj: TokenObj): tokenObj is Shadow =>
+	tokenObj.$type === "shadow";
 
 /**
  * 주어진 토큰 객체가 Gradient 타입인지 확인합니다.
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 Gradient 타입인지 여부
  */
-export const gradient = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.Gradient => tokenObj.$type === "gradient";
+export const gradient = (tokenObj: TokenObj): tokenObj is Gradient =>
+	tokenObj.$type === "gradient";
 
 /**
  * 주어진 토큰 객체가 Typography 타입인지 확인합니다.
  * @param tokenObj - 확인할 토큰 객체
  * @returns 토큰 객체가 Typography 타입인지 여부
  */
-export const typography = (
-	tokenObj: Types.TokenObj,
-): tokenObj is Types.TokenObjs.Typography => tokenObj.$type === "typography";
+export const typography = (tokenObj: TokenObj): tokenObj is Typography =>
+	tokenObj.$type === "typography";

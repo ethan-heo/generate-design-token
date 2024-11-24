@@ -1,12 +1,12 @@
 import { isTokenObj, isTokenRef, Transformers } from "@utils";
 import Token from "../../token";
 import { Transformer } from "./transform.types";
-import * as Types from "@types";
 import findByRefTokens from "./find-referred-token";
 import transformTokenResult from "./transform-token-value";
+import { TokenGroup, TokenObj } from "@types";
 
-type UseCaseType = [string[], Types.TokenGroup];
-type ReferredType = [string[], Types.TokenObj];
+type UseCaseType = [string[], TokenGroup];
+type ReferredType = [string[], TokenObj];
 
 export default {
 	findUseCases: (base: Token, refTokens: Token[]) => {
@@ -34,7 +34,7 @@ export default {
 		const [referredProps] = referred;
 		const useCaseTokenObjs = new Token(useCaseToken).findAll((_, token) =>
 			isTokenObj(token),
-		) as [string[], Types.TokenObj][];
+		) as [string[], TokenObj][];
 
 		/**
 		 * 가장 앞에 위치해야할 속성명

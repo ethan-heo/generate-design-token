@@ -1,12 +1,12 @@
 import { isTokenObj, isTokenRef, Transformers } from "@utils";
 import Token from "../../token";
 import { Transformer } from "./transform.types";
-import * as Types from "@types";
 import findByRefTokens from "./find-referred-token";
 import transformTokenResult from "./transform-token-value";
+import { TokenGroup, TokenObj } from "@types";
 
-type UseCaseType = [string[], Types.TokenGroup];
-type ReferredType = [string[], Types.TokenGroup];
+type UseCaseType = [string[], TokenGroup];
+type ReferredType = [string[], TokenGroup];
 
 export default {
 	findUseCases: (base: Token, refTokens: Token[]) => {
@@ -29,15 +29,15 @@ export default {
 		});
 	},
 	transform: (useCase: UseCaseType, referred: ReferredType) => {
-		const result: [string[], Types.TokenObj][] = [];
+		const result: [string[], TokenObj][] = [];
 		const [useCaseProps, useCaseToken] = useCase;
 		const [referredProps, referredToken] = referred;
 		const referredTokenObjs = new Token(referredToken).findAll((_, token) =>
 			isTokenObj(token),
-		) as [string[], Types.TokenObj][];
+		) as [string[], TokenObj][];
 		const useCaseTokenObjs = new Token(useCaseToken).findAll((_, token) =>
 			isTokenObj(token),
-		) as [string[], Types.TokenObj][];
+		) as [string[], TokenObj][];
 
 		for (const [referredTokenObjProps] of referredTokenObjs) {
 			/**

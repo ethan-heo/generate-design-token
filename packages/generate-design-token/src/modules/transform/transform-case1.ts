@@ -1,12 +1,12 @@
 import { isTokenObj, isTokenRef, Transformers } from "@utils";
 import Token from "../../token";
 import { Transformer } from "./transform.types";
-import * as Types from "@types";
 import findByRefTokens from "./find-referred-token";
 import transformTokenResult from "./transform-token-value";
+import { TokenObj } from "@types";
 
-type UseCaseType = [string[], Types.TokenObj];
-type ReferredType = [string[], Types.TokenObj];
+type UseCaseType = [string[], TokenObj];
+type ReferredType = [string[], TokenObj];
 
 export default {
 	findUseCases: (base: Token, refTokens: Token[]) => {

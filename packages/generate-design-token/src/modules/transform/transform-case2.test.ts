@@ -1,8 +1,8 @@
 import { expect, it } from "vitest";
 import Token, { TokenResult } from "../../token";
-import * as Types from "@types";
 import useCase2 from "./transform-case2";
 import transform from "./transform";
+import { TokenGroup } from "@types";
 
 const refTokens = [
 	{
@@ -26,7 +26,7 @@ const refTokens = [
 				},
 			},
 		},
-	} as Types.TokenGroup,
+	} as TokenGroup,
 ].map((token) => new Token(token));
 
 it.each([
@@ -53,7 +53,7 @@ it.each([
 			},
 		},
 	],
-] as unknown as [Types.TokenGroup, TokenResult[]][])(
+] as unknown as [TokenGroup, TokenResult[]][])(
 	`UseCase2.`,
 	(actual, expected) => {
 		const base = new Token(actual);

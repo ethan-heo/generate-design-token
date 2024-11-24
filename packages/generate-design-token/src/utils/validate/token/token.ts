@@ -1,4 +1,20 @@
-import * as Types from "@types";
+import {
+	Border,
+	Color,
+	Composite,
+	CubicBezier,
+	Dimension,
+	Duration,
+	FontFamily,
+	FontWeight,
+	Gradient,
+	Number,
+	Shadow,
+	String,
+	StrokeStyle,
+	Transition,
+	Typography,
+} from "@types";
 import { hasTokenRef, isTokenRef, TypeCheckers, Validate } from "@utils";
 
 const HEX_REGEXP = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/;
@@ -41,7 +57,7 @@ const validateTokenRefValue = (
 };
 
 const validateDimensionValue = (
-	value: Types.TokenObjs.Dimension["$value"],
+	value: Dimension["$value"],
 	throwError: ReturnType<typeof throwTypeError>,
 ) => {
 	const UNITS = ["px", "rem"];
@@ -64,7 +80,7 @@ const validateDimensionValue = (
 };
 
 const validateColorValue = (
-	value: Types.TokenObjs.Color["$value"],
+	value: Color["$value"],
 	throwError: ReturnType<typeof throwTypeError>,
 ) => {
 	if (!Validate.format.shouldBeOnlyTokenRef(value) && !HEX_REGEXP.test(value)) {
@@ -75,7 +91,7 @@ const validateColorValue = (
 };
 
 const validateFontFamilyValue = (
-	value: Types.TokenObjs.FontFamily["$value"],
+	value: FontFamily["$value"],
 	throwError: ReturnType<typeof throwTypeError>,
 ) => {
 	if (TypeCheckers.isArray(value)) {
@@ -86,40 +102,39 @@ const validateFontFamilyValue = (
 };
 
 const validateFontWeightValue = (
-	value: Types.TokenObjs.FontWeight["$value"],
+	value: FontWeight["$value"],
 	throwError: ReturnType<typeof throwTypeError>,
 ) => {
-	const ACCEPTABLE_FONT_WEIGHT_VALUES: Types.TokenObjs.FontWeight["$value"][] =
-		[
-			100,
-			200,
-			300,
-			400,
-			500,
-			600,
-			700,
-			800,
-			900,
-			1000,
-			"thin",
-			"hairline",
-			"extra-light",
-			"ultra-light",
-			"light",
-			"normal",
-			"regular",
-			"book",
-			"medium",
-			"semi-bold",
-			"demi-bold",
-			"bold",
-			"extra-bold",
-			"ultra-bold",
-			"black",
-			"heavy",
-			"extra-black",
-			"ultra-black",
-		];
+	const ACCEPTABLE_FONT_WEIGHT_VALUES: FontWeight["$value"][] = [
+		100,
+		200,
+		300,
+		400,
+		500,
+		600,
+		700,
+		800,
+		900,
+		1000,
+		"thin",
+		"hairline",
+		"extra-light",
+		"ultra-light",
+		"light",
+		"normal",
+		"regular",
+		"book",
+		"medium",
+		"semi-bold",
+		"demi-bold",
+		"bold",
+		"extra-bold",
+		"ultra-bold",
+		"black",
+		"heavy",
+		"extra-black",
+		"ultra-black",
+	];
 
 	if (!ACCEPTABLE_FONT_WEIGHT_VALUES.includes(value)) {
 		throwError(
@@ -129,7 +144,7 @@ const validateFontWeightValue = (
 };
 
 const validateDurationValue = (
-	value: Exclude<Types.TokenObjs.Duration["$value"], string>,
+	value: Exclude<Duration["$value"], string>,
 	throwError: ReturnType<typeof throwTypeError>,
 ) => {
 	const UNITS = ["ms", "s"];
@@ -144,7 +159,7 @@ const validateDurationValue = (
 };
 
 const validateCubicBezierValue = (
-	value: Exclude<Types.TokenObjs.CubicBezier["$value"], string>,
+	value: Exclude<CubicBezier["$value"], string>,
 	throwError: ReturnType<typeof throwTypeError>,
 ) => {
 	if (value.some((v) => !TypeCheckers.isNumber(v))) {
@@ -162,7 +177,7 @@ const validateCubicBezierValue = (
  * @returns Dimension TokenObj의 유효성 여부
  * @throws "Dimension"에 대한 에러 메시지를 throw합니다.
  */
-export const dimension = (tokenObj: Types.TokenObjs.Dimension): true => {
+export const dimension = (tokenObj: Dimension): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("Dimension");
 
@@ -189,7 +204,7 @@ export const dimension = (tokenObj: Types.TokenObjs.Dimension): true => {
  * @returns Color TokenObj의 유효성 여부
  * @throws "Color"에 대한 에러 메시지를 throw합니다.
  */
-export const color = (tokenObj: Types.TokenObjs.Color): true => {
+export const color = (tokenObj: Color): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("Color");
 
@@ -212,7 +227,7 @@ export const color = (tokenObj: Types.TokenObjs.Color): true => {
  * @returns FontFamily TokenObj의 유효성 여부
  * @throws "FontFamily"에 대한 에러 메시지를 throw합니다.
  */
-export const fontFamily = (tokenObj: Types.TokenObjs.FontFamily): true => {
+export const fontFamily = (tokenObj: FontFamily): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("FontFamily");
 
@@ -235,7 +250,7 @@ export const fontFamily = (tokenObj: Types.TokenObjs.FontFamily): true => {
  * @returns FontWeight TokenObj의 유효성 여부
  * @throws "FontWeight"에 대한 에러 메시지를 throw합니다.
  */
-export const fontWeight = (tokenObj: Types.TokenObjs.FontWeight): true => {
+export const fontWeight = (tokenObj: FontWeight): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("FontWeight");
 
@@ -258,7 +273,7 @@ export const fontWeight = (tokenObj: Types.TokenObjs.FontWeight): true => {
  * @returns Duration TokenObj의 유효성 여부
  * @throws "Duration"에 대한 에러 메시지를 throw합니다.
  */
-export const duration = (tokenObj: Types.TokenObjs.Duration): true => {
+export const duration = (tokenObj: Duration): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("Duration");
 
@@ -281,7 +296,7 @@ export const duration = (tokenObj: Types.TokenObjs.Duration): true => {
  * @returns CubicBezier TokenObj의 유효성 여부
  * @throws "CubicBezier"에 대한 에러 메시지를 throw합니다.
  */
-export const cubicBezier = (tokenObj: Types.TokenObjs.CubicBezier): true => {
+export const cubicBezier = (tokenObj: CubicBezier): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("CubicBezier");
 
@@ -306,7 +321,7 @@ export const cubicBezier = (tokenObj: Types.TokenObjs.CubicBezier): true => {
  * @returns String TokenObj의 유효성 여부
  * @throws "String"에 대한 에러 메시지를 throw합니다.
  */
-export const string = (tokenObj: Types.TokenObjs.String): true => {
+export const string = (tokenObj: String): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("String");
 
@@ -327,7 +342,7 @@ export const string = (tokenObj: Types.TokenObjs.String): true => {
  * @returns Number TokenObj의 유효성 여부
  * @throws "Number"에 대한 에러 메시지를 throw합니다.
  */
-export const number = (tokenObj: Types.TokenObjs.Number): true => {
+export const number = (tokenObj: Number): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("Number");
 
@@ -348,7 +363,7 @@ export const number = (tokenObj: Types.TokenObjs.Number): true => {
  * @returns Composite TokenObj의 유효성 여부
  * @throws "Composite"에 대한 에러 메시지를 throw합니다.
  */
-export const composite = (tokenObj: Types.TokenObjs.Composite): true => {
+export const composite = (tokenObj: Composite): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("Composite");
 
@@ -365,7 +380,7 @@ export const composite = (tokenObj: Types.TokenObjs.Composite): true => {
  * @returns StrokeStyle TokenObj의 유효성 여부
  * @throws "StrokeStyle"에 대한 에러 메시지를 throw합니다.
  */
-export const strokeStyle = (tokenObj: Types.TokenObjs.StrokeStyle): true => {
+export const strokeStyle = (tokenObj: StrokeStyle): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("StrokeStyle");
 
@@ -374,7 +389,7 @@ export const strokeStyle = (tokenObj: Types.TokenObjs.StrokeStyle): true => {
 	}
 
 	if (TypeCheckers.isString($value)) {
-		const ACCEPTABLE_VALUE: Types.TokenObjs.StrokeStyle["$value"][] = [
+		const ACCEPTABLE_VALUE: StrokeStyle["$value"][] = [
 			"solid",
 			"dashed",
 			"dotted",
@@ -439,7 +454,7 @@ export const strokeStyle = (tokenObj: Types.TokenObjs.StrokeStyle): true => {
  * @returns 토큰 객체가 Border 타입인지 여부
  * @throws "Border"에 대한 에러 메시지를 throw합니다.
  */
-export const border = (tokenObj: Types.TokenObjs.Border): true => {
+export const border = (tokenObj: Border): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("Border");
 
@@ -492,7 +507,7 @@ export const border = (tokenObj: Types.TokenObjs.Border): true => {
  * @returns 토큰 객체가 Transition 타입인지 여부
  * @throws "Transition"에 대한 에러 메시지를 throw합니다.
  */
-export const transition = (tokenObj: Types.TokenObjs.Transition): true => {
+export const transition = (tokenObj: Transition): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("Transition");
 
@@ -550,7 +565,7 @@ export const transition = (tokenObj: Types.TokenObjs.Transition): true => {
  * @returns 토큰 객체가 Shadow 타입인지 여부
  * @throws "Shadow"에 대한 에러 메시지를 throw합니다.
  */
-export const shadow = (tokenObj: Types.TokenObjs.Shadow): true => {
+export const shadow = (tokenObj: Shadow): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("Shadow");
 
@@ -641,7 +656,7 @@ export const shadow = (tokenObj: Types.TokenObjs.Shadow): true => {
  *   ],
  * }
  */
-export const gradient = (tokenObj: Types.TokenObjs.Gradient): true => {
+export const gradient = (tokenObj: Gradient): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("Gradient");
 
@@ -688,7 +703,7 @@ export const gradient = (tokenObj: Types.TokenObjs.Gradient): true => {
  * @returns 토큰 객체가 Typography 타입인지 여부
  * @throws "Typography"에 대한 에러 메시지를 throw합니다.
  */
-export const typography = (tokenObj: Types.TokenObjs.Typography): true => {
+export const typography = (tokenObj: Typography): true => {
 	const { $value } = tokenObj;
 	const throwError = throwTypeError("Typography");
 
