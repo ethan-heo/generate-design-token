@@ -1,18 +1,22 @@
 import * as Types from "@types";
-import UseCases from "@use-cases";
+import * as Modules from "./modules";
 import Token from "./token";
-import Parser from "./parser";
 
 const generateDesignToken = (
 	base: Types.TokenGroup,
-	raws: Types.TokenGroup[],
+	refTokens: Types.TokenGroup[],
 ) => {
-	const baseToken = new Token(base);
-	const rawTokens = raws.map((raw) => new Token(raw));
+	const _refTokens = refTokens.map((token) => new Token(token));
 
-	return new Parser()
-		.parse(new UseCases().transform(baseToken, rawTokens), rawTokens)
-		.getToken();
+	return Modules.parse(
+		Modules.transform(new Token(base), _refTokens, [
+			Modules.useCase1,
+			Modules.useCase2,
+			Modules.useCase3,
+			Modules.useCase4,
+		]),
+		_refTokens,
+	).getToken();
 };
 
 export default generateDesignToken;
