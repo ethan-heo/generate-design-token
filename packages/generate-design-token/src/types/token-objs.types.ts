@@ -226,7 +226,7 @@ export type Typography = CreateTokenObj<{
 		  };
 }>;
 
-type TokenObj =
+export type TokenObj =
 	| Dimension
 	| Color
 	| FontFamily
@@ -242,5 +242,3 @@ type TokenObj =
 	| Shadow
 	| Gradient
 	| Typography;
-
-export default TokenObj;
