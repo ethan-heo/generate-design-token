@@ -1,6 +1,7 @@
 import * as Types from "@types";
 import * as Modules from "@modules";
 import Token from "./token";
+import { Transformer } from "@modules/transform/transform.types";
 
 /**
  * GDT (Generate Design Token) 클래스
@@ -18,16 +19,23 @@ class GDT {
 		}
 	}
 
-	transform(
-		refTokens: Token[],
-		cases = [
-			Modules.useCase1,
-			Modules.useCase2,
-			Modules.useCase3,
-			Modules.useCase4,
-		],
-	) {
-		new GDT(Modules.transform(this.#base, refTokens, cases));
+	/**
+	 * 주어진 참조 토큰(refTokens)과 트랜스포머(cases)를 사용하여 현재 토큰을 트랜스폼합니다.
+	 *
+	 * @param refTokens 트랜스폼에 사용할 참조 토큰의 배열입니다.
+	 * @param cases 추가적으로 사용할 트랜스포머의 배열입니다. 기본적으로 useCase1, useCase2, useCase3, useCase4가 사용됩니다.
+	 * @returns 트랜스폼된 결과를 포함하는 새로운 GDT 인스턴스를 반환합니다.
+	 */
+	transform(refTokens: Token[], cases: Transformer<any, any>[] = []) {
+		return new GDT(
+			Modules.transform(this.#base, refTokens, [
+				Modules.useCase1,
+				Modules.useCase2,
+				Modules.useCase3,
+				Modules.useCase4,
+				...cases,
+			]),
+		);
 	}
 
 	/**
