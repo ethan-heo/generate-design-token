@@ -1,5 +1,5 @@
 import { isTokenObj, isTokenRef, Transformers } from "@utils";
-import Token from "../../token";
+import { Token } from "@modules";
 import { Transformer } from "./transform.types";
 import findByRefTokens from "./find-referred-token";
 import transformTokenResult from "./transform-token-value";

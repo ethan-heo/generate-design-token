@@ -6,7 +6,7 @@ import {
 	Transformers,
 	TypeCheckers,
 } from "@utils";
-import Token from "../token";
+import { Token } from "@modules";
 import { TokenObj } from "@types";
 
 type TokenObjValue = [string[], TokenObj];

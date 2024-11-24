@@ -1,6 +1,6 @@
 import { TokenGroup } from "@types";
 import * as Modules from "./modules";
-import Token from "./token";
+import { Token } from "@modules";
 
 const generateDesignToken = (base: TokenGroup, refTokens: TokenGroup[]) => {
 	const _refTokens = refTokens.map((token) => new Token(token));

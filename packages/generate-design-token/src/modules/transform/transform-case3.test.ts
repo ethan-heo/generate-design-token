@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import Token, { TokenResult } from "../../token";
+import { Token } from "@modules";
 import useCase3 from "./transform-case3";
 import transform from "./transform";
 import { TokenGroup } from "@types";
@@ -58,7 +58,7 @@ it.each([
 			},
 		},
 	],
-] as unknown as [TokenGroup, TokenResult[]][])(
+])(
 	`UseCase3.transformTokens() should transform tokens correctly`,
 	(baseToken, expected) => {
 		const base = new Token(baseToken);

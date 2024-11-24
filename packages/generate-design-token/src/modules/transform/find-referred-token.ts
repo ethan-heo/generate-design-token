@@ -1,5 +1,5 @@
 import { Transformers } from "@utils";
-import Token from "../../token";
+import { Token } from "@modules";
 import { TokenGroup } from "@types";
 
 /**

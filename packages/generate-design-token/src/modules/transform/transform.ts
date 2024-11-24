@@ -1,6 +1,7 @@
 import { findTokenRef, Transformers } from "@utils";
-import Token, { TokenResult } from "../../token";
+import { Token } from "@modules";
 import { Transformer } from "./transform.types";
+import { TokenObj } from "@types";
 
 /**
  * 주어진 토큰 이름에서 토큰 참조를 추출하고, 제공된 토큰 목록에서 검색하여 참조된 토큰을 찾습니다.
@@ -13,12 +14,12 @@ const findReferredToken = (tokenRef: string, tokens: Token[]) => {
 	const _tokenRef = Transformers.takeOffBracketFromTokenRef(
 		findTokenRef(tokenRef)![0],
 	);
-	let result: TokenResult | undefined;
+	let result: [string[], TokenObj] | undefined;
 
 	for (const token of tokens) {
 		const foundToken = token.find(
 			(props) => Transformers.toTokenRef(props) === _tokenRef,
-		) as TokenResult;
+		) as [string[], TokenObj];
 
 		if (foundToken) {
 			result = foundToken;
@@ -47,8 +48,8 @@ const transform = <T extends Transformer<any, any>>(
 		if (useCases.length === 0) return base;
 
 		const transformedTokens: {
-			useCase: TokenResult;
-			transformed: TokenResult[];
+			useCase: [string[], TokenObj];
+			transformed: [string[], TokenObj][];
 		}[] = [];
 
 		for (const useCase of useCases) {
@@ -72,10 +73,10 @@ const transform = <T extends Transformer<any, any>>(
 
 			base.delete(useCaseProps);
 
-			for (const [
-				transformedProps,
-				transformedToken,
-			] of transformed as TokenResult[]) {
+			for (const [transformedProps, transformedToken] of transformed as [
+				string[],
+				TokenObj,
+			][]) {
 				base.add(transformedProps, transformedToken);
 			}
 		}

@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import Token, { TokenResult } from "../../token";
+import { Token } from "@modules";
 import useCase2 from "./transform-case2";
 import transform from "./transform";
 import { TokenGroup } from "@types";
@@ -53,13 +53,10 @@ it.each([
 			},
 		},
 	],
-] as unknown as [TokenGroup, TokenResult[]][])(
-	`UseCase2.`,
-	(actual, expected) => {
-		const base = new Token(actual);
+])(`UseCase2.`, (actual, expected) => {
+	const base = new Token(actual);
 
-		expect(transform(base, refTokens, [useCase2]).getToken()).toStrictEqual(
-			expected,
-		);
-	},
-);
+	expect(transform(base, refTokens, [useCase2]).getToken()).toStrictEqual(
+		expected,
+	);
+});

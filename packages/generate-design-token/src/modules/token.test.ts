@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import Token from "./token";
+import { Token } from "@modules";
 import { isTokenObj, Transformers } from "@utils";
 import { TokenGroup, TokenObj } from "@types";
 

@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import Token from "../token";
+import { Token } from "@modules";
 import parse from "./parse";
 
 it(`[parse] 순환 참조 테스트`, () => {
