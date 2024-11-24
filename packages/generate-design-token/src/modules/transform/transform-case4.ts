@@ -17,7 +17,7 @@ export default {
 				return false;
 			}
 
-			const foundRef = findByRefTokens(lastProp, refTokens);
+			const foundRef = findByRefTokens(lastProp, [base, ...refTokens]);
 
 			if (!foundRef) {
 				return false;

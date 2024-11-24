@@ -2,7 +2,6 @@ import { expect, it } from "vitest";
 import Token, { TokenResult } from "../../token";
 import * as Types from "@types";
 import useCase3 from "./transform-case3";
-import { isTokenObj } from "@utils";
 import transform from "./transform";
 
 const refTokens = [

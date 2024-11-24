@@ -8,11 +8,6 @@ import transformTokenResult from "./transform-token-value";
 type UseCaseType = [string[], Types.TokenObj];
 type ReferredType = [string[], Types.TokenObj];
 
-const replaceTokenObj = (
-	useCaseToken: Types.TokenObj | Types.TokenGroup,
-	referredToken: Types.TokenObj | Types.TokenGroup,
-) => {};
-
 export default {
 	findUseCases: (base: Token, refTokens: Token[]) => {
 		return base.findAll((props, token) => {
@@ -22,7 +17,7 @@ export default {
 				return false;
 			}
 
-			const foundRef = findByRefTokens(lastProp, refTokens);
+			const foundRef = findByRefTokens(lastProp, [base, ...refTokens]);
 
 			if (!foundRef) {
 				return false;

@@ -1,4 +1,4 @@
-import { hasTokenRef, isTokenObj, isTokenRef, Transformers } from "@utils";
+import { isTokenObj, isTokenRef, Transformers } from "@utils";
 import Token from "../../token";
 import { Transformer } from "./transform.types";
 import * as Types from "@types";
@@ -17,7 +17,7 @@ export default {
 				return false;
 			}
 
-			const foundRef = findByRefTokens(lastProp, refTokens);
+			const foundRef = findByRefTokens(lastProp, [base, ...refTokens]);
 
 			if (!foundRef) {
 				return false;
