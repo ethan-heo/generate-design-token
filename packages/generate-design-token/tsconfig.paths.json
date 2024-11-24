@@ -8,7 +8,9 @@
 			"@use-cases": ["./src/use-cases/index"],
 			"@use-cases/*": ["./src/use-cases/*"],
 			"@constants": ["./src/constants/index"],
-			"@constants/*": ["./src/constants/*"]
+			"@constants/*": ["./src/constants/*"],
+			"@modules": ["./src/modules/index"],
+			"@modules/*": ["./src/modules/*"]
 		}
 	}
 }

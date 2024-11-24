@@ -1,24 +1,15 @@
-import { isTokenObj, isTokenRef, Transformers, TypeCheckers } from "@utils";
+import {
+	isTokenObj,
+	isTokenRef,
+	mapArray,
+	mapObject,
+	Transformers,
+	TypeCheckers,
+} from "@utils";
 import Token from "../token";
 import * as Types from "@types";
 
 type TokenObjValue = [string[], Types.TokenObj];
-
-const copyObj = <Obj extends object, T extends (...args: any[]) => any>(
-	obj: Obj,
-	callback: T,
-) => {
-	return Object.fromEntries(
-		Object.entries(obj).map(([key, value]) => [key, callback(value)]),
-	);
-};
-
-const copyArr = <Arr extends any[], T extends (...args: any[]) => any>(
-	arr: Arr,
-	callback: T,
-) => {
-	return arr.map(callback);
-};
 
 const findValueBy = (
 	tokenRef: string,
@@ -89,13 +80,13 @@ const findValueBy = (
 		}
 
 		if (TypeCheckers.isArray(value)) {
-			return copyArr(value, (_value) => {
+			return mapArray(value, (_value) => {
 				return recursiveFindValueBy(referringTokenRef, _value);
 			});
 		}
 
 		if (TypeCheckers.isObject(value)) {
-			return copyObj(value, (_value) => {
+			return mapObject(value, (_value) => {
 				return recursiveFindValueBy(referringTokenRef, _value);
 			});
 		}
@@ -127,11 +118,11 @@ const parse = (base: Token, refTokens: Token[]): Token => {
 			return findValueBy(value, refTokens);
 		} else {
 			if (TypeCheckers.isArray(value)) {
-				return copyArr(value, recursiveParse);
+				return mapArray(value, recursiveParse);
 			}
 
 			if (TypeCheckers.isObject(value)) {
-				return copyObj(value, recursiveParse);
+				return mapObject(value, recursiveParse);
 			}
 		}
 

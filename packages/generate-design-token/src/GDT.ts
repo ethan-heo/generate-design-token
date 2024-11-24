@@ -18,8 +18,16 @@ class GDT {
 		}
 	}
 
-	transform() {
-		return this;
+	transform(
+		refTokens: Token[],
+		cases = [
+			Modules.useCase1,
+			Modules.useCase2,
+			Modules.useCase3,
+			Modules.useCase4,
+		],
+	) {
+		new GDT(Modules.transform(this.#base, refTokens, cases));
 	}
 
 	/**
