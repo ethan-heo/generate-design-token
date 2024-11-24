@@ -1,5 +1,4 @@
 import { expect, it } from "vitest";
-import Parser from "../parser";
 import Token from "../token";
 import parse from "./parse";
 
@@ -46,6 +45,10 @@ it(`[parse] 파싱 테스트`, () => {
 				$value: "solid",
 			},
 		},
+		b: {
+			$type: "strokeStyle",
+			$value: "{stroke}",
+		},
 	});
 	const refToken = new Token({
 		"border-width": {
@@ -71,7 +74,7 @@ it(`[parse] 파싱 테스트`, () => {
 			},
 		},
 	});
-	expect(new Parser().parse(base, [refToken]).getToken()).toStrictEqual({
+	expect(parse(base, [refToken]).getToken()).toStrictEqual({
 		stroke: {
 			$type: "strokeStyle",
 			$value: {
@@ -87,6 +90,17 @@ it(`[parse] 파싱 테스트`, () => {
 			style: {
 				$type: "strokeStyle",
 				$value: "solid",
+			},
+		},
+		b: {
+			$type: "strokeStyle",
+			$value: {
+				dashArray: [
+					{ value: 1, unit: "rem" },
+					{ value: 2, unit: "rem" },
+					{ value: 3, unit: "rem" },
+				],
+				lineCap: "solid",
 			},
 		},
 	});

@@ -17,10 +17,11 @@ const findValueBy = (
 	circularRefMap = new Map<string, string>(),
 ): Types.TokenObj["$value"] => {
 	let token: TokenObjValue | null = null;
+	const _tokenRef = Transformers.takeOffBracketFromTokenRef(tokenRef);
 
 	for (const raw of refTokens) {
 		const foundTokenObj = raw.find(
-			(props) => Transformers.toTokenRef(props) === tokenRef.slice(1, -1),
+			(props) => Transformers.toTokenRef(props) === _tokenRef,
 		) as TokenObjValue;
 
 		if (foundTokenObj) {
@@ -115,7 +116,7 @@ const parse = (base: Token, refTokens: Token[]): Token => {
 	 */
 	function recursiveParse(value: Types.TokenObj["$value"]) {
 		if (TypeCheckers.isString(value) && isTokenRef(value)) {
-			return findValueBy(value, refTokens);
+			return findValueBy(value, [base, ...refTokens]);
 		} else {
 			if (TypeCheckers.isArray(value)) {
 				return mapArray(value, recursiveParse);
