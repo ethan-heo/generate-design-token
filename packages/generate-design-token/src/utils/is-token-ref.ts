@@ -7,6 +7,10 @@ import { Validate } from "@utils";
  * @returns {boolean} 토큰 참조 문자열이면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
  */
 const isTokenRef = (tokenRef: string) => {
+	if (tokenRef.includes("{$value}")) {
+		return false;
+	}
+
 	return Validate.format.shouldBeOnlyTokenRef(tokenRef);
 };
 
