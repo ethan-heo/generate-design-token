@@ -15,11 +15,11 @@ const replaceValueToTokenRef = (value: any, tokenRef: string) => {
 	}
 
 	if (TypeCheckers.isArray(value)) {
-		return mapArray(value, replaceValueToTokenRef);
+		return mapArray(value, (v) => replaceValueToTokenRef(v, tokenRef));
 	}
 
 	if (TypeCheckers.isObject(value)) {
-		return mapObject(value, replaceValueToTokenRef);
+		return mapObject(value, (v) => replaceValueToTokenRef(v, tokenRef));
 	}
 
 	return value;
