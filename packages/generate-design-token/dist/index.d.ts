@@ -146,6 +146,7 @@ type Typography = CreateTokenObj<{
     };
 }>;
 type TokenObj = Dimension | Color | FontFamily | FontWeight | Duration | CubicBezier | Number | String | Composite | StrokeStyle | Border | Transition | Shadow | Gradient | Typography;
+type TokenTypes = TokenObj["$type"];
 /**
  * @see https://tr.designtokens.org/format/#groups
  */
@@ -193,14 +194,13 @@ declare class Token {
      */
     map(callback: (props: string[], token: TokenGroup) => TokenResult): TokenResult[];
     getToken(): TokenGroup;
+    /**
+     * @description 주어진 토큰을 순회하여 주어진 콜백을 실행합니다.
+     * @param callback 토큰을 순회하는 콜백. 첫 번째 인자로 토큰의 경로를, 두 번째 인자로 토큰을 받는다.
+     */
+    forEach(callback: Iteratee): void;
 }
 
-/**
- * 재귀적으로 참조된 토큰값을 찾아 값을 반환합니다.
- * @param base - 기본 토큰
- * @param refTokens - 참조 토큰
- * @returns 찾은 토큰의 값
- */
 declare const parse: (base: Token, refTokens: Token[]) => Token;
 
 /**
@@ -240,78 +240,6 @@ declare const useCase4: Transformer<[
     string[],
     TokenGroup
 ]>;
-
-/**
- * 주어진 객체가 TokenObj 타입인지 확인합니다.
- * TokenObj는 `value` 속성을 가져야 합니다.
- * @param token - 확인할 객체
- * @returns 주어진 객체가 TokenObj 타입인지 여부
- */
-declare const isTokenObj: (token: object) => token is TokenObj;
-
-/**
- * 주어진 문자열에 토큰 참조가 포함되어 있는지 확인하고
- * 토큰 참조를 추출하여 반환합니다.
- *
- * @param value - 확인할 문자열
- * @returns 토큰 참조를 추출하여 반환합니다. 없으면 null을 반환합니다.
- */
-declare const findTokenRef: (value: string) => RegExpMatchArray | null;
-/**
- * 주어진 문자열에 토큰 참조값이 포함되어 있는지 확인합니다.
- *
- * @param tokenRef - 확인할 문자열
- * @returns 토큰 참조 문자열이 포함되어 있으면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
- */
-declare const hasTokenRef: (str: string) => boolean;
-/**
- * 주어진 문자열이 토큰 참조값인지 확인합니다.
- *
- * @param {string} tokenRef - 토큰 참조 문자열
- * @returns {boolean} 토큰 참조 문자열이면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
- */
-declare const isTokenRef: (tokenRef: string) => boolean;
-/**
- * 주어진 토큰 경로를 문자열로 변환하여 반환합니다.
- * @param props - 토큰 경로
- * @returns 토큰 경로를 문자열로 변환한 결과
- */
-declare const toTokenRef: (props: string[]) => string;
-/**
- * 주어진 토큰 참조 문자열을 토큰 경로의 배열로 변환합니다.
- *
- * @param tokenRef - 토큰 참조 문자열
- * @returns 토큰 경로의 배열
- */
-declare const fromTokenRef: (tokenRef: string) => string[];
-/**
- * 주어진 토큰 참조 문자열에 포함된 중괄호를 삭제하여 반환합니다.
- * @param tokenRef - 토큰 참조 문자열
- * @returns 중괄호를 삭제한 토큰 참조 문자열
- */
-declare const takeOffBracketFromTokenRef: (tokenRef: string) => string;
-
-/**
- * @description 토큰 객체의 필수 속성이 포함되어 있는지 확인한다
- * @returns
- */
-declare const shouldHaveRequiredProp: (value: {}) => boolean;
-/**
- * @description 객체 속성 모두 이름에 $를 prefix로 가지고 있는지 확인한다
- * @returns
- */
-declare const shouldHaveDollarPrefix: (value: {}) => boolean;
-/**
- * @description 객체 속성 모두 이름에 $를 prefix로 가지고 있지 않은지 확인한다
- * @returns
- */
-declare const shouldNotHaveDollarPrefix: (value: {}) => boolean;
-/**
- * @description 주어진 문자열이 토큰 참조값만 포함되어 있는지 확인한다.
- * @param {string} tokenRef
- * @returns {boolean} 토큰 참조가 포함된 문자열이면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
- */
-declare const shouldBeOnlyTokenRef: (tokenRef: string) => boolean;
 
 /**
  * 주어진 토큰 객체가 dimension 타입인지 확인합니다.
@@ -405,7 +333,6 @@ declare const isGradientToken: (tokenObj: TokenObj) => tokenObj is Gradient;
  * @returns 토큰 객체가 Typography 타입인지 여부
  */
 declare const isTypographyToken: (tokenObj: TokenObj) => tokenObj is Typography;
-
 /**
  * Dimension의 유효성을 확인합니다.
  * @param tokenObj - Dimension TokenObj
@@ -528,5 +455,91 @@ declare const validateGradientToken: (tokenObj: Gradient) => true;
  * @throws "Typography"에 대한 에러 메시지를 throw합니다.
  */
 declare const validateTypographyToken: (tokenObj: Typography) => true;
+type Validator<T extends string> = {
+    [key in T]: {
+        is: (token: TokenObj) => token is TokenObj & {
+            $type: key;
+        };
+        validate: <P extends TokenObj & {
+            $type: key;
+        }>(token: P) => true;
+    };
+};
+declare const validate: <T extends TokenTypes & string>(token: Token | TokenGroup, customValidators?: Validator<T>) => void;
 
-export { type Border, type Color, type Composite, type CubicBezier, type Dimension, type Duration, type FontFamily, type FontWeight, type Gradient, type Number, type Shadow, type String, type StrokeStyle, Token, type TokenGroup, type TokenObj, type Transition, type Typography, findTokenRef, fromTokenRef, generateDesignToken, hasTokenRef, isBorderToken, isColorToken, isCompositeToken, isCubicBezierToken, isDimensionToken, isDurationToken, isFontFamilyToken, isFontWeightToken, isGradientToken, isNumberToken, isShadowToken, isStringToken, isStrokeStyleToken, isTokenObj, isTokenRef, isTransitionToken, isTypographyToken, parse, shouldBeOnlyTokenRef, shouldHaveDollarPrefix, shouldHaveRequiredProp, shouldNotHaveDollarPrefix, takeOffBracketFromTokenRef, toTokenRef, useCase1, useCase2, useCase3, useCase4, validateBorderToken, validateColorToken, validateCompositeToken, validateCubicBezierToken, validateDimensionToken, validateDurationToken, validateFontFamilyToken, validateFontWeightToken, validateGradientToken, validateNumberToken, validateShadowToken, validateStringToken, validateStrokeStyleToken, validateTransitionToken, validateTypographyToken };
+/**
+ * 주어진 객체가 TokenObj 타입인지 확인합니다.
+ * TokenObj는 `value` 속성을 가져야 합니다.
+ * @param token - 확인할 객체
+ * @returns 주어진 객체가 TokenObj 타입인지 여부
+ */
+declare const isTokenObj: (token: object) => token is TokenObj;
+
+/**
+ * 주어진 문자열에 토큰 참조가 포함되어 있는지 확인하고
+ * 토큰 참조를 추출하여 반환합니다.
+ *
+ * @param value - 확인할 문자열
+ * @returns 토큰 참조를 추출하여 반환합니다. 없으면 null을 반환합니다.
+ */
+declare const findTokenRef: (value: string) => RegExpMatchArray | null;
+/**
+ * 주어진 문자열에 토큰 참조값이 포함되어 있는지 확인합니다.
+ *
+ * @param tokenRef - 확인할 문자열
+ * @returns 토큰 참조 문자열이 포함되어 있으면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+declare const hasTokenRef: (str: string) => boolean;
+/**
+ * 주어진 문자열이 토큰 참조값인지 확인합니다.
+ *
+ * @param {string} tokenRef - 토큰 참조 문자열
+ * @returns {boolean} 토큰 참조 문자열이면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+declare const isTokenRef: (tokenRef: string) => boolean;
+/**
+ * 주어진 토큰 경로를 문자열로 변환하여 반환합니다.
+ * @param props - 토큰 경로
+ * @returns 토큰 경로를 문자열로 변환한 결과
+ */
+declare const toTokenRef: (props: string[]) => string;
+/**
+ * 주어진 토큰 참조 문자열을 토큰 경로의 배열로 변환합니다.
+ *
+ * @param tokenRef - 토큰 참조 문자열
+ * @returns 토큰 경로의 배열
+ */
+declare const fromTokenRef: (tokenRef: string) => string[];
+/**
+ * 주어진 토큰 참조 문자열에 포함된 중괄호를 삭제하여 반환합니다.
+ * @param tokenRef - 토큰 참조 문자열
+ * @returns 중괄호를 삭제한 토큰 참조 문자열
+ */
+declare const takeOffBracketFromTokenRef: (tokenRef: string) => string;
+
+/**
+ * 주어진 객체가 토큰 객체의 필수 속성을 모두 포함하고 있는지 확인합니다.
+ * @param {object} value - 확인할 객체
+ * @returns 주어진 객체가 토큰 객체의 필수 속성을 모두 포함하고 있으면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+declare const shouldHaveRequiredProp: (value: {}) => boolean;
+/**
+ * @description 주어진 객체의 속성명이 모두 $로 시작하는지 확인합니다.
+ * @param {object} value - 확인할 객체
+ * @returns 주어진 객체의 모든 속성명이 $로 시작하면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+declare const shouldHaveDollarPrefix: (value: {}) => boolean;
+/**
+ * @description 주어진 객체의 속셩명 중 하나라도 $를 prefix로 가지고 있지 않은 속성명이 있는지 확인합니다.
+ * @param {object} value - 확인할 객체
+ * @returns 주어진 객체의 속셩명 중 하나라도 $를 prefix로 가지고 있지 않으면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+declare const shouldNotHaveDollarPrefix: (value: {}) => boolean;
+/**
+ * @description 주어진 문자열이 토큰 참조값만 포함되어 있는지 확인한다.
+ * @param {string} tokenRef
+ * @returns {boolean} 토큰 참조가 포함된 문자열이면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+declare const shouldBeOnlyTokenRef: (tokenRef: string) => boolean;
+
+export { type Border, type Color, type Composite, type CubicBezier, type Dimension, type Duration, type FontFamily, type FontWeight, type Gradient, type Number, type Shadow, type String, type StrokeStyle, Token, type TokenGroup, type TokenObj, type TokenTypes, type Transition, type Typography, findTokenRef, fromTokenRef, generateDesignToken, hasTokenRef, isBorderToken, isColorToken, isCompositeToken, isCubicBezierToken, isDimensionToken, isDurationToken, isFontFamilyToken, isFontWeightToken, isGradientToken, isNumberToken, isShadowToken, isStringToken, isStrokeStyleToken, isTokenObj, isTokenRef, isTransitionToken, isTypographyToken, parse, shouldBeOnlyTokenRef, shouldHaveDollarPrefix, shouldHaveRequiredProp, shouldNotHaveDollarPrefix, takeOffBracketFromTokenRef, toTokenRef, useCase1, useCase2, useCase3, useCase4, validate, validateBorderToken, validateColorToken, validateCompositeToken, validateCubicBezierToken, validateDimensionToken, validateDurationToken, validateFontFamilyToken, validateFontWeightToken, validateGradientToken, validateNumberToken, validateShadowToken, validateStringToken, validateStrokeStyleToken, validateTransitionToken, validateTypographyToken };
