@@ -28,6 +28,10 @@ it(`[parse] 순환 참조 테스트`, () => {
 
 it(`[parse] 파싱 테스트`, () => {
 	const base = new Token({
+		b: {
+			$type: "string",
+			$value: "{stroke}",
+		},
 		stroke: {
 			$type: "strokeStyle",
 			$value: {
@@ -45,10 +49,6 @@ it(`[parse] 파싱 테스트`, () => {
 				$value: "solid",
 			},
 		},
-		b: {
-			$type: "strokeStyle",
-			$value: "{stroke}",
-		},
 	});
 	const refToken = new Token({
 		"border-width": {
@@ -61,8 +61,12 @@ it(`[parse] 파싱 테스트`, () => {
 			},
 			2: {
 				$type: "dimension",
+				$value: "{border-width.3}",
+			},
+			3: {
+				$type: "dimension",
 				$value: {
-					value: 2,
+					value: 3,
 					unit: "rem",
 				},
 			},
@@ -80,7 +84,7 @@ it(`[parse] 파싱 테스트`, () => {
 			$value: {
 				dashArray: [
 					{ value: 1, unit: "rem" },
-					{ value: 2, unit: "rem" },
+					{ value: 3, unit: "rem" },
 					{ value: 3, unit: "rem" },
 				],
 				lineCap: "solid",
@@ -97,7 +101,7 @@ it(`[parse] 파싱 테스트`, () => {
 			$value: {
 				dashArray: [
 					{ value: 1, unit: "rem" },
-					{ value: 2, unit: "rem" },
+					{ value: 3, unit: "rem" },
 					{ value: 3, unit: "rem" },
 				],
 				lineCap: "solid",

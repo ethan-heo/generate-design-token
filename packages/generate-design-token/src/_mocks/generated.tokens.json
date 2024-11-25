@@ -2,35 +2,62 @@
 	"grid": {
 		"mobile": {
 			"columns": { "$type": "number", "$value": 4 },
-			"gutter": { "$type": "string", "$value": { "value": 8, "unit": "px" } },
-			"margin": { "$type": "string", "$value": { "value": 14, "unit": "px" } }
+			"gutter": {
+				"$type": "dimension",
+				"$value": { "value": 8, "unit": "px" }
+			},
+			"margin": {
+				"$type": "dimension",
+				"$value": { "value": 14, "unit": "px" }
+			}
 		},
 		"tablet": {
 			"columns": { "$type": "number", "$value": 8 },
-			"gutter": { "$type": "string", "$value": { "value": 12, "unit": "px" } },
-			"margin": { "$type": "string", "$value": { "value": 22, "unit": "px" } }
+			"gutter": {
+				"$type": "dimension",
+				"$value": { "value": 12, "unit": "px" }
+			},
+			"margin": {
+				"$type": "dimension",
+				"$value": { "value": 22, "unit": "px" }
+			}
 		},
 		"desktop": {
 			"columns": { "$type": "number", "$value": 12 },
-			"gutter": { "$type": "string", "$value": { "value": 16, "unit": "px" } },
+			"gutter": {
+				"$type": "dimension",
+				"$value": { "value": 16, "unit": "px" }
+			},
 			"margin": { "$type": "string", "$value": "auto" }
 		}
 	},
 	"responsive": {
-		"desktop": { "$type": "string", "$value": { "value": 1440, "unit": "px" } },
-		"tablet": { "$type": "string", "$value": { "value": 1280, "unit": "px" } },
-		"mobile": { "$type": "string", "$value": { "value": 768, "unit": "px" } }
+		"desktop": {
+			"$type": "dimension",
+			"$value": { "value": 1440, "unit": "px" }
+		},
+		"tablet": {
+			"$type": "dimension",
+			"$value": { "value": 1280, "unit": "px" }
+		},
+		"mobile": { "$type": "dimension", "$value": { "value": 768, "unit": "px" } }
 	},
 	"font-size": {
 		"extra-large": {
-			"$type": "string",
+			"$type": "dimension",
 			"$value": { "value": 2, "unit": "rem" }
 		},
-		"large": { "$type": "string", "$value": { "value": 1.5, "unit": "rem" } },
-		"medium": { "$type": "string", "$value": { "value": 1, "unit": "rem" } },
-		"small": { "$type": "string", "$value": { "value": 0.875, "unit": "rem" } },
+		"large": {
+			"$type": "dimension",
+			"$value": { "value": 1.5, "unit": "rem" }
+		},
+		"medium": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } },
+		"small": {
+			"$type": "dimension",
+			"$value": { "value": 0.875, "unit": "rem" }
+		},
 		"extra-small": {
-			"$type": "string",
+			"$type": "dimension",
 			"$value": { "value": 0.625, "unit": "rem" }
 		}
 	},
@@ -47,14 +74,20 @@
 	},
 	"line-height": {
 		"extra-large": {
-			"$type": "string",
+			"$type": "dimension",
 			"$value": { "value": 2, "unit": "rem" }
 		},
-		"large": { "$type": "string", "$value": { "value": 1.5, "unit": "rem" } },
-		"medium": { "$type": "string", "$value": { "value": 1, "unit": "rem" } },
-		"small": { "$type": "string", "$value": { "value": 0.875, "unit": "rem" } },
+		"large": {
+			"$type": "dimension",
+			"$value": { "value": 1.5, "unit": "rem" }
+		},
+		"medium": { "$type": "dimension", "$value": { "value": 1, "unit": "rem" } },
+		"small": {
+			"$type": "dimension",
+			"$value": { "value": 0.875, "unit": "rem" }
+		},
 		"extra-small": {
-			"$type": "string",
+			"$type": "dimension",
 			"$value": { "value": 0.625, "unit": "rem" }
 		}
 	},
@@ -1183,27 +1216,30 @@
 	},
 	"border-radius": {
 		"extra-large": {
-			"$type": "string",
+			"$type": "dimension",
 			"$value": { "value": 20, "unit": "px" }
 		},
-		"large": { "$type": "string", "$value": { "value": 16, "unit": "px" } },
-		"medium": { "$type": "string", "$value": { "value": 12, "unit": "px" } },
-		"small": { "$type": "string", "$value": { "value": 8, "unit": "px" } },
+		"large": { "$type": "dimension", "$value": { "value": 16, "unit": "px" } },
+		"medium": { "$type": "dimension", "$value": { "value": 12, "unit": "px" } },
+		"small": { "$type": "dimension", "$value": { "value": 8, "unit": "px" } },
 		"extra-small": {
-			"$type": "string",
+			"$type": "dimension",
 			"$value": { "value": 4, "unit": "px" }
 		},
-		"max": { "$type": "string", "$value": { "value": 10, "unit": "px" } }
+		"max": { "$type": "dimension", "$value": { "value": 10, "unit": "px" } }
 	},
 	"spacing": {
 		"extra-large": {
-			"$type": "string",
+			"$type": "dimension",
 			"$value": { "value": 24, "unit": "px" }
 		},
-		"large": { "$type": "string", "$value": { "value": 20, "unit": "px" } },
-		"medium": { "$type": "string", "$value": { "value": 16, "unit": "px" } },
-		"small": { "$type": "string", "$value": { "value": 12, "unit": "px" } },
-		"extra-small": { "$type": "string", "$value": { "value": 8, "unit": "px" } }
+		"large": { "$type": "dimension", "$value": { "value": 20, "unit": "px" } },
+		"medium": { "$type": "dimension", "$value": { "value": 16, "unit": "px" } },
+		"small": { "$type": "dimension", "$value": { "value": 12, "unit": "px" } },
+		"extra-small": {
+			"$type": "dimension",
+			"$value": { "value": 8, "unit": "px" }
+		}
 	},
 	"shadow": {
 		"top-left": {
@@ -1336,7 +1372,7 @@
 		}
 	},
 	"font-family": {
-		"$type": "string",
+		"$type": "fontFamily",
 		"$value": "맑은 고딕, malgun gothic, AppleGothicNeoSD, Apple SD 산돌고딕 Neo, Microsoft NeoGothic,  Droid sans, sans-serif;"
 	}
 }

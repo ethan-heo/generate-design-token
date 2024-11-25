@@ -74,7 +74,7 @@ const findValueBy = (
 			if (isTokenRef(value)) {
 				checkCircularRef(referringTokenRef, value);
 
-				return findValueBy(value, refTokens, circularRefMap) as string;
+				return findValueBy(value, refTokens, circularRefMap);
 			} else {
 				return value;
 			}
@@ -96,19 +96,37 @@ const findValueBy = (
 	}
 };
 
-/**
- * 재귀적으로 참조된 토큰값을 찾아 값을 반환합니다.
- * @param base - 기본 토큰
- * @param refTokens - 참조 토큰
- * @returns 찾은 토큰의 값
- */
 const parse = (base: Token, refTokens: Token[]): Token => {
 	const result = base.clone();
 
 	for (const [, tokenObj] of result.findAll((_, token) =>
 		isTokenObj(token),
 	) as TokenObjValue[]) {
-		tokenObj.$value = recursiveParse(tokenObj.$value) as TokenObj["$value"];
+		const { $value } = tokenObj;
+
+		if (isString($value) && isTokenRef($value)) {
+			let _tokenObj;
+
+			for (const refToken of [base, ...refTokens]) {
+				const foundTokenObj = refToken.find(
+					(props) => toTokenRef(props) === takeOffBracketFromTokenRef($value),
+				) as TokenObjValue;
+
+				if (foundTokenObj) {
+					_tokenObj = foundTokenObj[1];
+					break;
+				}
+			}
+
+			if (!_tokenObj) {
+				throw new Error(`정의되지 않은 토큰입니다: ${$value}`);
+			}
+
+			tokenObj.$type = _tokenObj.$type;
+			tokenObj.$value = recursiveTokenValue(_tokenObj.$value);
+		} else {
+			tokenObj.$value = recursiveTokenValue($value);
+		}
 	}
 
 	return result;
@@ -118,16 +136,16 @@ const parse = (base: Token, refTokens: Token[]): Token => {
 	 * @param value - 찾을 토큰의 값
 	 * @returns 찾은 토큰의 값
 	 */
-	function recursiveParse(value: TokenObj["$value"]) {
+	function recursiveTokenValue(value: TokenObj["$value"]) {
 		if (isString(value) && isTokenRef(value)) {
 			return findValueBy(value, [base, ...refTokens]);
 		} else {
 			if (isArray(value)) {
-				return mapArray(value, recursiveParse);
+				return mapArray(value, recursiveTokenValue);
 			}
 
 			if (isObject(value)) {
-				return mapObject(value, recursiveParse);
+				return mapObject(value, recursiveTokenValue);
 			}
 		}
 

@@ -8,6 +8,7 @@ import {
 	useCase4,
 } from "./modules/transform-use-cases";
 import parse from "./modules/parse";
+import { validate } from "./modules/validate";
 
 /**
  * @description
@@ -18,9 +19,10 @@ import parse from "./modules/parse";
  * @returns {TokenGroup} - 처리된 토큰
  */
 const generateDesignToken = (base: TokenGroup, refTokens: TokenGroup[]) => {
-	const _refTokens = refTokens.map((token) => new Token(token));
+	[base, ...refTokens].forEach((token) => validate(token));
 
-	return parse(
+	const _refTokens = refTokens.map((token) => new Token(token));
+	const result = parse(
 		transform(new Token(base), _refTokens, [
 			useCase1,
 			useCase2,
@@ -28,7 +30,11 @@ const generateDesignToken = (base: TokenGroup, refTokens: TokenGroup[]) => {
 			useCase4,
 		]),
 		_refTokens,
-	).getToken();
+	);
+
+	validate(result);
+
+	return result.getToken();
 };
 
 export default generateDesignToken;
