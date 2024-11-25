@@ -96,6 +96,12 @@ const findValueBy = (
 	}
 };
 
+/**
+ * 재귀적으로 참조된 토큰값을 찾아 값을 반환합니다.
+ * @param base - 기본 토큰
+ * @param refTokens - 참조 토큰
+ * @returns 찾은 토큰의 값
+ */
 const parse = (base: Token, refTokens: Token[]): Token => {
 	const result = base.clone();
 

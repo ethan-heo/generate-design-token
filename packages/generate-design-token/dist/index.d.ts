@@ -195,8 +195,22 @@ declare class Token {
     getToken(): TokenGroup;
 }
 
+/**
+ * 재귀적으로 참조된 토큰값을 찾아 값을 반환합니다.
+ * @param base - 기본 토큰
+ * @param refTokens - 참조 토큰
+ * @returns 찾은 토큰의 값
+ */
 declare const parse: (base: Token, refTokens: Token[]) => Token;
 
+/**
+ * @description
+ * 주어진 기본 토큰과 참조 토큰을 통해 구조 변환 -> 파싱 과정을 거쳐 토큰를 반환한다.
+ *
+ * @param {TokenGroup} base - 기본 토큰
+ * @param {TokenGroup[]} refTokens - 참조 토큰
+ * @returns {TokenGroup} - 처리된 토큰
+ */
 declare const generateDesignToken: (base: TokenGroup, refTokens: TokenGroup[]) => TokenGroup;
 
 interface Transformer<UC extends [string[], TokenGroup | TokenObj], Ref extends [string[], TokenGroup | TokenObj]> {
