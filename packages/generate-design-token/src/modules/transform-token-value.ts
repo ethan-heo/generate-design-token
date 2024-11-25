@@ -1,5 +1,6 @@
-import { TokenObj } from "@types";
-import { mapArray, mapObject, TypeCheckers } from "@utils";
+import { TokenObj } from "../types/token.types";
+import { mapArray, mapObject } from "../utils/map";
+import { isArray, isObject, isString } from "../utils/type-checker";
 
 /**
  * {$value}을 포함하고 있는 문자열, 배열, 혹은 객체를
@@ -10,15 +11,15 @@ import { mapArray, mapObject, TypeCheckers } from "@utils";
  * @returns {any}
  */
 const replaceValueToTokenRef = (value: any, tokenRef: string) => {
-	if (TypeCheckers.isString(value)) {
+	if (isString(value)) {
 		return value.replace(`{$value}`, `{${tokenRef}}`);
 	}
 
-	if (TypeCheckers.isArray(value)) {
+	if (isArray(value)) {
 		return mapArray(value, (v) => replaceValueToTokenRef(v, tokenRef));
 	}
 
-	if (TypeCheckers.isObject(value)) {
+	if (isObject(value)) {
 		return mapObject(value, (v) => replaceValueToTokenRef(v, tokenRef));
 	}
 

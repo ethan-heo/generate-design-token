@@ -1,6 +1,21 @@
-import { TokenObj } from "@types";
-import { Validate } from "@utils";
 import { expect, it } from "vitest";
+import {
+	isBorderToken,
+	isColorToken,
+	isCompositeToken,
+	isCubicBezierToken,
+	isDurationToken,
+	isFontFamilyToken,
+	isFontWeightToken,
+	isGradientToken,
+	isNumberToken,
+	isShadowToken,
+	isStringToken,
+	isStrokeStyleToken,
+	isTransitionToken,
+	isTypographyToken,
+} from "./is";
+import { TokenObj } from "../../../types/token.types";
 
 const TOKEN_OBJS: Record<TokenObj["$type"], TokenObj> = {
 	dimension: {
@@ -114,19 +129,19 @@ const TOKEN_OBJS: Record<TokenObj["$type"], TokenObj> = {
 	},
 };
 
-it(`Validator.tokenObj.is`, () => {
-	expect(Validate.token.is.border(TOKEN_OBJS.border)).toBeTruthy();
-	expect(Validate.token.is.color(TOKEN_OBJS.color)).toBeTruthy();
-	expect(Validate.token.is.fontFamily(TOKEN_OBJS.fontFamily)).toBeTruthy();
-	expect(Validate.token.is.fontWeight(TOKEN_OBJS.fontWeight)).toBeTruthy();
-	expect(Validate.token.is.duration(TOKEN_OBJS.duration)).toBeTruthy();
-	expect(Validate.token.is.cubicBezier(TOKEN_OBJS.cubicBezier)).toBeTruthy();
-	expect(Validate.token.is.number(TOKEN_OBJS.number)).toBeTruthy();
-	expect(Validate.token.is.string(TOKEN_OBJS.string)).toBeTruthy();
-	expect(Validate.token.is.composite(TOKEN_OBJS.composite)).toBeTruthy();
-	expect(Validate.token.is.strokeStyle(TOKEN_OBJS.strokeStyle)).toBeTruthy();
-	expect(Validate.token.is.transition(TOKEN_OBJS.transition)).toBeTruthy();
-	expect(Validate.token.is.shadow(TOKEN_OBJS.shadow)).toBeTruthy();
-	expect(Validate.token.is.gradient(TOKEN_OBJS.gradient)).toBeTruthy();
-	expect(Validate.token.is.typography(TOKEN_OBJS.typography)).toBeTruthy();
+it(`is`, () => {
+	expect(isBorderToken(TOKEN_OBJS.border)).toBeTruthy();
+	expect(isColorToken(TOKEN_OBJS.color)).toBeTruthy();
+	expect(isFontFamilyToken(TOKEN_OBJS.fontFamily)).toBeTruthy();
+	expect(isFontWeightToken(TOKEN_OBJS.fontWeight)).toBeTruthy();
+	expect(isDurationToken(TOKEN_OBJS.duration)).toBeTruthy();
+	expect(isCubicBezierToken(TOKEN_OBJS.cubicBezier)).toBeTruthy();
+	expect(isNumberToken(TOKEN_OBJS.number)).toBeTruthy();
+	expect(isStringToken(TOKEN_OBJS.string)).toBeTruthy();
+	expect(isCompositeToken(TOKEN_OBJS.composite)).toBeTruthy();
+	expect(isStrokeStyleToken(TOKEN_OBJS.strokeStyle)).toBeTruthy();
+	expect(isTransitionToken(TOKEN_OBJS.transition)).toBeTruthy();
+	expect(isShadowToken(TOKEN_OBJS.shadow)).toBeTruthy();
+	expect(isGradientToken(TOKEN_OBJS.gradient)).toBeTruthy();
+	expect(isTypographyToken(TOKEN_OBJS.typography)).toBeTruthy();
 });

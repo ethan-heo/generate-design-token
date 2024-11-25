@@ -1,9 +1,25 @@
 import { expect, it } from "vitest";
-import { Validate } from "@utils";
+import {
+	validateBorderToken,
+	validateColorToken,
+	validateCompositeToken,
+	validateCubicBezierToken,
+	validateDimensionToken,
+	validateDurationToken,
+	validateFontFamilyToken,
+	validateFontWeightToken,
+	validateGradientToken,
+	validateNumberToken,
+	validateShadowToken,
+	validateStringToken,
+	validateStrokeStyleToken,
+	validateTransitionToken,
+	validateTypographyToken,
+} from "./validate";
 
-it(`Validator.tokenObj.dimension`, () => {
+it(`validateDimensionToken`, () => {
 	expect(
-		Validate.token.dimension({
+		validateDimensionToken({
 			$type: "dimension",
 			$value: {
 				value: 10,
@@ -12,13 +28,13 @@ it(`Validator.tokenObj.dimension`, () => {
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.dimension({
+		validateDimensionToken({
 			$type: "dimension",
 			$value: "10vw",
 		} as any),
 	).toThrowError();
 	expect(() =>
-		Validate.token.dimension({
+		validateDimensionToken({
 			$type: "dimension",
 			$value: {
 				value: 10,
@@ -27,7 +43,7 @@ it(`Validator.tokenObj.dimension`, () => {
 		} as any),
 	).toThrowError();
 	expect(() =>
-		Validate.token.dimension({
+		validateDimensionToken({
 			$type: "dimension",
 			$value: {
 				value: "10",
@@ -37,54 +53,54 @@ it(`Validator.tokenObj.dimension`, () => {
 	).toThrowError();
 });
 
-it(`Validator.tokenObj.color`, () => {
+it(`validateColorToken`, () => {
 	expect(
-		Validate.token.color({
+		validateColorToken({
 			$type: "color",
 			$value: "#ff0000",
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.color({
+		validateColorToken({
 			$type: "color",
 			$value: "ff0000",
 		} as any),
 	).toThrowError();
 });
 
-it(`Validator.tokenObj.fontFamily`, () => {
+it(`validateFontFamilyToken`, () => {
 	expect(
-		Validate.token.fontFamily({
+		validateFontFamilyToken({
 			$type: "fontFamily",
 			$value: "Arial",
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.fontFamily({
+		validateFontFamilyToken({
 			$type: "fontFamily",
 			$value: 42,
 		} as any),
 	).toThrowError();
 });
 
-it(`Validator.tokenObj.fontWeight`, () => {
+it(`validateFontWeightToken`, () => {
 	expect(
-		Validate.token.fontWeight({
+		validateFontWeightToken({
 			$type: "fontWeight",
 			$value: "bold",
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.fontWeight({
+		validateFontWeightToken({
 			$type: "fontWeight",
 			$value: 42,
 		} as any),
 	).toThrowError();
 });
 
-it(`Validator.tokenObj.duration`, () => {
+it(`validateDurationToken`, () => {
 	expect(
-		Validate.token.duration({
+		validateDurationToken({
 			$type: "duration",
 			$value: {
 				value: 1000,
@@ -93,61 +109,61 @@ it(`Validator.tokenObj.duration`, () => {
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.duration({
+		validateDurationToken({
 			$type: "duration",
 			$value: 1000,
 		} as any),
 	).toThrowError();
 });
 
-it(`Validator.tokenObj.cubicBezier`, () => {
+it(`validateCubicBezierToken`, () => {
 	expect(
-		Validate.token.cubicBezier({
+		validateCubicBezierToken({
 			$type: "cubicBezier",
 			$value: [1, 1, 1, 1],
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.cubicBezier({
+		validateCubicBezierToken({
 			$type: "cubicBezier",
 			$value: 1000,
 		} as any),
 	).toThrowError();
 });
 
-it(`Validator.tokenObj.number`, () => {
+it(`validateNumberToken`, () => {
 	expect(
-		Validate.token.number({
+		validateNumberToken({
 			$type: "number",
 			$value: 10,
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.number({
+		validateNumberToken({
 			$type: "number",
 			$value: "10",
 		} as any),
 	).toThrowError();
 });
 
-it(`Validator.tokenObj.string`, () => {
+it(`validateStringToken`, () => {
 	expect(
-		Validate.token.string({
+		validateStringToken({
 			$type: "string",
 			$value: "Hello, World!",
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.string({
+		validateStringToken({
 			$type: "string",
 			$value: 42,
 		} as any),
 	).toThrowError();
 });
 
-it(`Validator.tokenObj.composite`, () => {
+it(`validateCompositeToken`, () => {
 	expect(
-		Validate.token.composite({
+		validateCompositeToken({
 			$type: "composite",
 			$value: {
 				"aa.bb.cc": 43,
@@ -155,16 +171,16 @@ it(`Validator.tokenObj.composite`, () => {
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.composite({
+		validateCompositeToken({
 			$type: "composite",
 			$value: 42,
 		} as any),
 	).toThrowError();
 });
 
-it(`Validator.tokenObj.strokeStyle`, () => {
+it(`validateStrokeStyleToken`, () => {
 	expect(
-		Validate.token.strokeStyle({
+		validateStrokeStyleToken({
 			$type: "strokeStyle",
 			$value: {
 				lineCap: "round",
@@ -173,16 +189,16 @@ it(`Validator.tokenObj.strokeStyle`, () => {
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.strokeStyle({
+		validateStrokeStyleToken({
 			$type: "strokeStyle",
 			$value: 42,
 		} as any),
 	).toThrowError();
 });
 
-it(`Validator.tokenObj.border`, () => {
+it(`validateBorderToken`, () => {
 	expect(
-		Validate.token.border({
+		validateBorderToken({
 			$type: "border",
 			$value: {
 				width: "{border-width.1}",
@@ -192,16 +208,16 @@ it(`Validator.tokenObj.border`, () => {
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.border({
+		validateBorderToken({
 			$type: "border",
 			$value: 42,
 		} as any),
 	).toThrowError();
 });
 
-it(`Validator.tokenObj.transition`, () => {
+it(`validateTransitionToken`, () => {
 	expect(
-		Validate.token.transition({
+		validateTransitionToken({
 			$type: "transition",
 			$value: {
 				duration: {
@@ -217,16 +233,16 @@ it(`Validator.tokenObj.transition`, () => {
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.transition({
+		validateTransitionToken({
 			$type: "transition",
 			$value: 42,
 		} as any),
 	).toThrowError();
 });
 
-it(`Validator.tokenObj.shadow`, () => {
+it(`validateShadowToken`, () => {
 	expect(
-		Validate.token.shadow({
+		validateShadowToken({
 			$type: "shadow",
 			$value: {
 				offsetX: {
@@ -250,16 +266,16 @@ it(`Validator.tokenObj.shadow`, () => {
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.shadow({
+		validateShadowToken({
 			$type: "shadow",
 			$value: 42,
 		} as any),
 	).toThrowError();
 });
 
-it(`Validator.tokenObj.gradient`, () => {
+it(`validateGradientToken`, () => {
 	expect(
-		Validate.token.gradient({
+		validateGradientToken({
 			$type: "gradient",
 			$value: [
 				{
@@ -274,16 +290,16 @@ it(`Validator.tokenObj.gradient`, () => {
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.gradient({
+		validateGradientToken({
 			$type: "gradient",
 			$value: 42,
 		} as any),
 	).toThrowError();
 });
 
-it(`Validator.tokenObj.typography`, () => {
+it(`validateTypographyToken`, () => {
 	expect(
-		Validate.token.typography({
+		validateTypographyToken({
 			$type: "typography",
 			$value: {
 				fontFamily: "Arial",
@@ -301,7 +317,7 @@ it(`Validator.tokenObj.typography`, () => {
 		}),
 	).toBeTruthy();
 	expect(() =>
-		Validate.token.typography({
+		validateTypographyToken({
 			$type: "typography",
 			$value: 42,
 		} as any),

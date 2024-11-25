@@ -1,13 +1,13 @@
+import { TokenObj } from "../types/token.types";
+import { mapArray, mapObject } from "../utils/map";
+import { isTokenObj } from "../utils/token-obj";
 import {
-	isTokenObj,
 	isTokenRef,
-	mapArray,
-	mapObject,
-	Transformers,
-	TypeCheckers,
-} from "@utils";
-import { Token } from "@modules";
-import { TokenObj } from "@types";
+	takeOffBracketFromTokenRef,
+	toTokenRef,
+} from "../utils/token-ref";
+import { isArray, isObject, isString } from "../utils/type-checker";
+import Token from "./token";
 
 type TokenObjValue = [string[], TokenObj];
 
@@ -17,11 +17,11 @@ const findValueBy = (
 	circularRefMap = new Map<string, string>(),
 ): TokenObj["$value"] => {
 	let token: TokenObjValue | null = null;
-	const _tokenRef = Transformers.takeOffBracketFromTokenRef(tokenRef);
+	const _tokenRef = takeOffBracketFromTokenRef(tokenRef);
 
 	for (const raw of refTokens) {
 		const foundTokenObj = raw.find(
-			(props) => Transformers.toTokenRef(props) === _tokenRef,
+			(props) => toTokenRef(props) === _tokenRef,
 		) as TokenObjValue;
 
 		if (foundTokenObj) {
@@ -70,7 +70,7 @@ const findValueBy = (
 		referringTokenRef: string,
 		value: T,
 	) {
-		if (TypeCheckers.isString(value)) {
+		if (isString(value)) {
 			if (isTokenRef(value)) {
 				checkCircularRef(referringTokenRef, value);
 
@@ -80,13 +80,13 @@ const findValueBy = (
 			}
 		}
 
-		if (TypeCheckers.isArray(value)) {
+		if (isArray(value)) {
 			return mapArray(value, (_value) => {
 				return recursiveFindValueBy(referringTokenRef, _value);
 			});
 		}
 
-		if (TypeCheckers.isObject(value)) {
+		if (isObject(value)) {
 			return mapObject(value, (_value) => {
 				return recursiveFindValueBy(referringTokenRef, _value);
 			});
@@ -113,14 +113,14 @@ const parse = (base: Token, refTokens: Token[]): Token => {
 	 * @returns 찾은 토큰의 값
 	 */
 	function recursiveParse(value: TokenObj["$value"]) {
-		if (TypeCheckers.isString(value) && isTokenRef(value)) {
+		if (isString(value) && isTokenRef(value)) {
 			return findValueBy(value, [base, ...refTokens]);
 		} else {
-			if (TypeCheckers.isArray(value)) {
+			if (isArray(value)) {
 				return mapArray(value, recursiveParse);
 			}
 
-			if (TypeCheckers.isObject(value)) {
+			if (isObject(value)) {
 				return mapObject(value, recursiveParse);
 			}
 		}

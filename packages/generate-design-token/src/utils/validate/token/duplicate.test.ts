@@ -1,5 +1,5 @@
-import { Validate } from "@utils";
 import { expect, it } from "vitest";
+import duplicateToken from "./duplicate";
 
 const TOKEN = {
 	color: {
@@ -10,7 +10,7 @@ const TOKEN = {
 	},
 };
 
-it(`Validate.token.duplicate`, () => {
-	expect(Validate.token.duplicate(TOKEN, "color.primary")).toBeTruthy();
-	expect(Validate.token.duplicate(TOKEN, "color.secondary")).toBeFalsy();
+it(`duplicateToken`, () => {
+	expect(duplicateToken(TOKEN, "color.primary")).toBeTruthy();
+	expect(duplicateToken(TOKEN, "color.secondary")).toBeFalsy();
 });

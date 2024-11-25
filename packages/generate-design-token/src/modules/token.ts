@@ -1,6 +1,11 @@
-import { TokenGroup, TokenObj } from "@types";
-import { Validate } from "@utils";
-import { isTokenObj, TypeCheckers, Transformers } from "@utils";
+import { TokenGroup, TokenObj } from "../types/token.types";
+import { isTokenObj } from "../utils/token-obj";
+import { toTokenRef } from "../utils/token-ref";
+import { isObject } from "../utils/type-checker";
+import {
+	shouldHaveRequiredProp,
+	shouldNotHaveDollarPrefix,
+} from "../utils/validate/format";
 
 export type TokenResult = [string[], TokenGroup | TokenObj];
 
@@ -55,11 +60,11 @@ class Token {
 	delete(props: string[]) {
 		let parentToken: TokenGroup = this.#token;
 		const prop = props.pop()!;
-		const tokenRef = Transformers.toTokenRef(props);
+		const tokenRef = toTokenRef(props);
 
 		if (props.length > 0) {
 			this.#iterator(this.#token, (props, token) => {
-				if (Transformers.toTokenRef(props) === tokenRef) {
+				if (toTokenRef(props) === tokenRef) {
 					parentToken = token;
 				}
 			});
@@ -134,7 +139,7 @@ class Token {
 
 			callback(this.#clone(props), token);
 
-			if (TypeCheckers.isObject(token) && !isTokenObj(token)) {
+			if (isObject(token) && !isTokenObj(token)) {
 				const item = Object.entries(token) as [string, TokenGroup][];
 
 				stack.push(item);
@@ -160,11 +165,8 @@ class Token {
 		//3. 토큰 객체 타입별 값의 형식 체크
 		//3-1. 값의 유효한 값인지 확인
 		this.#iterator(token, (_, _token) => {
-			if (
-				typeof _token === "object" &&
-				Validate.format.shouldHaveRequiredProp(_token)
-			) {
-				if (Validate.format.shouldNotHaveDollarPrefix(_token)) {
+			if (typeof _token === "object" && shouldHaveRequiredProp(_token)) {
+				if (shouldNotHaveDollarPrefix(_token)) {
 					throw new Error(
 						`토큰 객체의 속성값의 이름은 $가 prefix로 시작해야합니다.`,
 					);

@@ -1,7 +1,8 @@
 import { expect, it } from "vitest";
-import { Token } from "@modules";
-import { isTokenObj, Transformers } from "@utils";
-import { TokenGroup, TokenObj } from "@types";
+import Token from "./token";
+import { TokenGroup, TokenObj } from "../types/token.types";
+import { toTokenRef } from "../utils/token-ref";
+import { isTokenObj } from "../utils/token-obj";
 
 const TOKEN = {
 	color: {
@@ -66,9 +67,7 @@ it(`[Token.add] 토큰 속성을 추가한다`, () => {
 	token.add(actual.props, actual.token);
 
 	expect(
-		token.find(
-			(props) => Transformers.toTokenRef(props) === "color.tertiary.2",
-		),
+		token.find((props) => toTokenRef(props) === "color.tertiary.2"),
 	).toStrictEqual(expected);
 });
 
@@ -88,9 +87,7 @@ it(`[Token.delete] 토큰 속성을 삭제한다`, () => {
 	token.delete(["color", "tertiary", "1"]);
 
 	expect(
-		token.find(
-			(props) => Transformers.toTokenRef(props) === "color.tertiary.1",
-		),
+		token.find((props) => toTokenRef(props) === "color.tertiary.1"),
 	).toBeUndefined();
 });
 
@@ -108,7 +105,7 @@ it(`[Token.clone] 토큰을 복제한다`, () => {
 	const token = new Token(TOKEN);
 	const cloneToken = token.clone();
 	const actual = cloneToken.find(
-		(props) => Transformers.toTokenRef(props) === "color.tertiary.1",
+		(props) => toTokenRef(props) === "color.tertiary.1",
 	)!;
 
 	expect(actual[1] === TOKEN.color.tertiary[1]).toBeFalsy();

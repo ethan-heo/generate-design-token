@@ -1,127 +1,6 @@
 'use strict';
 
-const isTokenObj = (token) => {
-    return shouldHaveRequiredProp(token);
-};
-
-/**
- * 주어진 문자열이 토큰 참조값인지 확인합니다.
- *
- * @param {string} tokenRef - 토큰 참조 문자열
- * @returns {boolean} 토큰 참조 문자열이면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
- */
-const isTokenRef = (tokenRef) => {
-    if (tokenRef.includes("{$value}")) {
-        return false;
-    }
-    return shouldBeOnlyTokenRef(tokenRef);
-};
-
 const TOKEN_REF_REGEXP = /\{([^{}]+)\}/;
-
-const hasTokenRef = (tokenRef) => {
-    return !!tokenRef.match(TOKEN_REF_REGEXP);
-};
-
-/**
- * 주어진 객체의 모든 값을 주어진 콜백을 적용하여 반환합니다.
- *
- * @param obj - 처리할 객체
- * @param callback - 처리할 콜백. 첫 번째 인자로 값, 두 번째 인자로 키를 받습니다.
- * @returns 주어진 콜백을 적용한 결과를 반환합니다.
- */
-const mapObject = (obj, callback) => {
-    return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, callback(value)]));
-};
-
-/**
- * 주어진 배열을 순회하여 주어진 콜백을 적용하고, 그 결과를 반환하는 함수.
- *
- * @param arr - 순회할 배열.
- * @param callback - 순회할 때 적용할 콜백. 첫 번째 인자로 배열의 요소를 받는다.
- * @returns 주어진 콜백을 적용한 결과를 반환하는 배열.
- */
-const mapArray = (arr, callback) => {
-    return arr.map(callback);
-};
-
-/**
- * 주어진 문자열에 토큰 참조가 포함되어 있는지 확인하고
- * 토큰 참조를 추출하여 반환합니다.
- *
- * @param value - 확인할 문자열
- * @returns 토큰 참조를 추출하여 반환합니다. 없으면 null을 반환합니다.
- */
-const findTokenRef = (value) => {
-    return value.match(TOKEN_REF_REGEXP);
-};
-
-/**
- * 주어진 토큰 경로를 문자열로 변환하여 반환합니다.
- * @param props - 토큰 경로
- * @returns 토큰 경로를 문자열로 변환한 결과
- */
-const toTokenRef = (props) => {
-    return props.join(".");
-};
-
-/**
- * 주어진 토큰 참조 문자열을 토큰 경로의 배열로 변환합니다.
- *
- * @param tokenRef - 토큰 참조 문자열
- * @returns 토큰 경로의 배열
- */
-const fromTokenRef = (tokenRef) => {
-    return tokenRef.split(".");
-};
-
-const takeOffBracketFromTokenRef = (tokenRef) => {
-    return tokenRef.replace(/[\{\}]/g, "");
-};
-
-var index$4 = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    fromTokenRef: fromTokenRef,
-    takeOffBracketFromTokenRef: takeOffBracketFromTokenRef,
-    toTokenRef: toTokenRef
-});
-
-const getType = (value) => {
-    return Object.prototype.toString
-        .call(value)
-        .slice(8, -1)
-        .toLowerCase();
-};
-
-const isObject = (value) => {
-    return getType(value) === "object";
-};
-
-const isArray = (value) => {
-    return getType(value) === "array";
-};
-
-const isString = (value) => {
-    return getType(value) === "string";
-};
-
-const isNumber = (value) => {
-    return getType(value) === "number";
-};
-
-const isUndefined = (value) => {
-    return getType(value) === "undefined";
-};
-
-var index$3 = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    getType: getType,
-    isArray: isArray,
-    isNumber: isNumber,
-    isObject: isObject,
-    isString: isString,
-    isUndefined: isUndefined
-});
 
 /**
  * @description 토큰 객체의 필수 속성이 포함되어 있는지 확인한다
@@ -172,820 +51,116 @@ const shouldBeOnlyTokenRef = (tokenRef) => {
     return matchedTokenRef[0] === tokenRef;
 };
 
-var index$2 = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    shouldBeOnlyTokenRef: shouldBeOnlyTokenRef,
-    shouldHaveDollarPrefix: shouldHaveDollarPrefix,
-    shouldHaveRequiredProp: shouldHaveRequiredProp,
-    shouldNotHaveDollarPrefix: shouldNotHaveDollarPrefix
-});
-
 /**
- * 주어진 토큰 객체가 dimension 타입인지 확인합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 dimension 타입인지 여부
+ * 주어진 객체가 TokenObj 타입인지 확인합니다.
+ * TokenObj는 `value` 속성을 가져야 합니다.
+ * @param token - 확인할 객체
+ * @returns 주어진 객체가 TokenObj 타입인지 여부
  */
-const dimension$1 = (tokenObj) => tokenObj.$type === "dimension";
-/**
- * 주어진 토큰 객체가 Color 타입인지 확인합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 Color 타입인지 여부
- */
-const color$1 = (tokenObj) => tokenObj.$type === "color";
-/**
- * 주어진 토큰 객체가 FontFamily 타입인지 확인합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 FontFamily 타입인지 여부
- */
-const fontFamily$1 = (tokenObj) => tokenObj.$type === "fontFamily";
-/**
- * 주어진 토큰 객체가 FontWeight 타입인지 확인합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 FontWeight 타입인지 여부
- */
-const fontWeight$1 = (tokenObj) => tokenObj.$type === "fontWeight";
-/**
- * 주어진 토큰 객체가 Duration 타입인지 확인합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 Duration 타입인지 여부
- */
-const duration$1 = (tokenObj) => tokenObj.$type === "duration";
-/**
- * 주어진 토큰 객체가 CubicBezier 타입인지 확인합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 CubicBezier 타입인지 여부
- */
-const cubicBezier$1 = (tokenObj) => tokenObj.$type === "cubicBezier";
-/**
- * 주어진 토큰 객체가 Number 타입인지 확인합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 Number 타입인지 여부
- */
-const number$1 = (tokenObj) => tokenObj.$type === "number";
-/**
- * 주어진 토큰 객체가 String 타입인지 확인합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 String 타입인지 여부
- */
-const string$1 = (tokenObj) => tokenObj.$type === "string";
-/**
- * 주어진 토큰 객체가 Composite 타입인지 확인합니다.
- * Composite 타입은 key-value 형식의 토큰을 포함하는 토큰입니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 Composite 타입인지 여부
- */
-const composite$1 = (tokenObj) => tokenObj.$type === "composite";
-/**
- * 주어진 토큰 객체가 StrokeStyle 타입인지 확인합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 StrokeStyle 타입인지 여부
- */
-const strokeStyle$1 = (tokenObj) => tokenObj.$type === "strokeStyle";
-/**
- * 주어진 토큰 객체가 Border 타입인지 확인합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 Border 타입인지 여부
- */
-const border$1 = (tokenObj) => tokenObj.$type === "border";
-/**
- * 주어진 토큰 객체가 Transition 타입인지 확인합니다.
- * Transition 타입은 Duration, Delay, TimingFunction 세 가지 속성을 가지는 토큰입니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 Transition 타입인지 여부
- */
-const transition$1 = (tokenObj) => tokenObj.$type === "transition";
-/**
- * 주어진 토큰 객체가 Shadow 타입인지 확인합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 Shadow 타입인지 여부
- */
-const shadow$1 = (tokenObj) => tokenObj.$type === "shadow";
-/**
- * 주어진 토큰 객체가 Gradient 타입인지 확인합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 Gradient 타입인지 여부
- */
-const gradient$1 = (tokenObj) => tokenObj.$type === "gradient";
-/**
- * 주어진 토큰 객체가 Typography 타입인지 확인합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 Typography 타입인지 여부
- */
-const typography$1 = (tokenObj) => tokenObj.$type === "typography";
-
-var is = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    border: border$1,
-    color: color$1,
-    composite: composite$1,
-    cubicBezier: cubicBezier$1,
-    dimension: dimension$1,
-    duration: duration$1,
-    fontFamily: fontFamily$1,
-    fontWeight: fontWeight$1,
-    gradient: gradient$1,
-    number: number$1,
-    shadow: shadow$1,
-    string: string$1,
-    strokeStyle: strokeStyle$1,
-    transition: transition$1,
-    typography: typography$1
-});
-
-const HEX_REGEXP = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/;
-const throwTypeError = (prefix) => (msg) => {
-    throw new TypeError(`[${prefix}] ${msg}`);
-};
-const shouldHaveRequiredProps = (value, required, throwError) => {
-    const props = Object.keys(value);
-    if (!required.every((v) => props.includes(v))) {
-        throwError(`${required.join(",")}은 필수 속성입니다.`);
-    }
-};
-const notAllowedProps = (value, required, throwError) => {
-    const props = Object.keys(value);
-    if (!props.every((v) => required.includes(v))) {
-        throwError(`${required.join(",")} 속성 외 사용된 속성이 있습니다.`);
-    }
-};
-const validateTokenRefValue = (value, throwError) => {
-    if (!isTokenRef(value)) {
-        throwError(`토큰 참조값 이외에 다른 문자열은 사용할 수 없습니다.`);
-    }
-};
-const validateDimensionValue = (value, throwError) => {
-    const UNITS = ["px", "rem"];
-    if (isString(value)) {
-        if (!UNITS.some((unit) => value.endsWith(unit))) {
-            throwError(`value의 단위는 [${UNITS.join(",")}]이어야 핕인.`);
-        }
-    }
-    if (isObject(value)) {
-        if (!isNumber(value.value)) {
-            throwError(`value의 값은 number 타입이어야 합니다.`);
-        }
-        if (!UNITS.includes(value.unit)) {
-            throwError(`unit의 값은 [${UNITS.join(",")}]이어야 합니다.`);
-        }
-    }
-};
-const validateColorValue = (value, throwError) => {
-    if (!shouldBeOnlyTokenRef(value) && !HEX_REGEXP.test(value)) {
-        throwError(`색상값은 토큰 참조값 또는 24 BIT RGB 또는 24 + 8 BIT RGBA 형식의 HEX값이어야 합니다.`);
-    }
-};
-const validateFontFamilyValue = (value, throwError) => {
-    if (isArray(value)) {
-        if (!value.some((v) => !isString(v))) {
-            throwError(`요소의 값은 string 형식이어야 합니다.`);
-        }
-    }
-};
-const validateFontWeightValue = (value, throwError) => {
-    const ACCEPTABLE_FONT_WEIGHT_VALUES = [
-        100,
-        200,
-        300,
-        400,
-        500,
-        600,
-        700,
-        800,
-        900,
-        1000,
-        "thin",
-        "hairline",
-        "extra-light",
-        "ultra-light",
-        "light",
-        "normal",
-        "regular",
-        "book",
-        "medium",
-        "semi-bold",
-        "demi-bold",
-        "bold",
-        "extra-bold",
-        "ultra-bold",
-        "black",
-        "heavy",
-        "extra-black",
-        "ultra-black",
-    ];
-    if (!ACCEPTABLE_FONT_WEIGHT_VALUES.includes(value)) {
-        throwError(`$value 값은 [${ACCEPTABLE_FONT_WEIGHT_VALUES.join(",")}] 중 하나여야 합니다.`);
-    }
-};
-const validateDurationValue = (value, throwError) => {
-    const UNITS = ["ms", "s"];
-    if (!isNumber(value.value)) {
-        throwError(`value값은 number 타입이어야 합니다.`);
-    }
-    if (!UNITS.includes(value.unit)) {
-        throwError(`unit의 값은 [${UNITS.join(",")}] 중 하나여야 합니다.`);
-    }
-};
-const validateCubicBezierValue = (value, throwError) => {
-    if (value.some((v) => !isNumber(v))) {
-        throwError(`요소의 값은 number 형식이어야 합니다.`);
-    }
-    if (value.length !== 4) {
-        throwError(`value의 길이는 4개이어야 합니다.`);
-    }
-};
-/**
- * Dimension의 유효성을 확인합니다.
- * @param tokenObj - Dimension TokenObj
- * @returns Dimension TokenObj의 유효성 여부
- * @throws "Dimension"에 대한 에러 메시지를 throw합니다.
- */
-const dimension = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("Dimension");
-    if (!isString($value) && !isObject($value)) {
-        throwError(`허용되지 않는 형식입니다.`);
-    }
-    if (isString($value)) {
-        if (hasTokenRef($value)) {
-            validateTokenRefValue($value, throwError);
-        }
-        else {
-            validateDimensionValue($value, throwError);
-        }
-    }
-    else {
-        validateDimensionValue($value, throwError);
-    }
-    return true;
-};
-/**
- * Color의 유효성을 확인합니다.
- * @param tokenObj - Color TokenObj
- * @returns Color TokenObj의 유효성 여부
- * @throws "Color"에 대한 에러 메시지를 throw합니다.
- */
-const color = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("Color");
-    if (!isString($value)) {
-        throwError(`허용되지 않는 형식입니다.`);
-    }
-    if (hasTokenRef($value)) {
-        validateTokenRefValue($value, throwError);
-    }
-    else {
-        validateColorValue($value, throwError);
-    }
-    return true;
-};
-/**
- * FontFamily의 유효성을 확인합니다.
- * @param tokenObj - FontFamily TokenObj
- * @returns FontFamily TokenObj의 유효성 여부
- * @throws "FontFamily"에 대한 에러 메시지를 throw합니다.
- */
-const fontFamily = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("FontFamily");
-    if (!isString($value) && !isArray($value)) {
-        throwError(`허용되지 않는 형식입니다.`);
-    }
-    if (isString($value) && hasTokenRef($value)) {
-        validateTokenRefValue($value, throwError);
-    }
-    else {
-        validateFontFamilyValue($value, throwError);
-    }
-    return true;
-};
-/**
- * FontWeight의 유효성을 확인합니다.
- * @param tokenObj - FontWeight TokenObj
- * @returns FontWeight TokenObj의 유효성 여부
- * @throws "FontWeight"에 대한 에러 메시지를 throw합니다.
- */
-const fontWeight = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("FontWeight");
-    if (!isString($value) && !isNumber($value)) {
-        throwError(`허용되지 않는 형식입니다.`);
-    }
-    if (isString($value) && hasTokenRef($value)) {
-        validateTokenRefValue($value, throwError);
-    }
-    else {
-        validateFontWeightValue($value, throwError);
-    }
-    return true;
-};
-/**
- * Duration의 유효성을 확인합니다.
- * @param tokenObj - Duration TokenObj
- * @returns Duration TokenObj의 유효성 여부
- * @throws "Duration"에 대한 에러 메시지를 throw합니다.
- */
-const duration = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("Duration");
-    if (!isObject($value) && !isObject($value)) {
-        throwError(`허용되지 않는 형식입니다.`);
-    }
-    if (isString($value)) {
-        validateTokenRefValue($value, throwError);
-    }
-    else {
-        validateDurationValue($value, throwError);
-    }
-    return true;
-};
-/**
- * CubicBezier의 유효성을 확인합니다.
- * @param tokenObj - CubicBezier TokenObj
- * @returns CubicBezier TokenObj의 유효성 여부
- * @throws "CubicBezier"에 대한 에러 메시지를 throw합니다.
- */
-const cubicBezier = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("CubicBezier");
-    if (!isString($value) && !isArray($value)) {
-        throwError(`허용되지 않는 형식입니다.`);
-    }
-    if (isString($value)) {
-        if (hasTokenRef($value)) {
-            validateTokenRefValue($value, throwError);
-        }
-    }
-    else {
-        validateCubicBezierValue($value, throwError);
-    }
-    return true;
-};
-/**
- * String의 유효성을 확인합니다.
- * @param tokenObj - String TokenObj
- * @returns String TokenObj의 유효성 여부
- * @throws "String"에 대한 에러 메시지를 throw합니다.
- */
-const string = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("String");
-    if (!isString($value)) {
-        throwError(`허용되지 않는 형식입니다.`);
-    }
-    if (hasTokenRef($value)) {
-        validateTokenRefValue($value, throwError);
-    }
-    return true;
-};
-/**
- * Number의 유효성을 확인합니다.
- * @param tokenObj - Number TokenObj
- * @returns Number TokenObj의 유효성 여부
- * @throws "Number"에 대한 에러 메시지를 throw합니다.
- */
-const number = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("Number");
-    if (isString($value)) {
-        validateTokenRefValue($value, throwError);
-    }
-    else {
-        if (!isNumber($value)) {
-            throwError(`허용되지 않는 형식입니다.`);
-        }
-    }
-    return true;
-};
-/**
- * Composite의 유효성을 확인합니다.
- * @param tokenObj - Composite TokenObj
- * @returns Composite TokenObj의 유효성 여부
- * @throws "Composite"에 대한 에러 메시지를 throw합니다.
- */
-const composite = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("Composite");
-    if (!isObject($value)) {
-        throwError(`허용되지 않는 형식입니다.`);
-    }
-    return true;
-};
-/**
- * StrokeStyle의 유효성을 확인합니다.
- * @param tokenObj - StrokeStyle TokenObj
- * @returns StrokeStyle TokenObj의 유효성 여부
- * @throws "StrokeStyle"에 대한 에러 메시지를 throw합니다.
- */
-const strokeStyle = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("StrokeStyle");
-    if (!isString($value) && !isObject($value)) {
-        throwError(`허용되지 않는 형식입니다.`);
-    }
-    if (isString($value)) {
-        const ACCEPTABLE_VALUE = [
-            "solid",
-            "dashed",
-            "dotted",
-            "double",
-            "groove",
-            "ridge",
-            "outset",
-            "inset",
-        ];
-        if (!ACCEPTABLE_VALUE.includes($value)) {
-            throwError(`$value 값은 [${ACCEPTABLE_VALUE.join(",")}] 중 하나여야 합니다.`);
-        }
-        if (hasTokenRef($value)) {
-            validateTokenRefValue($value, throwError);
-        }
-    }
-    if (isObject($value)) {
-        const REQUIRED_PROPS = ["dashArray", "lineCap"];
-        shouldHaveRequiredProps($value, REQUIRED_PROPS, throwError);
-        notAllowedProps($value, REQUIRED_PROPS, throwError);
-        if (isArray($value.dashArray)) {
-            for (const value of $value.dashArray) {
-                if (isObject(value)) {
-                    validateDimensionValue(value, throwError);
-                }
-                else {
-                    if (!isString(value)) {
-                        throwError(`dashArray 요소는 Dimension 또는 문자열 형식이어야 합니다.`);
-                    }
-                    else {
-                        validateTokenRefValue(value, throwError);
-                    }
-                }
-            }
-        }
-        else {
-            throwError(`dashArray는 배열 타입이어야 합니다.`);
-        }
-        if (isString($value.lineCap)) {
-            const ACCEPTABLE_VALUE = ["butt", "round", "square"];
-            if (!ACCEPTABLE_VALUE.includes($value.lineCap)) {
-                throwError(`lineCap 값은 [${ACCEPTABLE_VALUE.join(",")}] 중 하나여야 합니다.`);
-            }
-        }
-    }
-    return true;
-};
-/**
- * 주어진 토큰 객체가 Border 타입인지 확인합니다.
- * Border 타입은 'width', 'style', 'color' 속성을 포함해야 합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 Border 타입인지 여부
- * @throws "Border"에 대한 에러 메시지를 throw합니다.
- */
-const border = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("Border");
-    if (!isString($value) && !isObject($value)) {
-        throwError(`허용되지 않는 형식입니다.`);
-    }
-    if (isString($value)) {
-        validateTokenRefValue($value, throwError);
-    }
-    else {
-        const ACCEPTABLE_PROPS = ["width", "style", "color"];
-        shouldHaveRequiredProps($value, ACCEPTABLE_PROPS, throwError);
-        notAllowedProps($value, ACCEPTABLE_PROPS, throwError);
-        if (isObject($value.width)) {
-            validateDimensionValue($value.width, throwError);
-        }
-        else {
-            if (!isString($value.width)) {
-                throwError(`width는 Dimension 또는 문자열 형식이어야 합니다.`);
-            }
-            else {
-                validateTokenRefValue($value.width, throwError);
-            }
-        }
-        if (!isString($value.style)) {
-            throwError(`style는 문자열 형식이어야 합니다.`);
-        }
-        else {
-            if (hasTokenRef($value.style)) {
-                validateTokenRefValue($value.style, throwError);
-            }
-        }
-        if (!isString($value.color)) {
-            throwError(`color는 문자열 형식이어야 합니다.`);
-        }
-        else {
-            if (hasTokenRef($value.color)) {
-                validateTokenRefValue($value.color, throwError);
-            }
-        }
-    }
-    return true;
-};
-/**
- * 주어진 토큰 객체가 Transition 타입인지 확인합니다.
- * Transition 타입은 'duration', 'timingFunction', 'delay' 속성을 포함해야 합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 Transition 타입인지 여부
- * @throws "Transition"에 대한 에러 메시지를 throw합니다.
- */
-const transition = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("Transition");
-    if (!isString($value) && !isObject($value)) {
-        throwError(`허용되지 않는 형식입니다.`);
-    }
-    if (isString($value)) {
-        validateTokenRefValue($value, throwError);
-    }
-    else {
-        const ACCEPTABLE_PROPS = ["duration", "timingFunction", "delay"];
-        shouldHaveRequiredProps($value, ACCEPTABLE_PROPS, throwError);
-        notAllowedProps($value, ACCEPTABLE_PROPS, throwError);
-        if (isObject($value.duration)) {
-            validateDurationValue($value.duration, throwError);
-        }
-        else {
-            if (!isString($value.duration)) {
-                throwError(`duration는 Duration 또는 문자열 형식이어야 합니다.`);
-            }
-            else {
-                validateTokenRefValue($value.duration, throwError);
-            }
-        }
-        if (isObject($value.delay)) {
-            validateDurationValue($value.delay, throwError);
-        }
-        else {
-            if (!isString($value.delay)) {
-                throwError(`delay는 Duration 또는 문자열 형식이어야 합니다.`);
-            }
-            else {
-                validateTokenRefValue($value.delay, throwError);
-            }
-        }
-        if (isArray($value.timingFunction)) {
-            validateCubicBezierValue($value.timingFunction, throwError);
-        }
-        else {
-            if (!isString($value.timingFunction)) {
-                throwError(`timingFunction는 CubicBezier 또는 문자열 형식이어야 합니다.`);
-            }
-            else {
-                validateTokenRefValue($value.timingFunction, throwError);
-            }
-        }
-    }
-    return true;
-};
-/**
- * 주어진 토큰 객체가 Shadow 타입인지 확인합니다.
- * Shadow 타입은 'offsetX', 'offsetY', 'blur', 'spread', 'color' 속성을 포함해야 합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 Shadow 타입인지 여부
- * @throws "Shadow"에 대한 에러 메시지를 throw합니다.
- */
-const shadow = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("Shadow");
-    if (!isString($value) && !isObject($value)) {
-        throwError(`허용되지 않는 형식입니다.`);
-    }
-    if (isString($value)) {
-        validateTokenRefValue($value, throwError);
-    }
-    else {
-        const ACCEPTABLE_PROPS = ["offsetX", "offsetY", "blur", "spread", "color"];
-        shouldHaveRequiredProps($value, ACCEPTABLE_PROPS, throwError);
-        notAllowedProps($value, ACCEPTABLE_PROPS, throwError);
-        if (isObject($value.offsetX)) {
-            validateDimensionValue($value.offsetX, throwError);
-        }
-        else {
-            if (!isString($value.offsetX)) {
-                throwError(`offsetX는 Dimension 또는 문자열 형식이어야 합니다.`);
-            }
-            else {
-                validateTokenRefValue($value.offsetX, throwError);
-            }
-        }
-        if (isObject($value.offsetY)) {
-            validateDimensionValue($value.offsetY, throwError);
-        }
-        else {
-            if (!isString($value.offsetY)) {
-                throwError(`offsetY는 Dimension 또는 문자열 형식이어야 합니다.`);
-            }
-            else {
-                validateTokenRefValue($value.offsetY, throwError);
-            }
-        }
-        if (isObject($value.blur)) {
-            validateDimensionValue($value.blur, throwError);
-        }
-        else {
-            if (!isString($value.blur)) {
-                throwError(`blur는 Dimension 또는 문자열 형식이어야 합니다.`);
-            }
-            else {
-                validateTokenRefValue($value.blur, throwError);
-            }
-        }
-        if (isObject($value.spread)) {
-            validateDimensionValue($value.spread, throwError);
-        }
-        else {
-            if (!isString($value.spread)) {
-                throwError(`spread는 Dimension 또는 문자열 형식이어야 합니다.`);
-            }
-            else {
-                validateTokenRefValue($value.spread, throwError);
-            }
-        }
-        if (!isString($value.color)) {
-            validateColorValue($value.color, throwError);
-        }
-        else {
-            if (!isString($value.color)) {
-                throwError(`color는 Color 또는 문자열 형식이어야 합니다.`);
-            }
-            else {
-                if (hasTokenRef($value.color)) {
-                    validateTokenRefValue($value.color, throwError);
-                }
-            }
-        }
-    }
-    return true;
-};
-/**
- * 주어진 토큰 객체가 Gradient 타입인지 확인합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 Gradient 타입인지 여부
- * @example
- * {
- *   $type: "gradient",
- *   $value: [
- *     {
- *       color: "#ff0000",
- *       position: 0,
- *     },
- *     {
- *       color: "#00ff00",
- *       position: 100,
- *     },
- *   ],
- * }
- */
-const gradient = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("Gradient");
-    if (!isString($value) && !isArray($value)) {
-        throwError(`허용되지 않는 형식입니다.`);
-    }
-    if (isString($value)) {
-        validateTokenRefValue($value, throwError);
-    }
-    else {
-        for (const value of $value) {
-            if (!isObject(value)) {
-                throwError(`허용되지 않는 형식입니다.`);
-            }
-            const ACCEPTABLE_PROPS = ["color", "position"];
-            shouldHaveRequiredProps(value, ACCEPTABLE_PROPS, throwError);
-            notAllowedProps(value, ACCEPTABLE_PROPS, throwError);
-            if (isString(value.color)) {
-                validateColorValue(value.color, throwError);
-                if (hasTokenRef(value.color)) {
-                    validateTokenRefValue(value.color, throwError);
-                }
-            }
-            else {
-                throwError(`color는 Color 또는 문자열 형식이어야 합니다.`);
-            }
-            if (!isNumber(value.position)) {
-                throwError(`position는 number 형식이어야 합니다.`);
-            }
-        }
-    }
-    return true;
-};
-/**
- * Typography 타입의 토큰을 확인합니다.
- * Typography 타입은 "fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing" 속성을 포함해야 합니다.
- * @param tokenObj - 확인할 토큰 객체
- * @returns 토큰 객체가 Typography 타입인지 여부
- * @throws "Typography"에 대한 에러 메시지를 throw합니다.
- */
-const typography = (tokenObj) => {
-    const { $value } = tokenObj;
-    const throwError = throwTypeError("Typography");
-    if (!isString($value) && !isObject($value)) {
-        throwError(`허용되지 않는 형식입니다.`);
-    }
-    if (isString($value)) {
-        validateTokenRefValue($value, throwError);
-    }
-    else {
-        const ACCEPTABLE_PROPS = [
-            "fontFamily",
-            "fontSize",
-            "fontWeight",
-            "lineHeight",
-            "letterSpacing",
-        ];
-        shouldHaveRequiredProps($value, ACCEPTABLE_PROPS, throwError);
-        notAllowedProps($value, ACCEPTABLE_PROPS, throwError);
-        if (!isString($value.fontFamily)) {
-            validateFontFamilyValue($value.fontFamily, throwError);
-        }
-        else {
-            if (hasTokenRef($value.fontFamily)) {
-                validateTokenRefValue($value.fontFamily, throwError);
-            }
-        }
-        if (!isString($value.fontWeight)) {
-            validateFontWeightValue($value.fontWeight, throwError);
-        }
-        else {
-            if (hasTokenRef($value.fontWeight)) {
-                validateTokenRefValue($value.fontWeight, throwError);
-            }
-        }
-        if (isObject($value.fontSize)) {
-            validateDimensionValue($value.fontSize, throwError);
-        }
-        else {
-            if (!isString($value.fontSize)) {
-                throwError(`fontSize는 Dimension 또는 문자열 형식이어야 합니다.`);
-            }
-            else {
-                validateTokenRefValue($value.fontSize, throwError);
-            }
-        }
-        if (!isNumber($value.lineHeight)) {
-            throwError(`lineHeight는 number 형식이어야 합니다.`);
-        }
-        else {
-            if (isString($value.lineHeight)) {
-                validateTokenRefValue($value.lineHeight, throwError);
-            }
-        }
-        if (isObject($value.letterSpacing)) {
-            validateDimensionValue($value.letterSpacing, throwError);
-        }
-        else {
-            if (!isString($value.letterSpacing)) {
-                throwError(`fontSize는 Dimension 또는 문자열 형식이어야 합니다.`);
-            }
-            else {
-                validateTokenRefValue($value.letterSpacing, throwError);
-            }
-        }
-    }
-    return true;
+const isTokenObj = (token) => {
+    return shouldHaveRequiredProp(token);
 };
 
 /**
- * 주어진 토큰 경로가 토큰 내부에 중복으로 존재하는지 확인합니다.
+ * 주어진 문자열에 토큰 참조가 포함되어 있는지 확인하고
+ * 토큰 참조를 추출하여 반환합니다.
  *
- * @param {Token | TokenGroup} token
- * @param {string} tokenRef
- * @returns {boolean}
+ * @param value - 확인할 문자열
+ * @returns 토큰 참조를 추출하여 반환합니다. 없으면 null을 반환합니다.
  */
-const duplicate = (token, tokenRef) => {
-    let _token = token;
-    if (!(token instanceof Token)) {
-        _token = new Token(token);
+const findTokenRef = (value) => {
+    return value.match(TOKEN_REF_REGEXP);
+};
+/**
+ * 주어진 문자열에 토큰 참조값이 포함되어 있는지 확인합니다.
+ *
+ * @param tokenRef - 확인할 문자열
+ * @returns 토큰 참조 문자열이 포함되어 있으면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+const hasTokenRef = (str) => {
+    return !!str.match(TOKEN_REF_REGEXP);
+};
+/**
+ * 주어진 문자열이 토큰 참조값인지 확인합니다.
+ *
+ * @param {string} tokenRef - 토큰 참조 문자열
+ * @returns {boolean} 토큰 참조 문자열이면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+const isTokenRef = (tokenRef) => {
+    if (tokenRef.includes("{$value}")) {
+        return false;
     }
-    return !!_token.find((props) => toTokenRef(props) === tokenRef);
+    return shouldBeOnlyTokenRef(tokenRef);
+};
+/**
+ * 주어진 토큰 경로를 문자열로 변환하여 반환합니다.
+ * @param props - 토큰 경로
+ * @returns 토큰 경로를 문자열로 변환한 결과
+ */
+const toTokenRef = (props) => {
+    return props.join(".");
+};
+/**
+ * 주어진 토큰 참조 문자열을 토큰 경로의 배열로 변환합니다.
+ *
+ * @param tokenRef - 토큰 참조 문자열
+ * @returns 토큰 경로의 배열
+ */
+const fromTokenRef = (tokenRef) => {
+    return tokenRef.split(".");
+};
+/**
+ * 주어진 토큰 참조 문자열에 포함된 중괄호를 삭제하여 반환합니다.
+ * @param tokenRef - 토큰 참조 문자열
+ * @returns 중괄호를 삭제한 토큰 참조 문자열
+ */
+const takeOffBracketFromTokenRef = (tokenRef) => {
+    return tokenRef.replace(/[\{\}]/g, "");
 };
 
-var index$1 = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    border: border,
-    color: color,
-    composite: composite,
-    cubicBezier: cubicBezier,
-    dimension: dimension,
-    duplicate: duplicate,
-    duration: duration,
-    fontFamily: fontFamily,
-    fontWeight: fontWeight,
-    gradient: gradient,
-    is: is,
-    number: number,
-    shadow: shadow,
-    string: string,
-    strokeStyle: strokeStyle,
-    transition: transition,
-    typography: typography
-});
-
-var index = /*#__PURE__*/Object.freeze({
-    __proto__: null,
-    format: index$2,
-    token: index$1
-});
+/**
+ * 주어진 값의 타입을 반환합니다.
+ * @param value 타입을 확인할 값
+ * @returns 주어진 값의 타입
+ */
+const getType = (value) => {
+    return Object.prototype.toString
+        .call(value)
+        .slice(8, -1)
+        .toLowerCase();
+};
+/**
+ * 주어진 값이 배열인지 확인합니다.
+ * @param value 확인할 값
+ * @returns 주어진 값이 배열이면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+const isArray = (value) => {
+    return getType(value) === "array";
+};
+/**
+ * 주어진 값이 숫자인지 확인합니다.
+ * @param value 확인할 값
+ * @returns 주어진 값이 숫자이면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+const isNumber = (value) => {
+    return getType(value) === "number";
+};
+/**
+ * 주어진 값이 객체인지 확인합니다.
+ * @param value 확인할 값
+ * @returns 주어진 값이 객체이면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+const isObject = (value) => {
+    return getType(value) === "object";
+};
+/**
+ * 주어진 값이 문자열인지 확인합니다.
+ * @param value 확인할 값
+ * @returns 주어진 값이 문자열이면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+const isString = (value) => {
+    return getType(value) === "string";
+};
 
 class Token {
     #token;
@@ -1110,8 +285,7 @@ class Token {
         //3. 토큰 객체 타입별 값의 형식 체크
         //3-1. 값의 유효한 값인지 확인
         this.#iterator(token, (_, _token) => {
-            if (typeof _token === "object" &&
-                shouldHaveRequiredProp(_token)) {
+            if (typeof _token === "object" && shouldHaveRequiredProp(_token)) {
                 if (shouldNotHaveDollarPrefix(_token)) {
                     throw new Error(`토큰 객체의 속성값의 이름은 $가 prefix로 시작해야합니다.`);
                 }
@@ -1122,6 +296,27 @@ class Token {
         return structuredClone(value);
     }
 }
+
+/**
+ * 주어진 배열을 순회하여 주어진 콜백을 적용하고, 그 결과를 반환하는 함수.
+ *
+ * @param arr - 순회할 배열.
+ * @param callback - 순회할 때 적용할 콜백. 첫 번째 인자로 배열의 요소를 받는다.
+ * @returns 주어진 콜백을 적용한 결과를 반환하는 배열.
+ */
+const mapArray = (arr, callback) => {
+    return arr.map(callback);
+};
+/**
+ * 주어진 객체의 모든 값을 주어진 콜백을 적용하여 반환합니다.
+ *
+ * @param obj - 처리할 객체
+ * @param callback - 처리할 콜백. 첫 번째 인자로 값, 두 번째 인자로 키를 받습니다.
+ * @returns 주어진 콜백을 적용한 결과를 반환합니다.
+ */
+const mapObject = (obj, callback) => {
+    return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, callback(value)]));
+};
 
 const findValueBy = (tokenRef, refTokens, circularRefMap = new Map()) => {
     let token = null;
@@ -1243,7 +438,10 @@ const transform = (base, refTokens, transformers = []) => {
             return base;
         const transformedTokens = [];
         for (const useCase of useCases) {
-            const foundReferredToken = findReferredToken(toTokenRef(useCase[0]), [base, ...refTokens]);
+            const foundReferredToken = findReferredToken(toTokenRef(useCase[0]), [
+                base,
+                ...refTokens,
+            ]);
             if (!foundReferredToken) {
                 throw new Error(`정의되지 않은 토큰입니다: ${useCase[0]}`);
             }
@@ -1255,7 +453,7 @@ const transform = (base, refTokens, transformers = []) => {
         for (const { useCase, transformed } of transformedTokens) {
             const [useCaseProps] = useCase;
             base.delete(useCaseProps);
-            for (const [transformedProps, transformedToken,] of transformed) {
+            for (const [transformedProps, transformedToken] of transformed) {
                 base.add(transformedProps, transformedToken);
             }
         }
@@ -1324,7 +522,7 @@ const transformTokenResult = (base, data) => {
     ];
 };
 
-var transformCase1 = {
+const useCase1 = {
     findUseCases: (base, refTokens) => {
         return base.findAll((props, token) => {
             const lastProp = props.at(-1);
@@ -1348,8 +546,7 @@ var transformCase1 = {
         ];
     },
 };
-
-var transformCase2 = {
+const useCase2 = {
     findUseCases: (base, refTokens) => {
         return base.findAll((props, token) => {
             const lastProp = props.at(-1);
@@ -1372,17 +569,13 @@ var transformCase2 = {
         for (const [referredTokenProps] of referredTokenObjs) {
             result.push(transformTokenResult(useCaseToken, {
                 props: [...useCaseProps.slice(0, -1), ...referredTokenProps],
-                replaceValue: toTokenRef([
-                    ...referredProps,
-                    ...referredTokenProps,
-                ]),
+                replaceValue: toTokenRef([...referredProps, ...referredTokenProps]),
             }));
         }
         return result;
     },
 };
-
-var transformCase3 = {
+const useCase3 = {
     findUseCases: (base, refTokens) => {
         return base.findAll((props, token) => {
             const lastProp = props.at(-1);
@@ -1416,8 +609,7 @@ var transformCase3 = {
         return result;
     },
 };
-
-var transformCase4 = {
+const useCase4 = {
     findUseCases: (base, refTokens) => {
         return base.findAll((props, token) => {
             const lastProp = props.at(-1);
@@ -1469,28 +661,805 @@ var transformCase4 = {
 const generateDesignToken = (base, refTokens) => {
     const _refTokens = refTokens.map((token) => new Token(token));
     return parse(transform(new Token(base), _refTokens, [
-        transformCase1,
-        transformCase2,
-        transformCase3,
-        transformCase4,
+        useCase1,
+        useCase2,
+        useCase3,
+        useCase4,
     ]), _refTokens).getToken();
 };
 
+/**
+ * 주어진 토큰 객체가 dimension 타입인지 확인합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 dimension 타입인지 여부
+ */
+const isDimensionToken = (tokenObj) => tokenObj.$type === "dimension";
+/**
+ * 주어진 토큰 객체가 Color 타입인지 확인합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 Color 타입인지 여부
+ */
+const isColorToken = (tokenObj) => tokenObj.$type === "color";
+/**
+ * 주어진 토큰 객체가 FontFamily 타입인지 확인합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 FontFamily 타입인지 여부
+ */
+const isFontFamilyToken = (tokenObj) => tokenObj.$type === "fontFamily";
+/**
+ * 주어진 토큰 객체가 FontWeight 타입인지 확인합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 FontWeight 타입인지 여부
+ */
+const isFontWeightToken = (tokenObj) => tokenObj.$type === "fontWeight";
+/**
+ * 주어진 토큰 객체가 Duration 타입인지 확인합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 Duration 타입인지 여부
+ */
+const isDurationToken = (tokenObj) => tokenObj.$type === "duration";
+/**
+ * 주어진 토큰 객체가 CubicBezier 타입인지 확인합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 CubicBezier 타입인지 여부
+ */
+const isCubicBezierToken = (tokenObj) => tokenObj.$type === "cubicBezier";
+/**
+ * 주어진 토큰 객체가 Number 타입인지 확인합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 Number 타입인지 여부
+ */
+const isNumberToken = (tokenObj) => tokenObj.$type === "number";
+/**
+ * 주어진 토큰 객체가 String 타입인지 확인합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 String 타입인지 여부
+ */
+const isStringToken = (tokenObj) => tokenObj.$type === "string";
+/**
+ * 주어진 토큰 객체가 Composite 타입인지 확인합니다.
+ * Composite 타입은 key-value 형식의 토큰을 포함하는 토큰입니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 Composite 타입인지 여부
+ */
+const isCompositeToken = (tokenObj) => tokenObj.$type === "composite";
+/**
+ * 주어진 토큰 객체가 StrokeStyle 타입인지 확인합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 StrokeStyle 타입인지 여부
+ */
+const isStrokeStyleToken = (tokenObj) => tokenObj.$type === "strokeStyle";
+/**
+ * 주어진 토큰 객체가 Border 타입인지 확인합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 Border 타입인지 여부
+ */
+const isBorderToken = (tokenObj) => tokenObj.$type === "border";
+/**
+ * 주어진 토큰 객체가 Transition 타입인지 확인합니다.
+ * Transition 타입은 Duration, Delay, TimingFunction 세 가지 속성을 가지는 토큰입니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 Transition 타입인지 여부
+ */
+const isTransitionToken = (tokenObj) => tokenObj.$type === "transition";
+/**
+ * 주어진 토큰 객체가 Shadow 타입인지 확인합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 Shadow 타입인지 여부
+ */
+const isShadowToken = (tokenObj) => tokenObj.$type === "shadow";
+/**
+ * 주어진 토큰 객체가 Gradient 타입인지 확인합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 Gradient 타입인지 여부
+ */
+const isGradientToken = (tokenObj) => tokenObj.$type === "gradient";
+/**
+ * 주어진 토큰 객체가 Typography 타입인지 확인합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 Typography 타입인지 여부
+ */
+const isTypographyToken = (tokenObj) => tokenObj.$type === "typography";
+
+const HEX_REGEXP = /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$/;
+const throwTypeError = (prefix) => (msg) => {
+    throw new TypeError(`[${prefix}] ${msg}`);
+};
+const shouldHaveRequiredProps = (value, required, throwError) => {
+    const props = Object.keys(value);
+    if (!required.every((v) => props.includes(v))) {
+        throwError(`${required.join(",")}은 필수 속성입니다.`);
+    }
+};
+const notAllowedProps = (value, required, throwError) => {
+    const props = Object.keys(value);
+    if (!props.every((v) => required.includes(v))) {
+        throwError(`${required.join(",")} 속성 외 사용된 속성이 있습니다.`);
+    }
+};
+const validateTokenRefValue = (value, throwError) => {
+    if (!isTokenRef(value)) {
+        throwError(`토큰 참조값 이외에 다른 문자열은 사용할 수 없습니다.`);
+    }
+};
+const validateDimensionValue = (value, throwError) => {
+    const UNITS = ["px", "rem"];
+    if (isString(value)) {
+        if (!UNITS.some((unit) => value.endsWith(unit))) {
+            throwError(`value의 단위는 [${UNITS.join(",")}]이어야 핕인.`);
+        }
+    }
+    if (isObject(value)) {
+        if (!isNumber(value.value)) {
+            throwError(`value의 값은 number 타입이어야 합니다.`);
+        }
+        if (!UNITS.includes(value.unit)) {
+            throwError(`unit의 값은 [${UNITS.join(",")}]이어야 합니다.`);
+        }
+    }
+};
+const validateColorValue = (value, throwError) => {
+    if (!shouldBeOnlyTokenRef(value) && !HEX_REGEXP.test(value)) {
+        throwError(`색상값은 토큰 참조값 또는 24 BIT RGB 또는 24 + 8 BIT RGBA 형식의 HEX값이어야 합니다.`);
+    }
+};
+const validateFontFamilyValue = (value, throwError) => {
+    if (isArray(value)) {
+        if (!value.some((v) => !isString(v))) {
+            throwError(`요소의 값은 string 형식이어야 합니다.`);
+        }
+    }
+};
+const validateFontWeightValue = (value, throwError) => {
+    const ACCEPTABLE_FONT_WEIGHT_VALUES = [
+        100,
+        200,
+        300,
+        400,
+        500,
+        600,
+        700,
+        800,
+        900,
+        1000,
+        "thin",
+        "hairline",
+        "extra-light",
+        "ultra-light",
+        "light",
+        "normal",
+        "regular",
+        "book",
+        "medium",
+        "semi-bold",
+        "demi-bold",
+        "bold",
+        "extra-bold",
+        "ultra-bold",
+        "black",
+        "heavy",
+        "extra-black",
+        "ultra-black",
+    ];
+    if (!ACCEPTABLE_FONT_WEIGHT_VALUES.includes(value)) {
+        throwError(`$value 값은 [${ACCEPTABLE_FONT_WEIGHT_VALUES.join(",")}] 중 하나여야 합니다.`);
+    }
+};
+const validateDurationValue = (value, throwError) => {
+    const UNITS = ["ms", "s"];
+    if (!isNumber(value.value)) {
+        throwError(`value값은 number 타입이어야 합니다.`);
+    }
+    if (!UNITS.includes(value.unit)) {
+        throwError(`unit의 값은 [${UNITS.join(",")}] 중 하나여야 합니다.`);
+    }
+};
+const validateCubicBezierValue = (value, throwError) => {
+    if (value.some((v) => !isNumber(v))) {
+        throwError(`요소의 값은 number 형식이어야 합니다.`);
+    }
+    if (value.length !== 4) {
+        throwError(`value의 길이는 4개이어야 합니다.`);
+    }
+};
+/**
+ * Dimension의 유효성을 확인합니다.
+ * @param tokenObj - Dimension TokenObj
+ * @returns Dimension TokenObj의 유효성 여부
+ * @throws "Dimension"에 대한 에러 메시지를 throw합니다.
+ */
+const validateDimensionToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("Dimension");
+    if (!isString($value) && !isObject($value)) {
+        throwError(`허용되지 않는 형식입니다.`);
+    }
+    if (isString($value)) {
+        if (hasTokenRef($value)) {
+            validateTokenRefValue($value, throwError);
+        }
+        else {
+            validateDimensionValue($value, throwError);
+        }
+    }
+    else {
+        validateDimensionValue($value, throwError);
+    }
+    return true;
+};
+/**
+ * Color의 유효성을 확인합니다.
+ * @param tokenObj - Color TokenObj
+ * @returns Color TokenObj의 유효성 여부
+ * @throws "Color"에 대한 에러 메시지를 throw합니다.
+ */
+const validateColorToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("Color");
+    if (!isString($value)) {
+        throwError(`허용되지 않는 형식입니다.`);
+    }
+    if (hasTokenRef($value)) {
+        validateTokenRefValue($value, throwError);
+    }
+    else {
+        validateColorValue($value, throwError);
+    }
+    return true;
+};
+/**
+ * FontFamily의 유효성을 확인합니다.
+ * @param tokenObj - FontFamily TokenObj
+ * @returns FontFamily TokenObj의 유효성 여부
+ * @throws "FontFamily"에 대한 에러 메시지를 throw합니다.
+ */
+const validateFontFamilyToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("FontFamily");
+    if (!isString($value) && !isArray($value)) {
+        throwError(`허용되지 않는 형식입니다.`);
+    }
+    if (isString($value) && hasTokenRef($value)) {
+        validateTokenRefValue($value, throwError);
+    }
+    else {
+        validateFontFamilyValue($value, throwError);
+    }
+    return true;
+};
+/**
+ * FontWeight의 유효성을 확인합니다.
+ * @param tokenObj - FontWeight TokenObj
+ * @returns FontWeight TokenObj의 유효성 여부
+ * @throws "FontWeight"에 대한 에러 메시지를 throw합니다.
+ */
+const validateFontWeightToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("FontWeight");
+    if (!isString($value) && !isNumber($value)) {
+        throwError(`허용되지 않는 형식입니다.`);
+    }
+    if (isString($value) && hasTokenRef($value)) {
+        validateTokenRefValue($value, throwError);
+    }
+    else {
+        validateFontWeightValue($value, throwError);
+    }
+    return true;
+};
+/**
+ * Duration의 유효성을 확인합니다.
+ * @param tokenObj - Duration TokenObj
+ * @returns Duration TokenObj의 유효성 여부
+ * @throws "Duration"에 대한 에러 메시지를 throw합니다.
+ */
+const validateDurationToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("Duration");
+    if (!isObject($value) && !isObject($value)) {
+        throwError(`허용되지 않는 형식입니다.`);
+    }
+    if (isString($value)) {
+        validateTokenRefValue($value, throwError);
+    }
+    else {
+        validateDurationValue($value, throwError);
+    }
+    return true;
+};
+/**
+ * CubicBezier의 유효성을 확인합니다.
+ * @param tokenObj - CubicBezier TokenObj
+ * @returns CubicBezier TokenObj의 유효성 여부
+ * @throws "CubicBezier"에 대한 에러 메시지를 throw합니다.
+ */
+const validateCubicBezierToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("CubicBezier");
+    if (!isString($value) && !isArray($value)) {
+        throwError(`허용되지 않는 형식입니다.`);
+    }
+    if (isString($value)) {
+        if (hasTokenRef($value)) {
+            validateTokenRefValue($value, throwError);
+        }
+    }
+    else {
+        validateCubicBezierValue($value, throwError);
+    }
+    return true;
+};
+/**
+ * String의 유효성을 확인합니다.
+ * @param tokenObj - String TokenObj
+ * @returns String TokenObj의 유효성 여부
+ * @throws "String"에 대한 에러 메시지를 throw합니다.
+ */
+const validateStringToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("String");
+    if (!isString($value)) {
+        throwError(`허용되지 않는 형식입니다.`);
+    }
+    if (hasTokenRef($value)) {
+        validateTokenRefValue($value, throwError);
+    }
+    return true;
+};
+/**
+ * Number의 유효성을 확인합니다.
+ * @param tokenObj - Number TokenObj
+ * @returns Number TokenObj의 유효성 여부
+ * @throws "Number"에 대한 에러 메시지를 throw합니다.
+ */
+const validateNumberToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("Number");
+    if (isString($value)) {
+        validateTokenRefValue($value, throwError);
+    }
+    else {
+        if (!isNumber($value)) {
+            throwError(`허용되지 않는 형식입니다.`);
+        }
+    }
+    return true;
+};
+/**
+ * Composite의 유효성을 확인합니다.
+ * @param tokenObj - Composite TokenObj
+ * @returns Composite TokenObj의 유효성 여부
+ * @throws "Composite"에 대한 에러 메시지를 throw합니다.
+ */
+const validateCompositeToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("Composite");
+    if (!isObject($value)) {
+        throwError(`허용되지 않는 형식입니다.`);
+    }
+    return true;
+};
+/**
+ * StrokeStyle의 유효성을 확인합니다.
+ * @param tokenObj - StrokeStyle TokenObj
+ * @returns StrokeStyle TokenObj의 유효성 여부
+ * @throws "StrokeStyle"에 대한 에러 메시지를 throw합니다.
+ */
+const validateStrokeStyleToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("StrokeStyle");
+    if (!isString($value) && !isObject($value)) {
+        throwError(`허용되지 않는 형식입니다.`);
+    }
+    if (isString($value)) {
+        const ACCEPTABLE_VALUE = [
+            "solid",
+            "dashed",
+            "dotted",
+            "double",
+            "groove",
+            "ridge",
+            "outset",
+            "inset",
+        ];
+        if (!ACCEPTABLE_VALUE.includes($value)) {
+            throwError(`$value 값은 [${ACCEPTABLE_VALUE.join(",")}] 중 하나여야 합니다.`);
+        }
+        if (hasTokenRef($value)) {
+            validateTokenRefValue($value, throwError);
+        }
+    }
+    if (isObject($value)) {
+        const REQUIRED_PROPS = ["dashArray", "lineCap"];
+        shouldHaveRequiredProps($value, REQUIRED_PROPS, throwError);
+        notAllowedProps($value, REQUIRED_PROPS, throwError);
+        if (isArray($value.dashArray)) {
+            for (const value of $value.dashArray) {
+                if (isObject(value)) {
+                    validateDimensionValue(value, throwError);
+                }
+                else {
+                    if (!isString(value)) {
+                        throwError(`dashArray 요소는 Dimension 또는 문자열 형식이어야 합니다.`);
+                    }
+                    else {
+                        validateTokenRefValue(value, throwError);
+                    }
+                }
+            }
+        }
+        else {
+            throwError(`dashArray는 배열 타입이어야 합니다.`);
+        }
+        if (isString($value.lineCap)) {
+            const ACCEPTABLE_VALUE = ["butt", "round", "square"];
+            if (!ACCEPTABLE_VALUE.includes($value.lineCap)) {
+                throwError(`lineCap 값은 [${ACCEPTABLE_VALUE.join(",")}] 중 하나여야 합니다.`);
+            }
+        }
+    }
+    return true;
+};
+/**
+ * 주어진 토큰 객체가 Border 타입인지 확인합니다.
+ * Border 타입은 'width', 'style', 'color' 속성을 포함해야 합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 Border 타입인지 여부
+ * @throws "Border"에 대한 에러 메시지를 throw합니다.
+ */
+const validateBorderToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("Border");
+    if (!isString($value) && !isObject($value)) {
+        throwError(`허용되지 않는 형식입니다.`);
+    }
+    if (isString($value)) {
+        validateTokenRefValue($value, throwError);
+    }
+    else {
+        const ACCEPTABLE_PROPS = ["width", "style", "color"];
+        shouldHaveRequiredProps($value, ACCEPTABLE_PROPS, throwError);
+        notAllowedProps($value, ACCEPTABLE_PROPS, throwError);
+        if (isObject($value.width)) {
+            validateDimensionValue($value.width, throwError);
+        }
+        else {
+            if (!isString($value.width)) {
+                throwError(`width는 Dimension 또는 문자열 형식이어야 합니다.`);
+            }
+            else {
+                validateTokenRefValue($value.width, throwError);
+            }
+        }
+        if (!isString($value.style)) {
+            throwError(`style는 문자열 형식이어야 합니다.`);
+        }
+        else {
+            if (hasTokenRef($value.style)) {
+                validateTokenRefValue($value.style, throwError);
+            }
+        }
+        if (!isString($value.color)) {
+            throwError(`color는 문자열 형식이어야 합니다.`);
+        }
+        else {
+            if (hasTokenRef($value.color)) {
+                validateTokenRefValue($value.color, throwError);
+            }
+        }
+    }
+    return true;
+};
+/**
+ * 주어진 토큰 객체가 Transition 타입인지 확인합니다.
+ * Transition 타입은 'duration', 'timingFunction', 'delay' 속성을 포함해야 합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 Transition 타입인지 여부
+ * @throws "Transition"에 대한 에러 메시지를 throw합니다.
+ */
+const validateTransitionToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("Transition");
+    if (!isString($value) && !isObject($value)) {
+        throwError(`허용되지 않는 형식입니다.`);
+    }
+    if (isString($value)) {
+        validateTokenRefValue($value, throwError);
+    }
+    else {
+        const ACCEPTABLE_PROPS = ["duration", "timingFunction", "delay"];
+        shouldHaveRequiredProps($value, ACCEPTABLE_PROPS, throwError);
+        notAllowedProps($value, ACCEPTABLE_PROPS, throwError);
+        if (isObject($value.duration)) {
+            validateDurationValue($value.duration, throwError);
+        }
+        else {
+            if (!isString($value.duration)) {
+                throwError(`duration는 Duration 또는 문자열 형식이어야 합니다.`);
+            }
+            else {
+                validateTokenRefValue($value.duration, throwError);
+            }
+        }
+        if (isObject($value.delay)) {
+            validateDurationValue($value.delay, throwError);
+        }
+        else {
+            if (!isString($value.delay)) {
+                throwError(`delay는 Duration 또는 문자열 형식이어야 합니다.`);
+            }
+            else {
+                validateTokenRefValue($value.delay, throwError);
+            }
+        }
+        if (isArray($value.timingFunction)) {
+            validateCubicBezierValue($value.timingFunction, throwError);
+        }
+        else {
+            if (!isString($value.timingFunction)) {
+                throwError(`timingFunction는 CubicBezier 또는 문자열 형식이어야 합니다.`);
+            }
+            else {
+                validateTokenRefValue($value.timingFunction, throwError);
+            }
+        }
+    }
+    return true;
+};
+/**
+ * 주어진 토큰 객체가 Shadow 타입인지 확인합니다.
+ * Shadow 타입은 'offsetX', 'offsetY', 'blur', 'spread', 'color' 속성을 포함해야 합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 Shadow 타입인지 여부
+ * @throws "Shadow"에 대한 에러 메시지를 throw합니다.
+ */
+const validateShadowToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("Shadow");
+    if (!isString($value) && !isObject($value)) {
+        throwError(`허용되지 않는 형식입니다.`);
+    }
+    if (isString($value)) {
+        validateTokenRefValue($value, throwError);
+    }
+    else {
+        const ACCEPTABLE_PROPS = ["offsetX", "offsetY", "blur", "spread", "color"];
+        shouldHaveRequiredProps($value, ACCEPTABLE_PROPS, throwError);
+        notAllowedProps($value, ACCEPTABLE_PROPS, throwError);
+        if (isObject($value.offsetX)) {
+            validateDimensionValue($value.offsetX, throwError);
+        }
+        else {
+            if (!isString($value.offsetX)) {
+                throwError(`offsetX는 Dimension 또는 문자열 형식이어야 합니다.`);
+            }
+            else {
+                validateTokenRefValue($value.offsetX, throwError);
+            }
+        }
+        if (isObject($value.offsetY)) {
+            validateDimensionValue($value.offsetY, throwError);
+        }
+        else {
+            if (!isString($value.offsetY)) {
+                throwError(`offsetY는 Dimension 또는 문자열 형식이어야 합니다.`);
+            }
+            else {
+                validateTokenRefValue($value.offsetY, throwError);
+            }
+        }
+        if (isObject($value.blur)) {
+            validateDimensionValue($value.blur, throwError);
+        }
+        else {
+            if (!isString($value.blur)) {
+                throwError(`blur는 Dimension 또는 문자열 형식이어야 합니다.`);
+            }
+            else {
+                validateTokenRefValue($value.blur, throwError);
+            }
+        }
+        if (isObject($value.spread)) {
+            validateDimensionValue($value.spread, throwError);
+        }
+        else {
+            if (!isString($value.spread)) {
+                throwError(`spread는 Dimension 또는 문자열 형식이어야 합니다.`);
+            }
+            else {
+                validateTokenRefValue($value.spread, throwError);
+            }
+        }
+        if (!isString($value.color)) {
+            validateColorValue($value.color, throwError);
+        }
+        else {
+            if (!isString($value.color)) {
+                throwError(`color는 Color 또는 문자열 형식이어야 합니다.`);
+            }
+            else {
+                if (hasTokenRef($value.color)) {
+                    validateTokenRefValue($value.color, throwError);
+                }
+            }
+        }
+    }
+    return true;
+};
+/**
+ * 주어진 토큰 객체가 Gradient 타입인지 확인합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 Gradient 타입인지 여부
+ * @example
+ * {
+ *   $type: "gradient",
+ *   $value: [
+ *     {
+ *       color: "#ff0000",
+ *       position: 0,
+ *     },
+ *     {
+ *       color: "#00ff00",
+ *       position: 100,
+ *     },
+ *   ],
+ * }
+ */
+const validateGradientToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("Gradient");
+    if (!isString($value) && !isArray($value)) {
+        throwError(`허용되지 않는 형식입니다.`);
+    }
+    if (isString($value)) {
+        validateTokenRefValue($value, throwError);
+    }
+    else {
+        for (const value of $value) {
+            if (!isObject(value)) {
+                throwError(`허용되지 않는 형식입니다.`);
+            }
+            const ACCEPTABLE_PROPS = ["color", "position"];
+            shouldHaveRequiredProps(value, ACCEPTABLE_PROPS, throwError);
+            notAllowedProps(value, ACCEPTABLE_PROPS, throwError);
+            if (isString(value.color)) {
+                validateColorValue(value.color, throwError);
+                if (hasTokenRef(value.color)) {
+                    validateTokenRefValue(value.color, throwError);
+                }
+            }
+            else {
+                throwError(`color는 Color 또는 문자열 형식이어야 합니다.`);
+            }
+            if (!isNumber(value.position)) {
+                throwError(`position는 number 형식이어야 합니다.`);
+            }
+        }
+    }
+    return true;
+};
+/**
+ * Typography 타입의 토큰을 확인합니다.
+ * Typography 타입은 "fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing" 속성을 포함해야 합니다.
+ * @param tokenObj - 확인할 토큰 객체
+ * @returns 토큰 객체가 Typography 타입인지 여부
+ * @throws "Typography"에 대한 에러 메시지를 throw합니다.
+ */
+const validateTypographyToken = (tokenObj) => {
+    const { $value } = tokenObj;
+    const throwError = throwTypeError("Typography");
+    if (!isString($value) && !isObject($value)) {
+        throwError(`허용되지 않는 형식입니다.`);
+    }
+    if (isString($value)) {
+        validateTokenRefValue($value, throwError);
+    }
+    else {
+        const ACCEPTABLE_PROPS = [
+            "fontFamily",
+            "fontSize",
+            "fontWeight",
+            "lineHeight",
+            "letterSpacing",
+        ];
+        shouldHaveRequiredProps($value, ACCEPTABLE_PROPS, throwError);
+        notAllowedProps($value, ACCEPTABLE_PROPS, throwError);
+        if (!isString($value.fontFamily)) {
+            validateFontFamilyValue($value.fontFamily, throwError);
+        }
+        else {
+            if (hasTokenRef($value.fontFamily)) {
+                validateTokenRefValue($value.fontFamily, throwError);
+            }
+        }
+        if (!isString($value.fontWeight)) {
+            validateFontWeightValue($value.fontWeight, throwError);
+        }
+        else {
+            if (hasTokenRef($value.fontWeight)) {
+                validateTokenRefValue($value.fontWeight, throwError);
+            }
+        }
+        if (isObject($value.fontSize)) {
+            validateDimensionValue($value.fontSize, throwError);
+        }
+        else {
+            if (!isString($value.fontSize)) {
+                throwError(`fontSize는 Dimension 또는 문자열 형식이어야 합니다.`);
+            }
+            else {
+                validateTokenRefValue($value.fontSize, throwError);
+            }
+        }
+        if (!isNumber($value.lineHeight)) {
+            throwError(`lineHeight는 number 형식이어야 합니다.`);
+        }
+        else {
+            if (isString($value.lineHeight)) {
+                validateTokenRefValue($value.lineHeight, throwError);
+            }
+        }
+        if (isObject($value.letterSpacing)) {
+            validateDimensionValue($value.letterSpacing, throwError);
+        }
+        else {
+            if (!isString($value.letterSpacing)) {
+                throwError(`fontSize는 Dimension 또는 문자열 형식이어야 합니다.`);
+            }
+            else {
+                validateTokenRefValue($value.letterSpacing, throwError);
+            }
+        }
+    }
+    return true;
+};
+
 exports.Token = Token;
-exports.Transformers = index$4;
-exports.TypeCheckers = index$3;
-exports.Validate = index;
 exports.findTokenRef = findTokenRef;
+exports.fromTokenRef = fromTokenRef;
 exports.generateDesignToken = generateDesignToken;
 exports.hasTokenRef = hasTokenRef;
+exports.isBorderToken = isBorderToken;
+exports.isColorToken = isColorToken;
+exports.isCompositeToken = isCompositeToken;
+exports.isCubicBezierToken = isCubicBezierToken;
+exports.isDimensionToken = isDimensionToken;
+exports.isDurationToken = isDurationToken;
+exports.isFontFamilyToken = isFontFamilyToken;
+exports.isFontWeightToken = isFontWeightToken;
+exports.isGradientToken = isGradientToken;
+exports.isNumberToken = isNumberToken;
+exports.isShadowToken = isShadowToken;
+exports.isStringToken = isStringToken;
+exports.isStrokeStyleToken = isStrokeStyleToken;
 exports.isTokenObj = isTokenObj;
 exports.isTokenRef = isTokenRef;
-exports.mapArray = mapArray;
-exports.mapObject = mapObject;
+exports.isTransitionToken = isTransitionToken;
+exports.isTypographyToken = isTypographyToken;
 exports.parse = parse;
-exports.transform = transform;
-exports.useCase1 = transformCase1;
-exports.useCase2 = transformCase2;
-exports.useCase3 = transformCase3;
-exports.useCase4 = transformCase4;
+exports.shouldBeOnlyTokenRef = shouldBeOnlyTokenRef;
+exports.shouldHaveDollarPrefix = shouldHaveDollarPrefix;
+exports.shouldHaveRequiredProp = shouldHaveRequiredProp;
+exports.shouldNotHaveDollarPrefix = shouldNotHaveDollarPrefix;
+exports.takeOffBracketFromTokenRef = takeOffBracketFromTokenRef;
+exports.toTokenRef = toTokenRef;
+exports.useCase1 = useCase1;
+exports.useCase2 = useCase2;
+exports.useCase3 = useCase3;
+exports.useCase4 = useCase4;
+exports.validateBorderToken = validateBorderToken;
+exports.validateColorToken = validateColorToken;
+exports.validateCompositeToken = validateCompositeToken;
+exports.validateCubicBezierToken = validateCubicBezierToken;
+exports.validateDimensionToken = validateDimensionToken;
+exports.validateDurationToken = validateDurationToken;
+exports.validateFontFamilyToken = validateFontFamilyToken;
+exports.validateFontWeightToken = validateFontWeightToken;
+exports.validateGradientToken = validateGradientToken;
+exports.validateNumberToken = validateNumberToken;
+exports.validateShadowToken = validateShadowToken;
+exports.validateStringToken = validateStringToken;
+exports.validateStrokeStyleToken = validateStrokeStyleToken;
+exports.validateTransitionToken = validateTransitionToken;
+exports.validateTypographyToken = validateTypographyToken;
 //# sourceMappingURL=index.js.map

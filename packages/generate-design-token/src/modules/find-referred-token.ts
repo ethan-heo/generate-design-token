@@ -1,6 +1,6 @@
-import { Transformers } from "@utils";
-import { Token } from "@modules";
-import { TokenGroup } from "@types";
+import { TokenGroup } from "../types/token.types";
+import { takeOffBracketFromTokenRef, toTokenRef } from "../utils/token-ref";
+import Token from "./token";
 
 /**
  * 주어진 토큰 참조 문자열에 해당하는 토큰을 참조 토큰 목록에서 찾아 반환합니다.
@@ -11,12 +11,10 @@ import { TokenGroup } from "@types";
  */
 const findByRefTokens = (tokenRef: string, refTokens: Token[]) => {
 	let result: [string[], TokenGroup] | undefined;
-	const _tokenRef = Transformers.takeOffBracketFromTokenRef(tokenRef);
+	const _tokenRef = takeOffBracketFromTokenRef(tokenRef);
 
 	for (const refToken of refTokens) {
-		const foundRef = refToken.find(
-			(props) => Transformers.toTokenRef(props) === _tokenRef,
-		);
+		const foundRef = refToken.find((props) => toTokenRef(props) === _tokenRef);
 
 		if (foundRef) {
 			result = foundRef;

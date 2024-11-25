@@ -1,4 +1,4 @@
-import { TOKEN_REF_REGEXP } from "@constants";
+import { TOKEN_REF_REGEXP } from "../../constants/regexp";
 
 /**
  * @description 토큰 객체의 필수 속성이 포함되어 있는지 확인한다

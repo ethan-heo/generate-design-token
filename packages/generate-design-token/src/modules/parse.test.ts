@@ -1,6 +1,6 @@
 import { expect, it } from "vitest";
-import { Token } from "@modules";
 import parse from "./parse";
+import Token from "./token";
 
 it(`[parse] 순환 참조 테스트`, () => {
 	const base = new Token({
