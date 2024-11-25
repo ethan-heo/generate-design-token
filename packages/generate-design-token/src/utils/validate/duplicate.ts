@@ -1,6 +1,6 @@
-import Token from "../../../modules/token";
-import { TokenGroup } from "../../../types/token.types";
-import { toTokenRef } from "../../token-ref";
+import Token from "../../modules/token";
+import { TokenGroup } from "../../types/token.types";
+import { toTokenRef } from "../token-ref";
 
 /**
  * 주어진 토큰 경로가 토큰 내부에 중복으로 존재하는지 확인합니다.
