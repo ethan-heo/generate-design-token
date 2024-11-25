@@ -1,8 +1,9 @@
 import { TOKEN_REF_REGEXP } from "../../constants/regexp";
 
 /**
- * @description 토큰 객체의 필수 속성이 포함되어 있는지 확인한다
- * @returns
+ * 주어진 객체가 토큰 객체의 필수 속성을 모두 포함하고 있는지 확인합니다.
+ * @param {object} value - 확인할 객체
+ * @returns 주어진 객체가 토큰 객체의 필수 속성을 모두 포함하고 있으면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
  */
 export const shouldHaveRequiredProp = (value: {}): boolean => {
 	const MUST_HAVE_PROPERTIES = ["$value"];
@@ -10,8 +11,9 @@ export const shouldHaveRequiredProp = (value: {}): boolean => {
 };
 
 /**
- * @description 객체 속성 모두 이름에 $를 prefix로 가지고 있는지 확인한다
- * @returns
+ * @description 주어진 객체의 속성명이 모두 $로 시작하는지 확인합니다.
+ * @param {object} value - 확인할 객체
+ * @returns 주어진 객체의 모든 속성명이 $로 시작하면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
  */
 export const shouldHaveDollarPrefix = (value: {}): boolean => {
 	let result = true;
@@ -27,15 +29,16 @@ export const shouldHaveDollarPrefix = (value: {}): boolean => {
 };
 
 /**
- * @description 객체 속성 모두 이름에 $를 prefix로 가지고 있지 않은지 확인한다
- * @returns
+ * @description 주어진 객체의 속셩명 중 하나라도 $를 prefix로 가지고 있지 않은 속성명이 있는지 확인합니다.
+ * @param {object} value - 확인할 객체
+ * @returns 주어진 객체의 속셩명 중 하나라도 $를 prefix로 가지고 있지 않으면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
  */
 export const shouldNotHaveDollarPrefix = (value: {}): boolean => {
-	let result = true;
+	let result = false;
 
 	for (const prop in value) {
-		if (prop.startsWith("$")) {
-			result = false;
+		if (!prop.startsWith("$")) {
+			result = true;
 			break;
 		}
 	}

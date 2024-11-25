@@ -243,6 +243,8 @@ export type TokenObj =
 	| Gradient
 	| Typography;
 
+export type TokenTypes = TokenObj["$type"];
+
 /**
  * @see https://tr.designtokens.org/format/#groups
  */

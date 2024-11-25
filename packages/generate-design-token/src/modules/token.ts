@@ -2,10 +2,6 @@ import { TokenGroup, TokenObj } from "../types/token.types";
 import { isTokenObj } from "../utils/token-obj";
 import { toTokenRef } from "../utils/token-ref";
 import { isObject } from "../utils/type-checker";
-import {
-	shouldHaveRequiredProp,
-	shouldNotHaveDollarPrefix,
-} from "../utils/validate/format";
 
 export type TokenResult = [string[], TokenGroup | TokenObj];
 
@@ -15,8 +11,6 @@ class Token {
 	#token: TokenGroup;
 
 	constructor(token: TokenGroup) {
-		// 유효성 검사
-		this.#validate(token);
 		this.#token = token;
 	}
 
@@ -159,19 +153,13 @@ class Token {
 		}
 	}
 
-	#validate(token: TokenGroup) {
-		//1. 중복 속성 체크
-		//2. $extension 속성은 무조건 JSON
-		//3. 토큰 객체 타입별 값의 형식 체크
-		//3-1. 값의 유효한 값인지 확인
-		this.#iterator(token, (_, _token) => {
-			if (typeof _token === "object" && shouldHaveRequiredProp(_token)) {
-				if (shouldNotHaveDollarPrefix(_token)) {
-					throw new Error(
-						`토큰 객체의 속성값의 이름은 $가 prefix로 시작해야합니다.`,
-					);
-				}
-			}
+	/**
+	 * @description 주어진 토큰을 순회하여 주어진 콜백을 실행합니다.
+	 * @param callback 토큰을 순회하는 콜백. 첫 번째 인자로 토큰의 경로를, 두 번째 인자로 토큰을 받는다.
+	 */
+	forEach(callback: Iteratee) {
+		this.#iterator(this.#token, (props, token) => {
+			callback(props, token, this);
 		});
 	}
 
