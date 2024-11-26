@@ -102,30 +102,16 @@ const parse = (base: Token, refTokens: Token[]): Token => {
 	for (const [, tokenObj] of result.findAll((_, token) =>
 		isTokenObj(token),
 	) as TokenObjValue[]) {
-		const { $value } = tokenObj;
+		if (isString(tokenObj.$value) && isTokenRef(tokenObj.$value)) {
+			const { $type, $value } = findTokenObj(
+				takeOffBracketFromTokenRef(tokenObj.$value),
+				[base, ...refTokens],
+			);
 
-		if (isString($value) && isTokenRef($value)) {
-			let _tokenObj;
-
-			for (const refToken of [base, ...refTokens]) {
-				const foundTokenObj = refToken.find(
-					(props) => toTokenRef(props) === takeOffBracketFromTokenRef($value),
-				) as TokenObjValue;
-
-				if (foundTokenObj) {
-					_tokenObj = foundTokenObj[1];
-					break;
-				}
-			}
-
-			if (!_tokenObj) {
-				throw new Error(`정의되지 않은 토큰입니다: ${$value}`);
-			}
-
-			tokenObj.$type = _tokenObj.$type;
-			tokenObj.$value = recursiveTokenValue(_tokenObj.$value);
-		} else {
+			tokenObj.$type = $type;
 			tokenObj.$value = recursiveTokenValue($value);
+		} else {
+			tokenObj.$value = recursiveTokenValue(tokenObj.$value);
 		}
 	}
 
@@ -150,6 +136,40 @@ const parse = (base: Token, refTokens: Token[]): Token => {
 		}
 
 		return value;
+	}
+
+	/**
+	 * 주어진 토큰 참조 문자열에 대한 토큰을 찾아 반환합니다.
+	 * @param tokenRef - 토큰 참조 문자열
+	 * @param refTokens - 참조 토큰 목록
+	 * @returns 찾은 토큰
+	 * @throws 토큰이 정의되지 않은 경우 에러를 throw합니다.
+	 */
+	function findTokenObj(tokenRef: string, refTokens: Token[]) {
+		let tokenObj: TokenObj | undefined;
+
+		for (const refToken of refTokens) {
+			const foundResult = refToken.find(
+				(props) => toTokenRef(props) === tokenRef,
+			) as TokenObjValue;
+
+			if (foundResult) {
+				tokenObj = foundResult[1];
+				break;
+			}
+		}
+
+		if (!tokenObj) {
+			throw new Error(`정의되지 않은 토큰입니다: ${tokenRef}`);
+		}
+
+		const { $value } = tokenObj;
+
+		if (isString($value) && isTokenRef($value)) {
+			return findTokenObj(takeOffBracketFromTokenRef($value), refTokens);
+		}
+
+		return tokenObj;
 	}
 };
 

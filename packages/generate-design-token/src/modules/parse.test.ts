@@ -109,3 +109,40 @@ it(`[parse] 파싱 테스트`, () => {
 		},
 	});
 });
+
+it(`토큰 객체의 값이 참조값일 때 참조값이 또 다른 참조값을 가리키고 있는 경우`, () => {
+	const base = new Token({
+		color: {
+			primary: {
+				$type: "string",
+				$value: "{a.b}",
+			},
+		},
+	});
+	const refToken = new Token({
+		a: {
+			b: {
+				$type: "color",
+				$value: "{a.c}",
+			},
+			c: {
+				$type: "dimension",
+				$value: {
+					value: 1,
+					unit: "px",
+				},
+			},
+		},
+	});
+	expect(parse(base, [refToken]).getToken()).toStrictEqual({
+		color: {
+			primary: {
+				$type: "dimension",
+				$value: {
+					value: 1,
+					unit: "px",
+				},
+			},
+		},
+	});
+});
