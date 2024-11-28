@@ -199,7 +199,7 @@ const validateDimensionValue = (
 
 	if (isString(value)) {
 		if (!UNITS.some((unit) => value.endsWith(unit))) {
-			throwError(`value의 단위는 [${UNITS.join(",")}]이어야 핕인.`);
+			throwError(`value의 단위는 [${UNITS.join(",")}]이어야 합니다.`);
 		}
 	}
 
