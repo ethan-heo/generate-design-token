@@ -31,8 +31,10 @@
 		"typescript": "^5.6.3",
 		"vitest": "^1.5.3"
 	},
+	"dependencies": {
+		"ejs": "^3.1.10"
+	},
 	"peerDependencies": {
-		"ejs": "^3.1.10",
 		"prettier": "^3.3.3"
 	},
 	"engines": {
