@@ -1010,15 +1010,9 @@ const defaultValidators: Validator<TokenTypes> = {
 	},
 };
 
-export const validate = <T extends TokenTypes & string>(
-	token: Token | TokenGroup,
-	customValidators = {} as Validator<T>,
-) => {
+export const validate = (token: Token | TokenGroup) => {
+	const validators = defaultValidators;
 	let _token = token;
-	let validators = {
-		...defaultValidators,
-		...customValidators,
-	};
 
 	if (!(_token instanceof Token)) {
 		_token = new Token(_token);
