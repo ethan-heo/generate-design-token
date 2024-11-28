@@ -104,11 +104,32 @@ class Token {
 	 * @param callback 토큰을 순회하는 콜백. 첫 번째 인자로 토큰의 경로를, 두 번째 인자로 토큰을 받는다.
 	 * @returns 주어진 콜백을 적용한 결과를 반환한다.
 	 */
-	map(callback: (props: string[], token: TokenGroup) => TokenResult) {
-		const result: TokenResult[] = [];
+	map<T extends (props: string[], token: TokenGroup | TokenObj) => any>(
+		callback: T,
+	) {
+		const result: ReturnType<typeof callback>[] = [];
 
 		this.#iterator(this.#clone(this.#token), (props, token) => {
 			result.push(callback(props, token));
+		});
+
+		return result;
+	}
+
+	/**
+	 * @description 주어진 콜백을 적용하여 필터링된 토큰을 반환합니다.
+	 * @param callback 필터링을 위한 콜백. 첫 번째 인자로 토큰의 경로를, 두 번째 인자로 토큰을 받는다.
+	 * @returns 필터링된 토큰을 반환합니다.
+	 */
+	filter<T extends (props: string[], token: TokenGroup | TokenObj) => any>(
+		callback: T,
+	) {
+		const result: [string[], TokenGroup | TokenObj][] = [];
+
+		this.#iterator(this.#clone(this.#token), (props, token) => {
+			if (callback(props, token)) {
+				result.push([props, token]);
+			}
 		});
 
 		return result;
