@@ -9,6 +9,6 @@
 		"sourceMap": true,
 		"resolveJsonModule": true
 	},
-	"include": ["./src/index.ts"],
+	"include": ["./src/index.ts", "./src/**/*.ts", "./configs/vitest.config.ts"],
 	"exclude": ["dist", "build", "node_modules"]
 }

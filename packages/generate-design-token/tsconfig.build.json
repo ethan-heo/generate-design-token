@@ -1,0 +1,11 @@
+{
+	"extends": "./tsconfig.paths.json",
+	"compilerOptions": {
+		"target": "ESNext",
+		"moduleResolution": "Bundler",
+		"outDir": "./dist/types",
+		"declaration": true,
+		"emitDeclarationOnly": true
+	},
+	"files": ["./src/index.ts"]
+}
