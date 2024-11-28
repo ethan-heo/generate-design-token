@@ -1,3 +1,6 @@
+import { Options } from 'ejs';
+import { Config } from 'prettier';
+
 type CreateTokenObj<T> = T extends {
     $value: any;
 } ? {
@@ -192,7 +195,13 @@ declare class Token {
      * @param callback 토큰을 순회하는 콜백. 첫 번째 인자로 토큰의 경로를, 두 번째 인자로 토큰을 받는다.
      * @returns 주어진 콜백을 적용한 결과를 반환한다.
      */
-    map(callback: (props: string[], token: TokenGroup) => TokenResult): TokenResult[];
+    map<T extends (props: string[], token: TokenGroup | TokenObj) => any>(callback: T): ReturnType<T>[];
+    /**
+     * @description 주어진 콜백을 적용하여 필터링된 토큰을 반환합니다.
+     * @param callback 필터링을 위한 콜백. 첫 번째 인자로 토큰의 경로를, 두 번째 인자로 토큰을 받는다.
+     * @returns 필터링된 토큰을 반환합니다.
+     */
+    filter<T extends (props: string[], token: TokenGroup | TokenObj) => any>(callback: T): [string[], TokenObj | TokenGroup][];
     getToken(): TokenGroup;
     /**
      * @description 주어진 토큰을 순회하여 주어진 콜백을 실행합니다.
@@ -202,6 +211,48 @@ declare class Token {
 }
 
 declare const parse: (base: Token, refTokens: Token[]) => Token;
+
+type EJSTokenData = {
+    props: string[];
+    value: TokenObj;
+    meta: Record<`$${string}`, any>;
+};
+type EJSTemplatePath = string;
+type GenerateOptions = {
+    /**
+     * 생성할 파일 이름
+     */
+    filename: string;
+    /**
+     * 생성할 파일 경로
+     */
+    path: string;
+    /**
+     * ejs 템플릿 및 템플릿 경로
+     */
+    template: string | EJSTemplatePath;
+    /**
+     * ejs 템플릿 옵션
+     */
+    ejsOptions?: Options;
+    /**
+     * ejs 템플릿 헬퍼 함수 등록
+     */
+    ejsHelper?: Record<string, (tokenData: EJSTokenData) => any>;
+    /**
+     * prettier 설정
+     */
+    prettierConfig?: Config;
+};
+/**
+ * TokenGroup을 파일로 생성합니다.
+ *
+ * @param token 생성할 TokenGroup
+ * @param options 생성할 파일의 경로, 이름, ejs 템플릿 등의 옵션
+ *
+ * @return 생성이 완료된 Promise
+ */
+declare const generate: (token: TokenGroup, options: GenerateOptions) => Promise<void>;
 
 /**
  * @description
@@ -455,17 +506,7 @@ declare const validateGradientToken: (tokenObj: Gradient) => true;
  * @throws "Typography"에 대한 에러 메시지를 throw합니다.
  */
 declare const validateTypographyToken: (tokenObj: Typography) => true;
-type Validator<T extends string> = {
-    [key in T]: {
-        is: (token: TokenObj) => token is TokenObj & {
-            $type: key;
-        };
-        validate: <P extends TokenObj & {
-            $type: key;
-        }>(token: P) => true;
-    };
-};
-declare const validate: <T extends TokenTypes & string>(token: Token | TokenGroup, customValidators?: Validator<T>) => void;
+declare const validate: (token: Token | TokenGroup) => void;
 
 /**
  * 주어진 객체가 TokenObj 타입인지 확인합니다.
@@ -542,4 +583,4 @@ declare const shouldNotHaveDollarPrefix: (value: {}) => boolean;
  */
 declare const shouldBeOnlyTokenRef: (tokenRef: string) => boolean;
 
-export { type Border, type Color, type Composite, type CubicBezier, type Dimension, type Duration, type FontFamily, type FontWeight, type Gradient, type Number, type Shadow, type String, type StrokeStyle, Token, type TokenGroup, type TokenObj, type TokenTypes, type Transition, type Typography, findTokenRef, fromTokenRef, generateDesignToken, hasTokenRef, isBorderToken, isColorToken, isCompositeToken, isCubicBezierToken, isDimensionToken, isDurationToken, isFontFamilyToken, isFontWeightToken, isGradientToken, isNumberToken, isShadowToken, isStringToken, isStrokeStyleToken, isTokenObj, isTokenRef, isTransitionToken, isTypographyToken, parse, shouldBeOnlyTokenRef, shouldHaveDollarPrefix, shouldHaveRequiredProp, shouldNotHaveDollarPrefix, takeOffBracketFromTokenRef, toTokenRef, useCase1, useCase2, useCase3, useCase4, validate, validateBorderToken, validateColorToken, validateCompositeToken, validateCubicBezierToken, validateDimensionToken, validateDurationToken, validateFontFamilyToken, validateFontWeightToken, validateGradientToken, validateNumberToken, validateShadowToken, validateStringToken, validateStrokeStyleToken, validateTransitionToken, validateTypographyToken };
+export { type Border, type Color, type Composite, type CubicBezier, type Dimension, type Duration, type FontFamily, type FontWeight, type Gradient, type Number, type Shadow, type String, type StrokeStyle, Token, type TokenGroup, type TokenObj, type TokenTypes, type Transition, type Typography, findTokenRef, fromTokenRef, generate, generateDesignToken, hasTokenRef, isBorderToken, isColorToken, isCompositeToken, isCubicBezierToken, isDimensionToken, isDurationToken, isFontFamilyToken, isFontWeightToken, isGradientToken, isNumberToken, isShadowToken, isStringToken, isStrokeStyleToken, isTokenObj, isTokenRef, isTransitionToken, isTypographyToken, parse, shouldBeOnlyTokenRef, shouldHaveDollarPrefix, shouldHaveRequiredProp, shouldNotHaveDollarPrefix, takeOffBracketFromTokenRef, toTokenRef, useCase1, useCase2, useCase3, useCase4, validate, validateBorderToken, validateColorToken, validateCompositeToken, validateCubicBezierToken, validateDimensionToken, validateDurationToken, validateFontFamilyToken, validateFontWeightToken, validateGradientToken, validateNumberToken, validateShadowToken, validateStringToken, validateStrokeStyleToken, validateTransitionToken, validateTypographyToken };

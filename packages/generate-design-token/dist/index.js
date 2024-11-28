@@ -1,5 +1,29 @@
 'use strict';
 
+var ejs = require('ejs');
+var fs = require('fs/promises');
+var nPath = require('node:path');
+var prettier = require('prettier');
+
+function _interopNamespaceDefault(e) {
+    var n = Object.create(null);
+    if (e) {
+        Object.keys(e).forEach(function (k) {
+            if (k !== 'default') {
+                var d = Object.getOwnPropertyDescriptor(e, k);
+                Object.defineProperty(n, k, d.get ? d : {
+                    enumerable: true,
+                    get: function () { return e[k]; }
+                });
+            }
+        });
+    }
+    n.default = e;
+    return Object.freeze(n);
+}
+
+var ejs__namespace = /*#__PURE__*/_interopNamespaceDefault(ejs);
+
 const TOKEN_REF_REGEXP = /\{([^{}]+)\}/;
 
 /**
@@ -164,6 +188,14 @@ const isObject = (value) => {
 const isString = (value) => {
     return getType(value) === "string";
 };
+/**
+ * 주어진 값이 undefined인지 확인합니다.
+ * @param value 확인할 값
+ * @returns 주어진 값이 undefined이면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+const isUndefined = (value) => {
+    return getType(value) === "undefined";
+};
 
 class Token {
     #token;
@@ -249,6 +281,20 @@ class Token {
         const result = [];
         this.#iterator(this.#clone(this.#token), (props, token) => {
             result.push(callback(props, token));
+        });
+        return result;
+    }
+    /**
+     * @description 주어진 콜백을 적용하여 필터링된 토큰을 반환합니다.
+     * @param callback 필터링을 위한 콜백. 첫 번째 인자로 토큰의 경로를, 두 번째 인자로 토큰을 받는다.
+     * @returns 필터링된 토큰을 반환합니다.
+     */
+    filter(callback) {
+        const result = [];
+        this.#iterator(this.#clone(this.#token), (props, token) => {
+            if (callback(props, token)) {
+                result.push([props, token]);
+            }
         });
         return result;
     }
@@ -378,24 +424,13 @@ const findValueBy = (tokenRef, refTokens, circularRefMap = new Map()) => {
 const parse = (base, refTokens) => {
     const result = base.clone();
     for (const [, tokenObj] of result.findAll((_, token) => isTokenObj(token))) {
-        const { $value } = tokenObj;
-        if (isString($value) && isTokenRef($value)) {
-            let _tokenObj;
-            for (const refToken of [base, ...refTokens]) {
-                const foundTokenObj = refToken.find((props) => toTokenRef(props) === takeOffBracketFromTokenRef($value));
-                if (foundTokenObj) {
-                    _tokenObj = foundTokenObj[1];
-                    break;
-                }
-            }
-            if (!_tokenObj) {
-                throw new Error(`정의되지 않은 토큰입니다: ${$value}`);
-            }
-            tokenObj.$type = _tokenObj.$type;
-            tokenObj.$value = recursiveTokenValue(_tokenObj.$value);
+        if (isString(tokenObj.$value) && isTokenRef(tokenObj.$value)) {
+            const { $type, $value } = findTokenObj(takeOffBracketFromTokenRef(tokenObj.$value), [base, ...refTokens]);
+            tokenObj.$type = $type;
+            tokenObj.$value = recursiveTokenValue($value);
         }
         else {
-            tokenObj.$value = recursiveTokenValue($value);
+            tokenObj.$value = recursiveTokenValue(tokenObj.$value);
         }
     }
     return result;
@@ -418,259 +453,31 @@ const parse = (base, refTokens) => {
         }
         return value;
     }
-};
-
-/**
- * 주어진 토큰 이름에서 토큰 참조를 추출하고, 제공된 토큰 목록에서 검색하여 참조된 토큰을 찾습니다.
- *
- * @param tokenRef - 참조를 추출할 토큰 이름
- * @param tokens - 검색할 토큰 목록
- * @returns 참조된 토큰을 찾으면 T 타입의 토큰을 반환하고, 그렇지 않으면 undefined를 반환합니다.
- */
-const findReferredToken = (tokenRef, tokens) => {
-    const _tokenRef = takeOffBracketFromTokenRef(findTokenRef(tokenRef)[0]);
-    let result;
-    for (const token of tokens) {
-        const foundToken = token.find((props) => toTokenRef(props) === _tokenRef);
-        if (foundToken) {
-            result = foundToken;
-            break;
+    /**
+     * 주어진 토큰 참조 문자열에 대한 토큰을 찾아 반환합니다.
+     * @param tokenRef - 토큰 참조 문자열
+     * @param refTokens - 참조 토큰 목록
+     * @returns 찾은 토큰
+     * @throws 토큰이 정의되지 않은 경우 에러를 throw합니다.
+     */
+    function findTokenObj(tokenRef, refTokens) {
+        let tokenObj;
+        for (const refToken of refTokens) {
+            const foundResult = refToken.find((props) => toTokenRef(props) === tokenRef);
+            if (foundResult) {
+                tokenObj = foundResult[1];
+                break;
+            }
         }
+        if (!tokenObj) {
+            throw new Error(`정의되지 않은 토큰입니다: ${tokenRef}`);
+        }
+        const { $value } = tokenObj;
+        if (isString($value) && isTokenRef($value)) {
+            return findTokenObj(takeOffBracketFromTokenRef($value), refTokens);
+        }
+        return tokenObj;
     }
-    return result;
-};
-/**
- * 주어진 토큰(base)에 대한 참조 토큰(refTokens)을 찾아 대체합니다.
- *
- * @param base - 대체할 토큰
- * @param refTokens - 참조 토큰을 찾을 토큰 목록
- * @returns 대체된 토큰
- */
-const transform = (base, refTokens, transformers = []) => {
-    return transformers.reduce((base, transformer) => {
-        const useCases = transformer.findUseCases(base, refTokens);
-        if (useCases.length === 0)
-            return base;
-        const transformedTokens = [];
-        for (const useCase of useCases) {
-            const foundReferredToken = findReferredToken(toTokenRef(useCase[0]), [
-                base,
-                ...refTokens,
-            ]);
-            if (!foundReferredToken) {
-                throw new Error(`정의되지 않은 토큰입니다: ${useCase[0]}`);
-            }
-            transformedTokens.push({
-                useCase,
-                transformed: transformer.transform(useCase, foundReferredToken),
-            });
-        }
-        for (const { useCase, transformed } of transformedTokens) {
-            const [useCaseProps] = useCase;
-            base.delete(useCaseProps);
-            for (const [transformedProps, transformedToken] of transformed) {
-                base.add(transformedProps, transformedToken);
-            }
-        }
-        return base;
-    }, base.clone());
-};
-
-/**
- * 주어진 토큰 참조 문자열에 해당하는 토큰을 참조 토큰 목록에서 찾아 반환합니다.
- *
- * @param tokenRef - 찾고자 하는 토큰의 참조 문자열
- * @param refTokens - 검색할 참조 토큰 목록
- * @returns 찾은 토큰이 있으면 [string[], Types.TokenGroup] 형식의 결과를 반환하고, 없으면 undefined를 반환합니다.
- */
-const findByRefTokens = (tokenRef, refTokens) => {
-    let result;
-    const _tokenRef = takeOffBracketFromTokenRef(tokenRef);
-    for (const refToken of refTokens) {
-        const foundRef = refToken.find((props) => toTokenRef(props) === _tokenRef);
-        if (foundRef) {
-            result = foundRef;
-            break;
-        }
-    }
-    return result;
-};
-
-/**
- * {$value}을 포함하고 있는 문자열, 배열, 혹은 객체를
- * 실제 토큰 참조값으로 치환하여 반환합니다.
- *
- * @param {any} value
- * @param {string} tokenRef
- * @returns {any}
- */
-const replaceValueToTokenRef = (value, tokenRef) => {
-    if (isString(value)) {
-        return value.replace(`{$value}`, `{${tokenRef}}`);
-    }
-    if (isArray(value)) {
-        return mapArray(value, (v) => replaceValueToTokenRef(v, tokenRef));
-    }
-    if (isObject(value)) {
-        return mapObject(value, (v) => replaceValueToTokenRef(v, tokenRef));
-    }
-    return value;
-};
-/**
- * @function transformTokenResult
- *
- * @description
- * 토큰 객체를 전달받아, {$value}을 포함하고 있는 문자열, 배열, 혹은
- * 객체를 실제 토큰 참조값으로 치환하는 함수
- *
- * @param {Types.TokenObj} base - 토큰 객체
- * @param {UpdateData} data - 치환할 토큰의 프로퍼티와 참조값
- * @returns {[string[], Types.TokenObj]} - TokenResult
- */
-const transformTokenResult = (base, data) => {
-    return [
-        data.props,
-        {
-            ...base,
-            $value: replaceValueToTokenRef(base.$value, data.replaceValue),
-        },
-    ];
-};
-
-const useCase1 = {
-    findUseCases: (base, refTokens) => {
-        return base.findAll((props, token) => {
-            const lastProp = props.at(-1);
-            if (!isTokenRef(lastProp) || !isTokenObj(token)) {
-                return false;
-            }
-            const foundRef = findByRefTokens(lastProp, [base, ...refTokens]);
-            if (!foundRef) {
-                return false;
-            }
-            const [, refToken] = foundRef;
-            return isTokenObj(refToken);
-        });
-    },
-    transform: (useCase, referred) => {
-        return [
-            transformTokenResult(useCase[1], {
-                props: [referred[0].at(-1)],
-                replaceValue: toTokenRef(referred[0]),
-            }),
-        ];
-    },
-};
-const useCase2 = {
-    findUseCases: (base, refTokens) => {
-        return base.findAll((props, token) => {
-            const lastProp = props.at(-1);
-            if (!isTokenRef(lastProp) || !isTokenObj(token)) {
-                return false;
-            }
-            const foundRef = findByRefTokens(lastProp, [base, ...refTokens]);
-            if (!foundRef) {
-                return false;
-            }
-            const [, refToken] = foundRef;
-            return !isTokenObj(refToken);
-        });
-    },
-    transform: (useCase, referred) => {
-        const result = [];
-        const [useCaseProps, useCaseToken] = useCase;
-        const [referredProps, referredToken] = referred;
-        const referredTokenObjs = new Token(referredToken).findAll((_, token) => isTokenObj(token));
-        for (const [referredTokenProps] of referredTokenObjs) {
-            result.push(transformTokenResult(useCaseToken, {
-                props: [...useCaseProps.slice(0, -1), ...referredTokenProps],
-                replaceValue: toTokenRef([...referredProps, ...referredTokenProps]),
-            }));
-        }
-        return result;
-    },
-};
-const useCase3 = {
-    findUseCases: (base, refTokens) => {
-        return base.findAll((props, token) => {
-            const lastProp = props.at(-1);
-            if (!isTokenRef(lastProp) || isTokenObj(token)) {
-                return false;
-            }
-            const foundRef = findByRefTokens(lastProp, [base, ...refTokens]);
-            if (!foundRef) {
-                return false;
-            }
-            const [, refToken] = foundRef;
-            return isTokenObj(refToken);
-        });
-    },
-    transform: (useCase, referred) => {
-        const result = [];
-        const [useCaseProps, useCaseToken] = useCase;
-        const [referredProps] = referred;
-        const useCaseTokenObjs = new Token(useCaseToken).findAll((_, token) => isTokenObj(token));
-        /**
-         * 가장 앞에 위치해야할 속성명
-         * - 참조값으로 명명된 속성명을 참조된 토큰을 가리키는 속성명으로 대체한다.
-         */
-        const firstProp = useCaseProps.map((useCaseProp) => isTokenRef(useCaseProp) ? referredProps.at(-1) : useCaseProp);
-        for (const [useCaseTokenObjProps, useCaseTokenObj] of useCaseTokenObjs) {
-            result.push(transformTokenResult(useCaseTokenObj, {
-                props: [...firstProp, ...useCaseTokenObjProps],
-                replaceValue: toTokenRef(referredProps),
-            }));
-        }
-        return result;
-    },
-};
-const useCase4 = {
-    findUseCases: (base, refTokens) => {
-        return base.findAll((props, token) => {
-            const lastProp = props.at(-1);
-            if (!isTokenRef(lastProp) || isTokenObj(token)) {
-                return false;
-            }
-            const foundRef = findByRefTokens(lastProp, [base, ...refTokens]);
-            if (!foundRef) {
-                return false;
-            }
-            const [, refToken] = foundRef;
-            return !isTokenObj(refToken);
-        });
-    },
-    transform: (useCase, referred) => {
-        const result = [];
-        const [useCaseProps, useCaseToken] = useCase;
-        const [referredProps, referredToken] = referred;
-        const referredTokenObjs = new Token(referredToken).findAll((_, token) => isTokenObj(token));
-        const useCaseTokenObjs = new Token(useCaseToken).findAll((_, token) => isTokenObj(token));
-        for (const [referredTokenObjProps] of referredTokenObjs) {
-            /**
-             * 가장 앞에 위치해야할 속성명
-             * - 참조값으로 명명된 속성명을 참조된 토큰을 가리키는 속성명으로 대체한다.
-             */
-            const firstProp = [];
-            for (const useCaseProp of useCaseProps) {
-                if (isTokenRef(useCaseProp)) {
-                    firstProp.push(...referredTokenObjProps);
-                }
-                else {
-                    firstProp.push(useCaseProp);
-                }
-            }
-            for (const [useCaseTokenObjProps, useCaseTokenObj] of useCaseTokenObjs) {
-                result.push(transformTokenResult(useCaseTokenObj, {
-                    props: [...firstProp, ...useCaseTokenObjProps],
-                    replaceValue: toTokenRef([
-                        ...referredProps,
-                        ...referredTokenObjProps,
-                    ]),
-                }));
-            }
-        }
-        return result;
-    },
 };
 
 /**
@@ -793,7 +600,7 @@ const validateDimensionValue = (value, throwError) => {
     const UNITS = ["px", "rem"];
     if (isString(value)) {
         if (!UNITS.some((unit) => value.endsWith(unit))) {
-            throwError(`value의 단위는 [${UNITS.join(",")}]이어야 핕인.`);
+            throwError(`value의 단위는 [${UNITS.join(",")}]이어야 합니다.`);
         }
     }
     if (isObject(value)) {
@@ -1482,12 +1289,9 @@ const defaultValidators = {
         validate: validateDimensionToken,
     },
 };
-const validate = (token, customValidators = {}) => {
+const validate = (token) => {
+    const validators = defaultValidators;
     let _token = token;
-    let validators = {
-        ...defaultValidators,
-        ...customValidators,
-    };
     if (!(_token instanceof Token)) {
         _token = new Token(_token);
     }
@@ -1503,6 +1307,336 @@ const validate = (token, customValidators = {}) => {
             }
         }
     });
+};
+
+/**
+ * TokenGroup을 파일로 생성합니다.
+ *
+ * @param token 생성할 TokenGroup
+ * @param options 생성할 파일의 경로, 이름, ejs 템플릿 등의 옵션
+ *
+ * @return 생성이 완료된 Promise
+ */
+const generate = async (token, options) => {
+    if (isUndefined(global)) {
+        throw new Error("Node 환경에서 사용할 수 있습니다.");
+    }
+    validate(token);
+    const { path, filename, template, ejsOptions, ejsHelper = {}, } = validateOptions(options);
+    const data = new Token(token)
+        .filter((_, token) => isTokenObj(token))
+        .map(([props, token]) => {
+        return {
+            props,
+            value: {
+                $type: token.$type,
+                $value: token.$value,
+            },
+            meta: pickMeta(token, ["$type", "$value"]),
+        };
+    });
+    let _template = template;
+    if (_template.includes(nPath.sep)) {
+        _template = await fs.readFile(nPath.resolve(_template), {
+            encoding: "utf-8",
+        });
+    }
+    let contents = await ejs__namespace.compile(_template, { async: true, ...ejsOptions })({
+        tokens: data,
+        ...ejsHelper,
+    });
+    contents = await prettier.format(contents, {
+        parser: nPath.extname(filename).slice(1),
+    });
+    await fs.mkdir(path, { recursive: true });
+    await fs.writeFile(nPath.resolve(path, filename), contents, {
+        encoding: "utf-8",
+    });
+};
+function validateOptions(options) {
+    if (isString(options.filename)) {
+        if (!nPath.extname(options.filename)) {
+            throw new Error(`filename에 확장자가 없습니다. ${options.filename}`);
+        }
+    }
+    else {
+        throw new Error(`filename은 문자열 형식이어야 합니다.`);
+    }
+    if (!isString(options.path)) {
+        throw new Error(`path는 문자열 형식이어야 합니다.`);
+    }
+    if (!isString(options.template)) {
+        throw new Error(`template는 ejs 템플릿 경로 또는 ejs 템플릿 문자열 가진 문자열 형식이어야 합니다.`);
+    }
+    return options;
+}
+/**
+ * 토큰에 대한 메타데이터를 추출하는 함수
+ * @param token - 토큰
+ * @param excludes - 추출하고 싶지 않은 메타데이터의 키
+ * @returns {EJSTokenData["meta"]} 추출된 메타데이터
+ */
+function pickMeta(token, excludes = []) {
+    const result = {};
+    for (const prop in token) {
+        if (!excludes.includes(prop) && prop.startsWith("$")) {
+            result[prop] = token;
+        }
+    }
+    return result;
+}
+
+/**
+ * 주어진 토큰 이름에서 토큰 참조를 추출하고, 제공된 토큰 목록에서 검색하여 참조된 토큰을 찾습니다.
+ *
+ * @param tokenRef - 참조를 추출할 토큰 이름
+ * @param tokens - 검색할 토큰 목록
+ * @returns 참조된 토큰을 찾으면 T 타입의 토큰을 반환하고, 그렇지 않으면 undefined를 반환합니다.
+ */
+const findReferredToken = (tokenRef, tokens) => {
+    const _tokenRef = takeOffBracketFromTokenRef(findTokenRef(tokenRef)[0]);
+    let result;
+    for (const token of tokens) {
+        const foundToken = token.find((props) => toTokenRef(props) === _tokenRef);
+        if (foundToken) {
+            result = foundToken;
+            break;
+        }
+    }
+    return result;
+};
+/**
+ * 주어진 토큰(base)에 대한 참조 토큰(refTokens)을 찾아 대체합니다.
+ *
+ * @param base - 대체할 토큰
+ * @param refTokens - 참조 토큰을 찾을 토큰 목록
+ * @returns 대체된 토큰
+ */
+const transform = (base, refTokens, transformers = []) => {
+    return transformers.reduce((base, transformer) => {
+        const useCases = transformer.findUseCases(base, refTokens);
+        if (useCases.length === 0)
+            return base;
+        const transformedTokens = [];
+        for (const useCase of useCases) {
+            const foundReferredToken = findReferredToken(toTokenRef(useCase[0]), [
+                base,
+                ...refTokens,
+            ]);
+            if (!foundReferredToken) {
+                throw new Error(`정의되지 않은 토큰입니다: ${useCase[0]}`);
+            }
+            transformedTokens.push({
+                useCase,
+                transformed: transformer.transform(useCase, foundReferredToken),
+            });
+        }
+        for (const { useCase, transformed } of transformedTokens) {
+            const [useCaseProps] = useCase;
+            base.delete(useCaseProps);
+            for (const [transformedProps, transformedToken] of transformed) {
+                base.add(transformedProps, transformedToken);
+            }
+        }
+        return base;
+    }, base.clone());
+};
+
+/**
+ * 주어진 토큰 참조 문자열에 해당하는 토큰을 참조 토큰 목록에서 찾아 반환합니다.
+ *
+ * @param tokenRef - 찾고자 하는 토큰의 참조 문자열
+ * @param refTokens - 검색할 참조 토큰 목록
+ * @returns 찾은 토큰이 있으면 [string[], Types.TokenGroup] 형식의 결과를 반환하고, 없으면 undefined를 반환합니다.
+ */
+const findByRefTokens = (tokenRef, refTokens) => {
+    let result;
+    const _tokenRef = takeOffBracketFromTokenRef(tokenRef);
+    for (const refToken of refTokens) {
+        const foundRef = refToken.find((props) => toTokenRef(props) === _tokenRef);
+        if (foundRef) {
+            result = foundRef;
+            break;
+        }
+    }
+    return result;
+};
+
+/**
+ * {$value}을 포함하고 있는 문자열, 배열, 혹은 객체를
+ * 실제 토큰 참조값으로 치환하여 반환합니다.
+ *
+ * @param {any} value
+ * @param {string} tokenRef
+ * @returns {any}
+ */
+const replaceValueToTokenRef = (value, tokenRef) => {
+    if (isString(value)) {
+        return value.replace(`{$value}`, `{${tokenRef}}`);
+    }
+    if (isArray(value)) {
+        return mapArray(value, (v) => replaceValueToTokenRef(v, tokenRef));
+    }
+    if (isObject(value)) {
+        return mapObject(value, (v) => replaceValueToTokenRef(v, tokenRef));
+    }
+    return value;
+};
+/**
+ * @function transformTokenResult
+ *
+ * @description
+ * 토큰 객체를 전달받아, {$value}을 포함하고 있는 문자열, 배열, 혹은
+ * 객체를 실제 토큰 참조값으로 치환하는 함수
+ *
+ * @param {Types.TokenObj} base - 토큰 객체
+ * @param {UpdateData} data - 치환할 토큰의 프로퍼티와 참조값
+ * @returns {[string[], Types.TokenObj]} - TokenResult
+ */
+const transformTokenResult = (base, data) => {
+    return [
+        data.props,
+        {
+            ...base,
+            $value: replaceValueToTokenRef(base.$value, data.replaceValue),
+        },
+    ];
+};
+
+const useCase1 = {
+    findUseCases: (base, refTokens) => {
+        return base.findAll((props, token) => {
+            const lastProp = props.at(-1);
+            if (!isTokenRef(lastProp) || !isTokenObj(token)) {
+                return false;
+            }
+            const foundRef = findByRefTokens(lastProp, [base, ...refTokens]);
+            if (!foundRef) {
+                return false;
+            }
+            const [, refToken] = foundRef;
+            return isTokenObj(refToken);
+        });
+    },
+    transform: (useCase, referred) => {
+        return [
+            transformTokenResult(useCase[1], {
+                props: [referred[0].at(-1)],
+                replaceValue: toTokenRef(referred[0]),
+            }),
+        ];
+    },
+};
+const useCase2 = {
+    findUseCases: (base, refTokens) => {
+        return base.findAll((props, token) => {
+            const lastProp = props.at(-1);
+            if (!isTokenRef(lastProp) || !isTokenObj(token)) {
+                return false;
+            }
+            const foundRef = findByRefTokens(lastProp, [base, ...refTokens]);
+            if (!foundRef) {
+                return false;
+            }
+            const [, refToken] = foundRef;
+            return !isTokenObj(refToken);
+        });
+    },
+    transform: (useCase, referred) => {
+        const result = [];
+        const [useCaseProps, useCaseToken] = useCase;
+        const [referredProps, referredToken] = referred;
+        const referredTokenObjs = new Token(referredToken).findAll((_, token) => isTokenObj(token));
+        for (const [referredTokenProps] of referredTokenObjs) {
+            result.push(transformTokenResult(useCaseToken, {
+                props: [...useCaseProps.slice(0, -1), ...referredTokenProps],
+                replaceValue: toTokenRef([...referredProps, ...referredTokenProps]),
+            }));
+        }
+        return result;
+    },
+};
+const useCase3 = {
+    findUseCases: (base, refTokens) => {
+        return base.findAll((props, token) => {
+            const lastProp = props.at(-1);
+            if (!isTokenRef(lastProp) || isTokenObj(token)) {
+                return false;
+            }
+            const foundRef = findByRefTokens(lastProp, [base, ...refTokens]);
+            if (!foundRef) {
+                return false;
+            }
+            const [, refToken] = foundRef;
+            return isTokenObj(refToken);
+        });
+    },
+    transform: (useCase, referred) => {
+        const result = [];
+        const [useCaseProps, useCaseToken] = useCase;
+        const [referredProps] = referred;
+        const useCaseTokenObjs = new Token(useCaseToken).findAll((_, token) => isTokenObj(token));
+        /**
+         * 가장 앞에 위치해야할 속성명
+         * - 참조값으로 명명된 속성명을 참조된 토큰을 가리키는 속성명으로 대체한다.
+         */
+        const firstProp = useCaseProps.map((useCaseProp) => isTokenRef(useCaseProp) ? referredProps.at(-1) : useCaseProp);
+        for (const [useCaseTokenObjProps, useCaseTokenObj] of useCaseTokenObjs) {
+            result.push(transformTokenResult(useCaseTokenObj, {
+                props: [...firstProp, ...useCaseTokenObjProps],
+                replaceValue: toTokenRef(referredProps),
+            }));
+        }
+        return result;
+    },
+};
+const useCase4 = {
+    findUseCases: (base, refTokens) => {
+        return base.findAll((props, token) => {
+            const lastProp = props.at(-1);
+            if (!isTokenRef(lastProp) || isTokenObj(token)) {
+                return false;
+            }
+            const foundRef = findByRefTokens(lastProp, [base, ...refTokens]);
+            if (!foundRef) {
+                return false;
+            }
+            const [, refToken] = foundRef;
+            return !isTokenObj(refToken);
+        });
+    },
+    transform: (useCase, referred) => {
+        const result = [];
+        const [useCaseProps, useCaseToken] = useCase;
+        const [referredProps, referredToken] = referred;
+        const referredTokenObjs = new Token(referredToken).findAll((_, token) => isTokenObj(token));
+        const useCaseTokenObjs = new Token(useCaseToken).findAll((_, token) => isTokenObj(token));
+        for (const [referredTokenObjProps] of referredTokenObjs) {
+            /**
+             * 가장 앞에 위치해야할 속성명
+             * - 참조값으로 명명된 속성명을 참조된 토큰을 가리키는 속성명으로 대체한다.
+             */
+            const firstProp = [];
+            for (const useCaseProp of useCaseProps) {
+                if (isTokenRef(useCaseProp)) {
+                    firstProp.push(...referredTokenObjProps);
+                }
+                else {
+                    firstProp.push(useCaseProp);
+                }
+            }
+            for (const [useCaseTokenObjProps, useCaseTokenObj] of useCaseTokenObjs) {
+                result.push(transformTokenResult(useCaseTokenObj, {
+                    props: [...firstProp, ...useCaseTokenObjProps],
+                    replaceValue: toTokenRef([
+                        ...referredProps,
+                        ...referredTokenObjProps,
+                    ]),
+                }));
+            }
+        }
+        return result;
+    },
 };
 
 /**
@@ -1529,6 +1663,7 @@ const generateDesignToken = (base, refTokens) => {
 exports.Token = Token;
 exports.findTokenRef = findTokenRef;
 exports.fromTokenRef = fromTokenRef;
+exports.generate = generate;
 exports.generateDesignToken = generateDesignToken;
 exports.hasTokenRef = hasTokenRef;
 exports.isBorderToken = isBorderToken;
