@@ -21,15 +21,19 @@
 	"devDependencies": {
 		"@ethanheo/ts-utils": "^0.3.0",
 		"@rollup/plugin-typescript": "^11.1.6",
+		"@types/ejs": "^3.1.5",
 		"@types/node": "^20.12.11",
 		"badge-maker": "^3.3.1",
-		"prettier": "^3.3.3",
 		"rollup": "^4.17.2",
 		"rollup-plugin-dts": "^6.1.1",
 		"ts-node": "^10.9.2",
 		"tslib": "^2.6.2",
 		"typescript": "^5.6.3",
 		"vitest": "^1.5.3"
+	},
+	"peerDependencies": {
+		"ejs": "^3.1.10",
+		"prettier": "^3.3.3"
 	},
 	"engines": {
 		"node": ">=18.0.0"
