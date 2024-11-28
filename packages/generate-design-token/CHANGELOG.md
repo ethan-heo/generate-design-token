@@ -1,5 +1,11 @@
 # generate-design-token
 
+## 2.2.0
+
+### Minor Changes
+
+- [#18](https://github.com/ethan-heo/generate-design-token/pull/18) [`e3d69ef`](https://github.com/ethan-heo/generate-design-token/commit/e3d69ef2658913153c1f81f06911a8710c619262) Thanks [@ethan-heo](https://github.com/ethan-heo)! - 디자인 토큰 포맷을 기반으로 구조 및 기능을 개선, 추가한다
+
 ## 2.1.2
 
 ### Patch Changes
