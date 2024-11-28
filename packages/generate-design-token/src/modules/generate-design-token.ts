@@ -1,14 +1,9 @@
-import Token from "./modules/token";
-import { TokenGroup } from "./types/token.types";
-import transform from "./modules/transform";
-import {
-	useCase1,
-	useCase2,
-	useCase3,
-	useCase4,
-} from "./modules/transform-use-cases";
-import parse from "./modules/parse";
-import { validate } from "./modules/validate";
+import Token from "./token";
+import { TokenGroup } from "../types/token.types";
+import transform from "./transform";
+import { useCase1, useCase2, useCase3, useCase4 } from "./transform-use-cases";
+import parse from "./parse";
+import { validate } from "./validate";
 
 /**
  * @description
