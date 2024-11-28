@@ -66,3 +66,14 @@ export const isString = (value: unknown): value is string => {
 export const isUndefined = (value: unknown): value is undefined => {
 	return getType(value) === "undefined";
 };
+
+/**
+ * 주어진 값이 함수인지 확인합니다.
+ * @param value 확인할 값
+ * @returns 주어진 값이 함수이면 true를 반환합니다. 그렇지 않으면 false를 반환합니다.
+ */
+export const isFunction = (
+	value: unknown,
+): value is (...args: any[]) => any => {
+	return getType(value) === "function";
+};
