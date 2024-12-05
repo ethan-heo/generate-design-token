@@ -14,7 +14,7 @@
 	"scripts": {
 		"test": "vitest --config ./configs/vitest.config.ts",
 		"build:type": "tsc-alias -p tsconfig.build.json",
-		"build": "rollup --config ./configs/rollup.config.ts --bundleConfigAsCjs --configPlugin typescript ",
+		"build": "rollup --config ./configs/rollup.config.ts --bundleConfigAsCjs --configPlugin typescript && pnpm badge",
 		"prettier": "prettier . --write",
 		"badge": "node ./scripts/create-badge.js"
 	},
