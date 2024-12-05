@@ -120,6 +120,6 @@ A token group represents the structure of information associated with a token. [
 
 Token objects represent information about the type of token. [link](https://second-editors-draft.tr.designtokens.org/format/#design-token-0)
 
-### License
+## License
 
 [MIT](./LICENSE.md)
