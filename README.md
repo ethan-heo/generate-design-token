@@ -112,4 +112,4 @@ generate API
 
 ### License
 
-![MIT](./LICENSE.md)
+[MIT](./LICENSE.md)
