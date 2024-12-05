@@ -110,6 +110,16 @@ generate API
 }
 ```
 
+## Infos
+
+### Token Group
+
+A token group represents the structure of information associated with a token. [link](https://second-editors-draft.tr.designtokens.org/format/#groups-0)
+
+### Token Object
+
+Token objects represent information about the type of token. [link](https://second-editors-draft.tr.designtokens.org/format/#design-token-0)
+
 ### License
 
 [MIT](./LICENSE.md)
