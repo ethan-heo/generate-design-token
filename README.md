@@ -71,8 +71,6 @@ generate(
 
 **Generate configs**
 
-generate API
-
 ```typescript
 {
 	/**
