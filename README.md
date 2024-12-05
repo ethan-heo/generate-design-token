@@ -1,289 +1,115 @@
 ## generate-design-token
 
 ![version](./packages/generate-design-token/assets/version.svg)
-![node](./packages/generate-design-token/assets/node.svg)
 
-> It was created to reduce unnecessary duplication of effort when defining design tokens.
+> GDT is a library that converts the format of design tokens and generates them into files. The design token format follows [the format of community groups](https://www.w3.org/community/design-tokens/)
 
-## Goal
+## Concepts
 
-Makes it convenient to define style properties defined in object form using some rules without having to hardcode them.
+The purpose of GDTs is to allow you to convert defined design tokens into files in a variety of formats. Along the way, we provide features for easily manipulating and validating design tokens.
 
-## Useage
+## Installing
 
-1. How to use reference values for values
-   - Use to use already defined style properties without hard coding them.
-   - Define style properties defined in object format in dot notation... ex) color.red
-   - Things to keep in mind
-     - If you use a reference for a value, the property that the reference points to must be a token object.
-       ```json
-       {
-           "color": {
-               "white": {
-                   "$type": "color",
-                   "$value": "#ffffff",
-               },
-               "black": {
-                   "$type": "color",
-                   "$value": "#000000",
-               }
-           }
-           "border-white-thin": {
-               "$type": "string",
-               "$value": "1px solid {color.white}"
-           }
-       }
-       ```
-2. How to use reference values for keys
-   - Use when configuring in association with a specific style property.
-   - CASE1
-     - When the value pointed to by the reference value is a token object and the value configured under it is also a token object, use the
-       - before
-       ```json
-       {
-       	"color": {
-       		"white": {
-       			"$type": "color",
-       			"$value": "#ffffff"
-       		},
-       		"black": {
-       			"$type": "color",
-       			"$value": "#000000"
-       		}
-       	},
-       	"border": {
-       		"{color.white}": {
-       			"$type": "string",
-       			"$value": "1px solid {$value}"
-       		}
-       	}
-       }
-       ```
-       - after
-       ```json
-       {
-       	"color": {
-       		"white": {
-       			"$type": "color",
-       			"$value": "#ffffff"
-       		},
-       		"black": {
-       			"$type": "color",
-       			"$value": "#000000"
-       		}
-       	},
-       	"border": {
-       		"white": {
-       			"$type": "string",
-       			"$value": "1px solid #ffffff"
-       		}
-       	}
-       }
-       ```
-   - CASE2
-     - When the value pointed to by the reference is a token object and the value constructed under it is a token struct object
-       - before
-       ```json
-       {
-       	"color": {
-       		"white": {
-       			"$type": "color",
-       			"$value": "#ffffff"
-       		},
-       		"black": {
-       			"$type": "color",
-       			"$value": "#000000"
-       		}
-       	},
-       	"border": {
-       		"{color.white}": {
-       			"thin": {
-       				"$type": "string",
-       				"$value": "1px solid {$value}"
-       			}
-       		}
-       	}
-       }
-       ```
-       - after
-       ```json
-       {
-       	"color": {
-       		"white": {
-       			"$type": "color",
-       			"$value": "#ffffff"
-       		},
-       		"black": {
-       			"$type": "color",
-       			"$value": "#000000"
-       		}
-       	},
-       	"border": {
-       		"white": {
-       			"thin": {
-       				"$type": "string",
-       				"$value": "1px solid #ffffff"
-       			}
-       		}
-       	}
-       }
-       ```
-   - CASE3
-     - When the value pointed to by the reference is a token structure object and the value configured in the child is a token object
-       - before
-       ```json
-       {
-       	"color": {
-       		"white": {
-       			"$type": "color",
-       			"$value": "#ffffff"
-       		},
-       		"black": {
-       			"$type": "color",
-       			"$value": "#000000"
-       		}
-       	},
-       	"border": {
-       		"{color}": {
-       			"$type": "string",
-       			"$value": "1px solid {$value}"
-       		}
-       	}
-       }
-       ```
-       - after
-       ```json
-       {
-       	"color": {
-       		"white": {
-       			"$type": "color",
-       			"$value": "#ffffff"
-       		},
-       		"black": {
-       			"$type": "color",
-       			"$value": "#000000"
-       		}
-       	},
-       	"border": {
-       		"white": {
-       			"$type": "string",
-       			"$value": "1px solid #ffffff"
-       		},
-       		"black": {
-       			"$type": "string",
-       			"$value": "1px solid #000000"
-       		}
-       	}
-       }
-       ```
-   - CASE4
-     - When the value pointed to by the reference is a token-structured object and the value configured in the child is a token-structured object
-       - before
-       ```json
-       {
-       	"color": {
-       		"white": {
-       			"$type": "color",
-       			"$value": "#ffffff"
-       		},
-       		"black": {
-       			"$type": "color",
-       			"$value": "#000000"
-       		}
-       	},
-       	"border": {
-       		"{color}": {
-       			"thin": {
-       				"$type": "string",
-       				"$value": "1px solid {$value}"
-       			}
-       		}
-       	}
-       }
-       ```
-       - after
-       ```json
-       {
-       	"color": {
-       		"white": {
-       			"$type": "color",
-       			"$value": "#ffffff"
-       		},
-       		"black": {
-       			"$type": "color",
-       			"$value": "#000000"
-       		}
-       	},
-       	"border": {
-       		"white": {
-       			"thin": {
-       				"$type": "string",
-       				"$value": "1px solid #ffffff"
-       			}
-       		},
-       		"black": {
-       			"thin": {
-       				"$type": "string",
-       				"$value": "1px solid #000000"
-       			}
-       		}
-       	}
-       }
-       ```
+### Package manager
 
-## Glossary of Terms
+Using npm:
 
-- Token Objects
-  - Based on the [Design Token Format](https://tr.designtokens.org/format/).
-    ```json
-    {
-    	"$type": "",
-    	"$value": ""
-    }
-    ```
-- Token Structure Objects
-  - A token structure object is the object structure that makes up a token object.
-    ```json
-    {
-    	"color": {
-    		"$type": "",
-    		"$value": ""
-    	}
-    }
-    ```
-- Single property
-  - A single property is when only one style attribute is defined.
-    ```json
-    {
-    	"$type": "color",
-    	"$value": "#ffffff"
-    }
-    ```
-- Composite properties
-  - A composite property is a single property composed of multiple properties. ex) border.thin
-    ```json
-    {
-    	"color": {
-    		"white": {
-    			"$type": "color",
-    			"$value": "#ffffff"
-    		}
-    	},
-    	"size": {
-    		"thin": {
-    			"$type": "dimension",
-    			"$value": "1px"
-    		}
-    	},
-    	"border": {
-    		"thin": {
-    			"$type": "string",
-    			"$value": "{size.thin} solid {color.white}"
-    		}
-    	}
-    }
-    ```
+```bash
+npm install generate-design-token
+```
 
-## Licence
+Using bower:
 
-[MIT](./LICENSE.md)
+```bash
+bower install generate-design-token
+```
+
+Using yarn:
+
+```bash
+yarn add generate-design-token
+```
+
+Using pnpm:
+
+```bash
+pnpm add generate-design-token
+```
+
+## API
+
+### Generate
+
+Generates a file according to a user-defined template format using the given token
+
+**generate(TOKEN_GROUP, config)**
+
+```typescript
+generate(
+	{
+		color: {
+			primary: {
+				$type: "color",
+				$value: "#ff0000",
+			},
+		},
+	},
+	{
+		filename: FILE_NAME,
+		path: CREATE_PATH,
+		template: `
+			:root {
+				<% tokens.forEach(function (token) {  %>
+					<% const data = transformCSSVariable(token); %>
+					<%= data.key %>: <%= data.value %>;
+				<%})%>
+			}
+	`,
+	},
+);
+```
+
+**Generate configs**
+
+generate API
+
+```typescript
+{
+	/**
+	 * File name to create
+	 */
+	filename: string;
+	/**
+	 * Path to the file to create
+	 */
+	path: string;
+	/**
+	 * EJS template string and path
+	 */
+	template: string;
+	/**
+	 * EJS library options
+	 */
+	ejsOptions?: EjsOptions;
+	/**
+	 * Register helper functions to be used in EJS templates
+	 */
+	ejsHelper?: {
+		[key in string]: (tokenData: {
+			props: string[];
+			value: TOKEN_OBJECT;
+			meta: {
+				[key in `$${string}`]: any
+			};
+		}) => any
+	};
+	/**
+	 * prettier library options
+	 */
+	prettierConfig?: PrettierConfig;
+}
+```
+
+### License
+
+![MIT](./LICENSE.md)
