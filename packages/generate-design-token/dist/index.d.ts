@@ -232,6 +232,10 @@ type GenerateOptions = {
      */
     template: string | EJSTemplatePath;
     /**
+     * ejs 템플릿 데이터 { custom: DATA }
+     */
+    ejsData?: any;
+    /**
      * ejs 템플릿 옵션
      */
     ejsOptions?: Options;

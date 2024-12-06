@@ -1322,7 +1322,7 @@ const generate = async (token, options) => {
         throw new Error("Node 환경에서 사용할 수 있습니다.");
     }
     validate(token);
-    const { path, filename, template, ejsOptions, ejsHelper = {}, } = validateOptions(options);
+    const { path, filename, template, ejsOptions, ejsHelper = {}, ejsData, } = validateOptions(options);
     const data = new Token(token)
         .filter((_, token) => isTokenObj(token))
         .map(([props, token]) => {
@@ -1343,6 +1343,7 @@ const generate = async (token, options) => {
     }
     let contents = await ejs__namespace.compile(_template, { async: true, ...ejsOptions })({
         tokens: data,
+        custom: ejsData,
         ...ejsHelper,
     });
     contents = await prettier.format(contents, {
