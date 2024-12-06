@@ -88,7 +88,7 @@ generate(
 	/**
 	 * EJS library options
 	 */
-	ejsOptions?: EjsOptions;
+	ejsOptions?: EjsOptions;        
 	/**
 	 * Register helper functions to be used in EJS templates
 	 */
