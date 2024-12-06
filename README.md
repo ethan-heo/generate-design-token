@@ -50,7 +50,7 @@ generate(
 		color: {
 			primary: {
 				$type: "color",
-				$value: "#ff0000",
+				$value: "#ff0000"
 			},
 		},
 	},
@@ -88,7 +88,7 @@ generate(
 	/**
 	 * EJS library options
 	 */
-	ejsOptions?: EjsOptions;
+	ejsOptions?: EjsOptions;        
 	/**
 	 * Register helper functions to be used in EJS templates
 	 */
