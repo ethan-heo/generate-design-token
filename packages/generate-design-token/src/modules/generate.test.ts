@@ -20,7 +20,7 @@ it(`헬퍼 함수가 동작하는지 확인한다.`, async () => {
 			filename,
 			path,
 			template: `
-                :root {
+                [data-theme="<%= custom.type %>"] {
                     <% tokens.forEach(function (token) {  %>
                         <% const data = transformCSSVariable(token); %>
                         <%= data.key %>: <%= data.value %>;
@@ -34,6 +34,9 @@ it(`헬퍼 함수가 동작하는지 확인한다.`, async () => {
 						value: tokenData.value.$value,
 					};
 				},
+			},
+			ejsData: {
+				type: "light",
 			},
 		},
 	);

@@ -32,6 +32,10 @@ export type GenerateOptions = {
 	 */
 	template: string | EJSTemplatePath;
 	/**
+	 * ejs 템플릿 데이터 { custom: DATA }
+	 */
+	ejsData?: any;
+	/**
 	 * ejs 템플릿 옵션
 	 */
 	ejsOptions?: EjsOptions;
@@ -66,6 +70,7 @@ const generate = async (token: TokenGroup, options: GenerateOptions) => {
 		template,
 		ejsOptions,
 		ejsHelper = {},
+		ejsData,
 	} = validateOptions(options);
 	const data: EJSTokenData[] = new Token(token)
 		.filter((_, token) => isTokenObj(token))
@@ -90,6 +95,7 @@ const generate = async (token: TokenGroup, options: GenerateOptions) => {
 
 	let contents = await ejs.compile(_template, { async: true, ...ejsOptions })({
 		tokens: data,
+		custom: ejsData,
 		...ejsHelper,
 	});
 
