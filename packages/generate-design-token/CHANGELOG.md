@@ -1,5 +1,11 @@
 # generate-design-token
 
+## 2.2.1
+
+### Patch Changes
+
+- [`de4840e`](https://github.com/ethan-heo/generate-design-token/commit/de4840e6d08f424bfe27c5e16b8f43c7f2f76de6) Thanks [@ethan-heo](https://github.com/ethan-heo)! - ejs 템플릿에서 사용할 커스텀 데이터를 추가할 수 있는 옵션을 추가한다
+
 ## 2.2.0
 
 ### Minor Changes
