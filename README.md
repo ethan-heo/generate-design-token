@@ -108,6 +108,262 @@ generate(
 }
 ```
 
+## Transform
+
+Structural transformations are used to effectively use duplicate structures. When writing defined style attributes in JSON, duplication of values could be resolved with reference values, but not structurally. For example, here's an example of a case like this
+
+```json
+{
+	"color": {
+		"primary": {
+			"$type": "color",
+			"$value": "#ff0000"
+		},
+		"secondary": {
+			"$type": "color",
+			"$value": "#00ff00"
+		}
+	},
+	"border": {
+		"thin": {
+			"primary": {
+				"$type": "border",
+				"$value": {
+					"width": "1px",
+					"style": "solid",
+					"color": "{color.primary}"
+				}
+			},
+			"secondary": {
+				"$type": "border",
+				"$value": {
+					"width": "1px",
+					"style": "solid",
+					"color": "{color.primary}"
+				}
+			}
+		}
+	}
+}
+```
+
+In this case, we are color-coding specific attributes inside the border, and the same structure is repeated as the number of specific attributes increases. To solve this problem, we thought of programming repeated use by utilizing structural generalization. The parts that can be utilized can be divided into the subject of the reference value and the structure of the attribute to be utilized.
+
+The subject of the reference value represents a token object or a group of tokens. As shown above, if you use all of the color property values, the token group is the subject, and if you use one of the color property values, the token object is the subject.
+
+The structure of the attribute you want to utilize indicates the structure in which you want to use the repeated element. In the example above, the property value of border would be that structure. Within the structure, how the repeated element is represented depends on whether it is followed by a token object or a group of tokens.
+
+There are four cases that can be defined
+
+1. when the iterator is a token object and the structure of the property it utilizes is a token object.
+2. when the iterator is a token object and the structure of the utilized attributes is a group of tokens.
+3. when the iterator is a token group and the structure of the utilized attribute is a token object
+4. when the iterator is a group of tokens and the structure of the utilized property is a group of tokens.
+
+Based on the number of these cases, the structure conversion proceeds.
+
+Case1.
+
+```json
+// before
+{
+	"border": {
+    "thin": {
+      "{color.primary}": {
+        "$type": "border",
+        "$value": {
+          "width": "1px",
+          "style": "solid",
+          "color": "{$value}"
+        }
+      }
+    }
+	}
+}
+
+//after
+{
+	"border": {
+		"thin": {
+			"primary": {
+				"$type": "border",
+				"$value": {
+					"width": "1px",
+					"style": "solid",
+					"color": "{color.primary}"
+				}
+			}
+		}
+	}
+}
+```
+
+Case2.
+
+```json
+// before
+{
+	"border": {
+    "{color.primary}": {
+      "thin": {
+				"$type": "border",
+				"$value": {
+					"width": "1px",
+					"style": "solid",
+					"color": "{$value}"
+				}
+			},
+			"thick": {
+				"$type": "border",
+				"$value": {
+					"width": "2px",
+					"style": "solid",
+					"color": "{$value}"
+				}
+			}
+    }
+	}
+}
+
+// after
+{
+	"border": {
+		"primary": {
+			"thin": {
+				"$type": "border",
+				"$value": {
+					"width": "1px",
+					"style": "solid",
+					"color": "{color.primary}"
+				}
+			},
+			"thick": {
+				"$type": "border",
+				"$value": {
+					"width": "2px",
+					"style": "solid",
+					"color": "{color.primary}"
+				}
+			}
+		}
+	}
+}
+```
+
+Case3.
+
+```json
+// before
+{
+	"border": {
+    "thin": {
+      "{color}": {
+				"$type": "border",
+				"$value": {
+					"width": "1px",
+					"style": "solid",
+					"color": "{$value}"
+				}
+			}
+    }
+	}
+}
+
+// after
+{
+	"border": {
+    "thin": {
+      "primary": {
+        "$type": "border",
+        "$value": {
+          "width": "1px",
+          "style": "solid",
+          "color": "{color.primary}"
+        }
+      },
+      "secondary": {
+        "$type": "border",
+        "$value": {
+          "width": "1px",
+          "style": "solid",
+          "color": "{color.secondary}"
+        }
+      }
+    }
+  }
+}
+```
+
+Case4.
+
+```json
+// before
+{
+	"border": {
+    "{color}": {
+      "thin": {
+        "$type": "border",
+        "$value": {
+          "width": "1px",
+          "style": "solid",
+          "color": "{$value}"
+        }
+      },
+      "thick": {
+        "$type": "border",
+        "$value": {
+          "width": "2px",
+          "style": "solid",
+          "color": "{$value}"
+        }
+      },
+    },
+	}
+}
+
+// after
+{
+	"border": {
+		"primary": {
+			"thin": {
+				"$type": "border",
+				"$value": {
+					"width": "1px",
+					"style": "solid",
+					"color": "{color.primary}"
+				}
+			},
+			"thick": {
+				"$type": "border",
+				"$value": {
+					"width": "2px",
+					"style": "solid",
+					"color": "{color.primary}"
+				}
+			}
+		},
+		"secondary": {
+			"thin": {
+				"$type": "border",
+				"$value": {
+					"width": "1px",
+					"style": "solid",
+					"color": "{color.secondary}"
+				}
+			},
+			"thick": {
+				"$type": "border",
+				"$value": {
+					"width": "2px",
+					"style": "solid",
+					"color": "{color.thick}"
+				}
+			}
+		}
+	}
+}
+```
+
 ## Infos
 
 ### Token Group
