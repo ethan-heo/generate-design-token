@@ -1,5 +1,11 @@
 # generate-design-token
 
+## 2.2.2
+
+### Patch Changes
+
+- [`06ec9e2`](https://github.com/ethan-heo/generate-design-token/commit/06ec9e2c2e2c5ba3c6e3b2289abd66bfb7ddbe15) Thanks [@ethan-heo](https://github.com/ethan-heo)! - 빌드 파일을 배포한다
+
 ## 2.2.1
 
 ### Patch Changes
