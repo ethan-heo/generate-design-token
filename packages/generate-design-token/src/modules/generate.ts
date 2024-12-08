@@ -62,8 +62,6 @@ const generate = async (token: TokenGroup, options: GenerateOptions) => {
 		throw new Error("Node 환경에서 사용할 수 있습니다.");
 	}
 
-	validate(token);
-
 	const {
 		path,
 		filename,
