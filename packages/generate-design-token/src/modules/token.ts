@@ -143,12 +143,12 @@ class Token {
 		token: TokenGroup,
 		callback: (props: string[], token: TokenGroup) => void,
 	) {
-		const stack = [Object.entries(token)] as [string, TokenGroup][][];
-		let currentCtx: [string, TokenGroup][] = stack[stack.length - 1]!;
+		let stack = [Object.entries(token)] as [string, TokenGroup][][];
+		let currentCtx: [string, TokenGroup][] = stack[0]!;
 		let props: string[] = [];
 
 		while (currentCtx.length) {
-			const [prop, token] = currentCtx.pop()!;
+			const [prop, token] = currentCtx.shift()!;
 
 			props.push(prop);
 
@@ -157,19 +157,19 @@ class Token {
 			if (isObject(token) && !isTokenObj(token)) {
 				const item = Object.entries(token) as [string, TokenGroup][];
 
-				stack.push(item);
+				stack = [item, ...stack];
 				currentCtx = item;
 			} else {
 				props.pop();
 			}
 
 			if (currentCtx.length === 0) {
-				while (stack.length > 0 && stack.at(-1)!.length === 0) {
-					stack.pop();
+				while (stack.length > 0 && stack.at(0)!.length === 0) {
+					stack.shift();
 					props.pop();
 				}
 
-				currentCtx = stack[stack.length - 1] ?? [];
+				currentCtx = stack[0] ?? [];
 			}
 		}
 	}

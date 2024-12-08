@@ -19,6 +19,10 @@ const TOKEN = {
 				$type: "color",
 				$value: "#0000ff",
 			},
+			2: {
+				$type: "color",
+				$value: "#00f0ff",
+			},
 		},
 	},
 } as const;
@@ -36,14 +40,11 @@ it(`[Token.find] 특정 조건에 맞는 토큰을 찾아 반환한다.`, () => 
 it(`[Token.findAll] 특정 조건에 맞는 토큰을 모두 찾아 반환한다.`, () => {
 	const token = new Token(TOKEN);
 
-	expect(
-		token.findAll((props) => {
-			const tokenRef = props.join(".");
-			return tokenRef === "color.primary" || tokenRef === "color.secondary";
-		}),
-	).toStrictEqual([
-		[["color", "secondary"], TOKEN.color.secondary],
+	expect(token.findAll((_, token) => isTokenObj(token))).toStrictEqual([
 		[["color", "primary"], TOKEN.color.primary],
+		[["color", "secondary"], TOKEN.color.secondary],
+		[["color", "tertiary", "1"], TOKEN.color.tertiary[1]],
+		[["color", "tertiary", "2"], TOKEN.color.tertiary[2]],
 	]);
 });
 
