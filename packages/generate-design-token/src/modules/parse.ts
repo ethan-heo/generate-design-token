@@ -99,8 +99,8 @@ const findValueBy = (
 const parse = (base: Token, refTokens: Token[]): Token => {
 	const result = base.clone();
 
-	for (const [, tokenObj] of result.findAll((_, token) =>
-		isTokenObj(token),
+	for (const [, tokenObj] of result.findAll(
+		(_, token) => isObject(token) && isTokenObj(token),
 	) as TokenObjValue[]) {
 		if (isString(tokenObj.$value) && isTokenRef(tokenObj.$value)) {
 			const { $type, $value } = findTokenObj(
