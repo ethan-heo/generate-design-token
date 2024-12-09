@@ -229,6 +229,10 @@ An array consisting of information from token objects and groups.
 - **value**: Token objects and groups
 - **meta**: Meta-information except $type, $value contained in token objects and groups
 
+**topLevelMeta**
+
+Metadata at the top of the token group
+
 #### Default helper functions
 
 Default helper functions available in EJS templates
