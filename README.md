@@ -40,57 +40,72 @@ pnpm add generate-design-token
 
 ### Generate
 
-Generates a file according to a user-defined template format using the given token
+You can generate a file or string based on an EJS template.
 
-**generate(TOKEN_GROUP, config)**
+#### generateContents(TOKEN_GROUP, config)
 
 ```typescript
-generate(
+const contents = generate(
 	{
 		color: {
 			primary: {
 				$type: "color",
-				$value: "#ff0000"
+				$value: "#ff0000",
 			},
 		},
 	},
 	{
-		filename: FILE_NAME,
-		path: CREATE_PATH,
-		template: `
-			:root {
-				<% tokens.forEach(function (token) {  %>
-					<% const data = transformCSSVariable(token); %>
-					<%= data.key %>: <%= data.value %>;
-				<%})%>
-			}
-	`,
+		extname: "css",
+		template: {
+			contents: `
+					:root {
+						<% tokens.forEach(function (token) {  %>
+							<% const data = transformCSSVariable(token); %>
+							<%= data.key %>: <%= data.value %>;
+						<%})%>
+					}
+			`,
+		},
+		ejsHelper: {
+			transformCSSVariable: (tokenData: EJSTemplateTokenData) => {
+				return {
+					key: `--${tokenData.props.join("-")}`,
+					value: tokenData.value.$value,
+				};
+			},
+		},
 	},
 );
 ```
 
-**Generate configs**
+**Configs**
 
 ```typescript
 {
 	/**
-	 * File name to create
+	 * File extension
 	 */
-	filename: string;
+	extname: string;
 	/**
-	 * Path to the file to create
+	 * EJS template and template path, one or the
+	 * other must be defined unconditionally. If you
+	 * define both, content takes precedence over
 	 */
-	path: string;
+	template: {
+		content?: string;
+		path?: string
+	};
 	/**
-	 * EJS template string and path
+	 * Custom EJS template data
 	 */
-	template: string;
+	ejsData?: Record<string, any>
 	/**
 	 * EJS library options
 	 */
-	ejsOptions?: EjsOptions;        
+	ejsOptions?: EjsOptions;
 	/**
-	 * Register helper functions to be used in EJS templates
+	 * Register helper functions to be used in
+	 * EJS templates
 	 */
 	ejsHelper?: {
 		[key in string]: (tokenData: {
@@ -106,6 +121,126 @@ generate(
 	 */
 	prettierConfig?: PrettierConfig;
 }
+```
+
+#### generateFile(TOKEN_GROUP, config)
+
+```typescript
+generate(
+	{
+		color: {
+			primary: {
+				$type: "color",
+				$value: "#ff0000",
+			},
+		},
+	},
+	{
+		filename: "variables.css",
+		outputPath: OUTPUT_PATH
+		template: {
+			contents: `
+					:root {
+						<% tokens.forEach(function (token) {  %>
+							<% const data = transformCSSVariable(token); %>
+							<%= data.key %>: <%= data.value %>;
+						<%})%>
+					}
+			`
+		},
+		ejsHelper: {
+			transformCSSVariable: (tokenData: EJSTemplateTokenData) => {
+					return {
+						key: `--${tokenData.props.join("-")}`,
+						value: tokenData.value.$value,
+					};
+				}
+		}
+	},
+);
+```
+
+**Configs**
+
+```typescript
+{
+	/**
+	 * filename
+	 */
+	filename: string;
+	/**
+	 * output path
+	 */
+	outputPath: string;
+	/**
+	 * EJS template and template path, one or the
+	 * other must be defined unconditionally. If you
+	 * define both, content takes precedence over
+	 */
+	template: {
+		content?: string;
+		path?: string
+	};
+	/**
+	 * Custom EJS template data
+	 */
+	ejsData?: Record<string, any>
+	/**
+	 * EJS library options
+	 */
+	ejsOptions?: EjsOptions;
+	/**
+	 * Register helper functions to be used in
+	 * EJS templates
+	 */
+	ejsHelper?: {
+		[key in string]: (tokenData: {
+			props: string[];
+			value: TOKEN_OBJECT;
+			meta: {
+				[key in `$${string}`]: any
+			};
+		}) => any
+	};
+	/**
+	 * prettier library options
+	 */
+	prettierConfig?: PrettierConfig;
+}
+```
+
+### Data and default helper functions available in EJS templates
+
+#### Data
+
+**tokens**
+An array consisting of information from token objects and groups.
+
+```typescript
+{
+	props: string[];
+	value: TokenObj | TokenGroup;
+	meta: Record<`$${string}`, any>;
+}
+```
+
+- **props**: Array of property names where token objects and groups are located
+- **value**: Token objects and groups
+- **meta**: Meta-information except $type, $value contained in token objects and groups
+
+#### Default helper functions
+
+Default helper functions available in EJS templates
+
+**isTokenObj**
+The value of the token data determines whether it is a token object or not.
+
+example:
+
+```ejs
+<% tokens.forEach(function (token) {  %>
+	<% if (!isTokenObj(token.value)) return %>
+<%})%>
 ```
 
 ## Transform
