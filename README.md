@@ -214,6 +214,7 @@ generate(
 #### Data
 
 **tokens**
+
 An array consisting of information from token objects and groups.
 
 ```typescript
@@ -233,6 +234,7 @@ An array consisting of information from token objects and groups.
 Default helper functions available in EJS templates
 
 **isTokenObj**
+
 The value of the token data determines whether it is a token object or not.
 
 example:
