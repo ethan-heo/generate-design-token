@@ -1,5 +1,11 @@
 # generate-design-token
 
+## 2.3.0
+
+### Minor Changes
+
+- [`a5d74bd`](https://github.com/ethan-heo/generate-design-token/commit/a5d74bd0e66853f0f20a2d7ff95f87e95a8ec1ff) Thanks [@ethan-heo](https://github.com/ethan-heo)! - generate 함수를 문자열, 파일 생성 기능 두가지로 나눈다
+
 ## 2.2.3
 
 ### Patch Changes
