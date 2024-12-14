@@ -163,7 +163,7 @@ export const generateContents = async (
 	}
 };
 
-type GenerateFileOptions = {
+export type GenerateFileOptions = {
 	/**
 	 * 생성할 파일 이름
 	 */
@@ -172,7 +172,7 @@ type GenerateFileOptions = {
 	 * 생성할 파일 경로
 	 */
 	outputPath: string;
-} & Omit<GenerateContentsOptions, "extname">;
+} & GenerateContentsOptions;
 
 /**
  * TokenGroup을 파일로 생성합니다.
@@ -198,8 +198,7 @@ export const generateFile = async (
 		throw new Error(`outputPath는 문자열 형식이어야 합니다.`);
 	}
 
-	const extname = options.filename.split(".").at(-1) as string;
-	const contents = await generateContents(token, { ...options, extname });
+	const contents = await generateContents(token, options);
 
 	await fs.mkdir(options.outputPath, { recursive: true });
 	await fs.writeFile(
