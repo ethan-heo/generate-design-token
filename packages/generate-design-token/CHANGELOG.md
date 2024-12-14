@@ -1,5 +1,11 @@
 # generate-design-token
 
+## 2.3.1
+
+### Patch Changes
+
+- [`46d7c6b`](https://github.com/ethan-heo/generate-design-token/commit/46d7c6bae1741647d836a7f4fca12c8e17e31944) Thanks [@ethan-heo](https://github.com/ethan-heo)! - generateFile 옵션에 extname을 필수로 추가하도록 변경한다
+
 ## 2.3.0
 
 ### Minor Changes
